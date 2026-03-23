@@ -20,6 +20,8 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
   }
 };
 
+const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.22]' : ''}`;
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -192,7 +194,7 @@ export default function App() {
                         <div className={`absolute inset-0 rounded-full p-1 bg-gradient-to-br ${selectedTeam.gradient} shadow-lg group-hover:shadow-2xl transition-all`}>
                           <div className="w-full h-full rounded-full bg-black/40" />
                         </div>
-                        <img src={player.imageUrl} alt={player.name} className="w-24 h-28 sm:w-28 sm:h-32 object-contain object-bottom relative z-10" />
+                        <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-24 h-28 sm:w-28 sm:h-32 object-contain object-bottom relative z-10")} />
                       </div>
                       <h3 className="text-base sm:text-lg font-black text-white leading-tight mb-1">{player.name}</h3>
                       <span className="text-xs font-bold uppercase tracking-wider text-white/60">{player.role}</span>
@@ -251,7 +253,7 @@ export default function App() {
                             <div className="flex items-center gap-3">
                               <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                 <div className="absolute inset-0 bg-black/40 border-2 border-white/20 rounded-full shadow-md" />
-                                <img src={player.imageUrl} alt={player.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                               </div>
                               <div className="flex-1">
                                 <div className="flex justify-between items-start mb-1 gap-2">
@@ -279,7 +281,7 @@ export default function App() {
                       <div className="flex items-center gap-3">
                         <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                           <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full shadow-md" />
-                          <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                          <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className={getPlayerImageClass(impactPlayer.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                         </div>
                         <div className="flex-1">
                           <div className="font-bold text-white">{impactPlayer.name}</div>
@@ -312,7 +314,7 @@ export default function App() {
                       <button key={player.id} disabled={isDisabled} onClick={() => handlePlayerToggle(player)} className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isSelected ? status === 'Playing 11' ? 'bg-white/20 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : isDisabled ? 'bg-black/20 border-white/5 opacity-40 cursor-not-allowed' : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'}`}>
                         <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                           <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                          <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                          <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                         </div>
                         <div className="flex-1">
                           <div className={`font-bold ${isSelected ? 'text-white' : 'text-blue-100'}`}>{player.name}</div>
@@ -372,7 +374,7 @@ export default function App() {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl" />
                         <div className="relative w-24 h-24 mx-auto mb-4 flex items-end justify-center">
                           <div className="absolute inset-0 bg-black/40 border-4 border-yellow-400 rounded-full shadow-xl" />
-                          <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-24 h-28 object-contain object-bottom relative z-10" />
+                          <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className={getPlayerImageClass(impactPlayer.id, "w-24 h-28 object-contain object-bottom relative z-10")} />
                         </div>
                         <h4 className="text-2xl font-black text-white mb-1 relative z-10">{impactPlayer.name}</h4>
                         <span className="text-xs font-bold uppercase tracking-wider text-yellow-300 relative z-10">{impactPlayer.role}</span>
@@ -710,7 +712,7 @@ export default function App() {
                                     <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                     <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                       <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                                      <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                                      <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                                     </div>
                                     <div className="flex-1">
                                       <div className="font-bold text-white text-sm">{player.name}</div>
@@ -729,7 +731,7 @@ export default function App() {
                                 <div className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-yellow-500/20">
                                   <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                     <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full" />
-                                    <img src={team1XI.impactPlayer.imageUrl} alt={team1XI.impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                    <img src={team1XI.impactPlayer.imageUrl} alt={team1XI.impactPlayer.name} className={getPlayerImageClass(team1XI.impactPlayer.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                                   </div>
                                   <div>
                                     <div className="font-bold text-white">{team1XI.impactPlayer.name}</div>
@@ -779,7 +781,7 @@ export default function App() {
                                     <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                     <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                       <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                                      <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                                      <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                                     </div>
                                     <div className="flex-1">
                                       <div className="font-bold text-white text-sm">{player.name}</div>
@@ -798,7 +800,7 @@ export default function App() {
                                 <div className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-yellow-500/20 flex-row-reverse text-right">
                                   <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                     <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full" />
-                                    <img src={team2XI.impactPlayer.imageUrl} alt={team2XI.impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                    <img src={team2XI.impactPlayer.imageUrl} alt={team2XI.impactPlayer.name} className={getPlayerImageClass(team2XI.impactPlayer.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                                   </div>
                                   <div>
                                     <div className="font-bold text-white">{team2XI.impactPlayer.name}</div>
@@ -912,7 +914,7 @@ export default function App() {
                                   <div className="flex items-center gap-3">
                                     <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                       <div className="absolute inset-0 bg-black/40 border-2 border-white/20 rounded-full shadow-md" />
-                                      <img src={player.imageUrl} alt={player.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                      <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                                     </div>
                                     <div className="flex-1">
                                       <div className="flex justify-between items-start mb-1">
@@ -975,7 +977,7 @@ export default function App() {
                             >
                               <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                 <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                                <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                                <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                               </div>
                               <div className="flex-1">
                                 <div className={`font-bold flex items-center gap-2 ${isSelected ? 'text-white' : 'text-blue-100'}`}>
@@ -1016,7 +1018,7 @@ function PlayerNode({ player }: { player: Player }) {
         <img 
           src={player.imageUrl} 
           alt={player.name} 
-          className="w-16 h-20 object-contain object-bottom relative z-10 group-hover:scale-110 transition-transform duration-300"
+          className={getPlayerImageClass(player.id, "w-16 h-20 object-contain object-bottom relative z-10 group-hover:scale-110 transition-transform duration-300")}
         />
       </div>
       <div className="bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-lg border border-white/20 text-center mt-3 shadow-xl">

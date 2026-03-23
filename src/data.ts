@@ -417,12 +417,12 @@ const captainByTeam: Record<string, string> = {
   mi: 'Hardik Pandya',
   rcb: 'Virat Kohli',
   kkr: 'Ajinkya Rahane',
-  dc: 'KL Rahul',
+  dc: 'Axar Patel',
   pbks: 'Shreyas Iyer',
   rr: 'Sanju Samson',
   gt: 'Shubman Gill',
-  srh: 'Pat Cummins',
-  lsg: 'Nicholas Pooran',
+  srh: 'Ishan Kishan',
+  lsg: 'Rishabh Pant',
 };
 
 const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 'dateLabel' | 'day' | 'team1' | 'team2' | 'venueCity' | 'stadium' | 'captain1' | 'captain2'>> = {
