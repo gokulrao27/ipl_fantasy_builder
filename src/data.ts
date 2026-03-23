@@ -362,138 +362,304 @@ export const teams: Team[] = [
   }
 ];
 
-export interface Match {
-  id: string;
-  date: string;
-  team1: string;
-  team2: string;
-  venue: string;
-  captain1: string;
-  captain2: string;
-  avgFirstInningsScore: number;
-  batFirstWins: number;
-  totalMatches: number;
+export interface PlayerBattle {
+  batter: string;
+  bowler: string;
+  runs: number;
+  balls: number;
+  dismissals: number;
+  note: string;
 }
 
-export const schedule: Match[] = [
-  {
-    id: 'm1',
-    date: '2026-03-22',
-    team1: 'csk',
-    team2: 'rcb',
-    venue: 'M. A. Chidambaram Stadium, Chennai',
-    captain1: 'Ruturaj Gaikwad',
-    captain2: 'Virat Kohli',
-    avgFirstInningsScore: 165,
-    batFirstWins: 46,
-    totalMatches: 76,
+export interface Match {
+  id: string;
+  matchNumber: number;
+  date: string;
+  dateLabel: string;
+  day: string;
+  team1: string;
+  team2: string;
+  venueCity: string;
+  stadium: string;
+  captain1: string;
+  captain2: string;
+  headline: string;
+  venueStats: {
+    avgFirstInningsScore: number;
+    chasingWins: number;
+    totalMatches: number;
+    bestBowlingFigure: string;
+    boundaryPercentage: number;
+  };
+  headToHead: {
+    team1Wins: number;
+    team2Wins: number;
+    noResult: number;
+    last5: string;
+  };
+  playerBattles: PlayerBattle[];
+  interestingStats: string[];
+}
+
+type MatchSeed = {
+  matchNumber: number;
+  date: string;
+  dateLabel: string;
+  day: string;
+  team1: string;
+  team2: string;
+  venueCity: string;
+  stadium: string;
+};
+
+const captainByTeam: Record<string, string> = {
+  csk: 'Ruturaj Gaikwad',
+  mi: 'Hardik Pandya',
+  rcb: 'Virat Kohli',
+  kkr: 'Ajinkya Rahane',
+  dc: 'KL Rahul',
+  pbks: 'Shreyas Iyer',
+  rr: 'Sanju Samson',
+  gt: 'Shubman Gill',
+  srh: 'Pat Cummins',
+  lsg: 'Nicholas Pooran',
+};
+
+const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 'dateLabel' | 'day' | 'team1' | 'team2' | 'venueCity' | 'stadium' | 'captain1' | 'captain2'>> = {
+  'rcb-srh': {
+    headline: 'Powerplay fireworks meeting one of the most explosive middle orders in the league.',
+    venueStats: { avgFirstInningsScore: 189, chasingWins: 52, totalMatches: 96, bestBowlingFigure: '6/12', boundaryPercentage: 61 },
+    headToHead: { team1Wins: 11, team2Wins: 13, noResult: 0, last5: 'SRH lead 3-2 in the last five meetings.' },
+    playerBattles: [
+      { batter: 'Virat Kohli', bowler: 'Pat Cummins', runs: 72, balls: 49, dismissals: 3, note: 'Cummins attacks the top of off stump and has dismissed Kohli three times in T20s.' },
+      { batter: 'Travis Head', bowler: 'Josh Hazlewood', runs: 38, balls: 31, dismissals: 2, note: 'Hazlewood keeps the ball above the bat handle and cramps Head for room.' },
+    ],
+    interestingStats: ['Chinnaswamy has produced 200-plus totals in 7 of the last 11 IPL innings here.', 'SRH finished with the best six-hitting rate in the previous campaign, while RCB were top three in powerplay run rate.'],
   },
-  {
-    id: 'm2',
-    date: '2026-03-23',
-    team1: 'mi',
-    team2: 'dc',
-    venue: 'Wankhede Stadium, Mumbai',
-    captain1: 'Hardik Pandya',
-    captain2: 'KL Rahul',
-    avgFirstInningsScore: 180,
-    batFirstWins: 50,
-    totalMatches: 109,
+  'mi-kkr': {
+    headline: 'A pace-heavy Wankhede clash where death-overs execution usually decides the game.',
+    venueStats: { avgFirstInningsScore: 183, chasingWins: 61, totalMatches: 118, bestBowlingFigure: '5/18', boundaryPercentage: 58 },
+    headToHead: { team1Wins: 24, team2Wins: 11, noResult: 0, last5: 'MI lead 4-1 across the last five meetings.' },
+    playerBattles: [
+      { batter: 'Rohit Sharma', bowler: 'Sunil Narine', runs: 124, balls: 103, dismissals: 4, note: 'Narine has consistently slowed Rohit with a hard length into the pitch.' },
+      { batter: 'Andre Russell', bowler: 'Jasprit Bumrah', runs: 54, balls: 47, dismissals: 5, note: 'Bumrah’s yorker length has repeatedly won the death-overs duel.' },
+    ],
+    interestingStats: ['MI score at over 11 runs per over in the final five overs at Wankhede.', 'KKR have won more than 70% of matches when Narine takes a powerplay wicket.'],
   },
-  {
-    id: 'm3',
-    date: '2026-03-24',
-    team1: 'kkr',
-    team2: 'srh',
-    venue: 'Eden Gardens, Kolkata',
-    captain1: 'Ajinkya Rahane',
-    captain2: 'Pat Cummins',
-    avgFirstInningsScore: 175,
-    batFirstWins: 36,
-    totalMatches: 86,
+  'rr-csk': {
+    headline: 'Spin control and middle-over batting depth are likely to shape this Guwahati fixture.',
+    venueStats: { avgFirstInningsScore: 177, chasingWins: 5, totalMatches: 9, bestBowlingFigure: '4/17', boundaryPercentage: 54 },
+    headToHead: { team1Wins: 14, team2Wins: 16, noResult: 0, last5: 'The last five meetings are tied 2-2 with one washout.' },
+    playerBattles: [
+      { batter: 'Yashasvi Jaiswal', bowler: 'Noor Ahmad', runs: 28, balls: 24, dismissals: 2, note: 'Noor’s wrong’un has twice broken Jaiswal’s starts in the middle overs.' },
+      { batter: 'Shivam Dube', bowler: 'Jofra Archer', runs: 33, balls: 21, dismissals: 2, note: 'Archer’s hard-length pace-on option keeps Dube from lining him up early.' },
+    ],
+    interestingStats: ['Guwahati games have seen the winning side hit at least 9 sixes in every completed IPL match.', 'CSK concede among the fewest boundaries per over in the middle phase.'],
   },
-  {
-    id: 'm4',
-    date: '2026-03-25',
-    team1: 'rr',
-    team2: 'lsg',
-    venue: 'Sawai Mansingh Stadium, Jaipur',
-    captain1: 'Sanju Samson',
-    captain2: 'Nicholas Pooran',
-    avgFirstInningsScore: 160,
-    batFirstWins: 18,
-    totalMatches: 52,
+  'pbks-gt': {
+    headline: 'Mullanpur rewards aggressive new-ball hitting but grips enough later for slower balls.',
+    venueStats: { avgFirstInningsScore: 172, chasingWins: 6, totalMatches: 11, bestBowlingFigure: '4/21', boundaryPercentage: 52 },
+    headToHead: { team1Wins: 2, team2Wins: 3, noResult: 0, last5: 'GT lead the rivalry 3-2 overall.' },
+    playerBattles: [
+      { batter: 'Shubman Gill', bowler: 'Arshdeep Singh', runs: 45, balls: 34, dismissals: 2, note: 'Arshdeep swings it back in early and keeps Gill honest with the fuller length.' },
+      { batter: 'Shreyas Iyer', bowler: 'Rashid Khan', runs: 58, balls: 52, dismissals: 3, note: 'Rashid’s googly has made this a low-risk, low-boundary matchup.' },
+    ],
+    interestingStats: ['The side winning the powerplay has gone on to win 8 of the first 11 IPL games at Mullanpur.', 'GT have one of the best economy rates in overs 7-15.'],
   },
-  {
-    id: 'm5',
-    date: '2026-03-26',
-    team1: 'pbks',
-    team2: 'gt',
-    venue: 'PCA Stadium, Mohali',
-    captain1: 'Shreyas Iyer',
-    captain2: 'Shubman Gill',
-    avgFirstInningsScore: 168,
-    batFirstWins: 27,
-    totalMatches: 61,
+  'lsg-dc': {
+    headline: 'Lucknow usually turns into a tactical chase where strike rotation matters as much as power.',
+    venueStats: { avgFirstInningsScore: 166, chasingWins: 8, totalMatches: 16, bestBowlingFigure: '5/14', boundaryPercentage: 47 },
+    headToHead: { team1Wins: 3, team2Wins: 2, noResult: 0, last5: 'LSG edge the series 3-2 so far.' },
+    playerBattles: [
+      { batter: 'Nicholas Pooran', bowler: 'Kuldeep Yadav', runs: 41, balls: 29, dismissals: 2, note: 'Kuldeep is one of the few spinners who attacks Pooran with pace through the air.' },
+      { batter: 'KL Rahul', bowler: 'Avesh Khan', runs: 63, balls: 54, dismissals: 3, note: 'Avesh’s wide yorker plan has dismissed Rahul three times in T20 cricket.' },
+    ],
+    interestingStats: ['Ekana has had one of the lowest boundary percentages among IPL venues.', 'DC’s spin attack becomes more effective when the surface dries under lights.'],
   },
-  {
-    id: 'm6',
-    date: '2026-03-27',
-    team1: 'rcb',
-    team2: 'kkr',
-    venue: 'M. Chinnaswamy Stadium, Bengaluru',
-    captain1: 'Virat Kohli',
-    captain2: 'Ajinkya Rahane',
-    avgFirstInningsScore: 185,
-    batFirstWins: 33,
-    totalMatches: 88,
+  'kkr-srh': {
+    headline: 'Two high-ceiling batting units with enough mystery spin to swing momentum in bursts.',
+    venueStats: { avgFirstInningsScore: 181, chasingWins: 39, totalMatches: 93, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
+    headToHead: { team1Wins: 19, team2Wins: 9, noResult: 0, last5: 'KKR have won 4 of the last 5 meetings.' },
+    playerBattles: [
+      { batter: 'Heinrich Klaasen', bowler: 'Varun Chakaravarthy', runs: 29, balls: 27, dismissals: 3, note: 'Varun’s pace changes have regularly forced Klaasen into miscues.' },
+      { batter: 'Rinku Singh', bowler: 'Pat Cummins', runs: 36, balls: 23, dismissals: 1, note: 'Cummins attacks Rinku with hard-length pace and keeps the deep square boundary in play.' },
+    ],
+    interestingStats: ['Eden Gardens has offered the fastest outfield among major IPL venues.', 'Both sides rank near the top for sixes hit between overs 16 and 20.'],
   },
-  {
-    id: 'm7',
-    date: '2026-03-28',
-    team1: 'dc',
-    team2: 'csk',
-    venue: 'Arun Jaitley Stadium, Delhi',
-    captain1: 'KL Rahul',
-    captain2: 'Ruturaj Gaikwad',
-    avgFirstInningsScore: 165,
-    batFirstWins: 35,
-    totalMatches: 84,
+  'csk-pbks': {
+    headline: 'Chepauk’s slower surface makes matchup bowling and spin-hitting a major theme.',
+    venueStats: { avgFirstInningsScore: 168, chasingWins: 33, totalMatches: 80, bestBowlingFigure: '5/13', boundaryPercentage: 45 },
+    headToHead: { team1Wins: 16, team2Wins: 14, noResult: 0, last5: 'CSK lead 3-2 in the last five meetings.' },
+    playerBattles: [
+      { batter: 'MS Dhoni', bowler: 'Arshdeep Singh', runs: 31, balls: 18, dismissals: 2, note: 'Arshdeep often goes full and wide to deny Dhoni his preferred arc.' },
+      { batter: 'Marcus Stoinis', bowler: 'Ravindra Jadeja', runs: 40, balls: 37, dismissals: 3, note: 'Jadeja’s angle into the pads has cramped Stoinis in Chennai conditions.' },
+    ],
+    interestingStats: ['Chepauk has the lowest six percentage among the established IPL venues.', 'PBKS score quickly in the powerplay but dip more than most teams against spin.'],
   },
-  {
-    id: 'm8',
-    date: '2026-03-29',
-    team1: 'srh',
-    team2: 'mi',
-    venue: 'Rajiv Gandhi International Stadium, Hyderabad',
-    captain1: 'Pat Cummins',
-    captain2: 'Hardik Pandya',
-    avgFirstInningsScore: 158,
-    batFirstWins: 31,
-    totalMatches: 71,
+  'dc-mi': {
+    headline: 'Delhi often turns into a boundary-heavy contest where wicket-taking pace becomes the separator.',
+    venueStats: { avgFirstInningsScore: 178, chasingWins: 42, totalMatches: 90, bestBowlingFigure: '5/17', boundaryPercentage: 56 },
+    headToHead: { team1Wins: 16, team2Wins: 20, noResult: 0, last5: 'MI lead 3-2 across the last five meetings.' },
+    playerBattles: [
+      { batter: 'Suryakumar Yadav', bowler: 'Kuldeep Yadav', runs: 67, balls: 44, dismissals: 2, note: 'Kuldeep still creates enough dip to keep SKY from free-flowing through cover.' },
+      { batter: 'KL Rahul', bowler: 'Jasprit Bumrah', runs: 95, balls: 78, dismissals: 4, note: 'Bumrah owns the late-innings phase in this matchup.' },
+    ],
+    interestingStats: ['Arun Jaitley Stadium has one of the highest fours-per-over rates in the tournament.', 'MI’s death bowling record improves sharply when Bumrah bowls two overs at the back end.'],
   },
-  {
-    id: 'm9',
-    date: '2026-03-30',
-    team1: 'rr',
-    team2: 'pbks',
-    venue: 'Sawai Mansingh Stadium, Jaipur',
-    captain1: 'Sanju Samson',
-    captain2: 'Shreyas Iyer',
-    avgFirstInningsScore: 162,
-    batFirstWins: 20,
-    totalMatches: 55,
+  'gt-rr': {
+    headline: 'Ahmedabad usually rewards range hitting, but wrist-spin can still decide the middle overs.',
+    venueStats: { avgFirstInningsScore: 187, chasingWins: 18, totalMatches: 35, bestBowlingFigure: '5/10', boundaryPercentage: 59 },
+    headToHead: { team1Wins: 5, team2Wins: 1, noResult: 0, last5: 'GT have won 4 of the last 5 meetings.' },
+    playerBattles: [
+      { batter: 'Sanju Samson', bowler: 'Rashid Khan', runs: 44, balls: 39, dismissals: 3, note: 'Rashid has kept Samson from targeting the leg side pocket.' },
+      { batter: 'Shubman Gill', bowler: 'Jofra Archer', runs: 52, balls: 41, dismissals: 2, note: 'Archer’s hard length has produced two big breakthroughs in previous meetings.' },
+    ],
+    interestingStats: ['Ahmedabad has produced 180-plus first innings totals in more than half of its IPL matches.', 'GT have historically defended totals well here with their cutters into the surface.'],
   },
-  {
-    id: 'm10',
-    date: '2026-03-31',
-    team1: 'lsg',
-    team2: 'gt',
-    venue: 'BRSABV Ekana Cricket Stadium, Lucknow',
-    captain1: 'Nicholas Pooran',
-    captain2: 'Shubman Gill',
-    avgFirstInningsScore: 155,
-    batFirstWins: 15,
-    totalMatches: 30,
-  }
+  'srh-lsg': {
+    headline: 'Hyderabad combines a true surface with late grip, creating a swing between power and spin.',
+    venueStats: { avgFirstInningsScore: 185, chasingWins: 40, totalMatches: 79, bestBowlingFigure: '5/19', boundaryPercentage: 60 },
+    headToHead: { team1Wins: 1, team2Wins: 4, noResult: 0, last5: 'LSG have won 4 of 5 against SRH.' },
+    playerBattles: [
+      { batter: 'Nicholas Pooran', bowler: 'Pat Cummins', runs: 39, balls: 25, dismissals: 2, note: 'Cummins uses the short ball sparingly but effectively into Pooran’s body line.' },
+      { batter: 'Abhishek Sharma', bowler: 'Mayank Yadav', runs: 18, balls: 14, dismissals: 1, note: 'Extreme pace forces Abhishek to access straighter zones.' },
+    ],
+    interestingStats: ['SRH have the best boundary percentage at this venue over the last two seasons.', 'LSG’s left-hand heavy batting unit will test SRH’s matchups early.'],
+  },
+  'rcb-csk': {
+    headline: 'Few IPL fixtures carry more noise: stars, spin, and death overs all matter here.',
+    venueStats: { avgFirstInningsScore: 190, chasingWins: 53, totalMatches: 96, bestBowlingFigure: '6/14', boundaryPercentage: 62 },
+    headToHead: { team1Wins: 11, team2Wins: 21, noResult: 1, last5: 'The last five meetings are split 3-2 in CSK’s favour.' },
+    playerBattles: [
+      { batter: 'Virat Kohli', bowler: 'Ravindra Jadeja', runs: 132, balls: 109, dismissals: 3, note: 'Jadeja rushes Kohli on the angle whenever the ball grips.' },
+      { batter: 'Ruturaj Gaikwad', bowler: 'Josh Hazlewood', runs: 48, balls: 39, dismissals: 2, note: 'Hazlewood’s back-of-a-length line narrows Ruturaj’s scoring areas.' },
+    ],
+    interestingStats: ['Chinnaswamy games between these sides usually feature more than 25 boundaries.', 'CSK’s spin trio often controls overs 7-14 better than any visiting attack here.'],
+  },
+  'kkr-pbks': {
+    headline: 'An Eden Gardens game where both teams will likely chase sixes and leverage spin in the middle.',
+    venueStats: { avgFirstInningsScore: 181, chasingWins: 39, totalMatches: 93, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
+    headToHead: { team1Wins: 21, team2Wins: 12, noResult: 0, last5: 'KKR lead 3-2 in the last five.' },
+    playerBattles: [
+      { batter: 'Andre Russell', bowler: 'Arshdeep Singh', runs: 42, balls: 23, dismissals: 2, note: 'Arshdeep goes full at the toes and has still found a couple of key dismissals.' },
+      { batter: 'Shreyas Iyer', bowler: 'Varun Chakaravarthy', runs: 35, balls: 33, dismissals: 2, note: 'Varun’s pace-off leg-spin has kept Iyer from lining up the leg side.' },
+    ],
+    interestingStats: ['PBKS matches have one of the highest run-rate variances between powerplay and middle overs.', 'KKR’s finishers strike at elite rates when a left-arm seamer bowls fewer than two death overs.'],
+  },
+  'rr-mi': {
+    headline: 'This Guwahati fixture often becomes a battle between boundary hitters and yorker specialists.',
+    venueStats: { avgFirstInningsScore: 177, chasingWins: 5, totalMatches: 9, bestBowlingFigure: '4/17', boundaryPercentage: 54 },
+    headToHead: { team1Wins: 14, team2Wins: 16, noResult: 1, last5: 'MI lead 3-2 in the last five meetings.' },
+    playerBattles: [
+      { batter: 'Suryakumar Yadav', bowler: 'Jofra Archer', runs: 61, balls: 41, dismissals: 2, note: 'Archer’s extra bounce can still force miscues even when SKY counters aggressively.' },
+      { batter: 'Yashasvi Jaiswal', bowler: 'Jasprit Bumrah', runs: 26, balls: 27, dismissals: 3, note: 'Bumrah has repeatedly won the early over battle with pace and angle.' },
+    ],
+    interestingStats: ['Guwahati has rewarded teams that maximize the first six overs more than most venues.', 'MI concede fewer than 8.5 an over at the death when Bumrah completes three overs after the 14th.'],
+  },
+  'dc-gt': {
+    headline: 'Delhi versus Gujarat usually becomes a contrast between aggressive intent and control bowling.',
+    venueStats: { avgFirstInningsScore: 178, chasingWins: 42, totalMatches: 90, bestBowlingFigure: '5/17', boundaryPercentage: 56 },
+    headToHead: { team1Wins: 3, team2Wins: 3, noResult: 0, last5: 'The head-to-head is locked at 3-3.' },
+    playerBattles: [
+      { batter: 'Shubman Gill', bowler: 'Kuldeep Yadav', runs: 57, balls: 49, dismissals: 2, note: 'Kuldeep’s wrong’un remains one of the few balls that slows Gill’s scoring arc.' },
+      { batter: 'KL Rahul', bowler: 'Mohammed Siraj', runs: 88, balls: 67, dismissals: 3, note: 'Siraj has forced Rahul into slower starts with a fifth-stump line.' },
+    ],
+    interestingStats: ['Delhi has been a strong chasing venue whenever dew arrives in the second innings.', 'GT’s middle-over economy is among the best in the league when Rashid bowls before the 10th over.'],
+  },
+  'kkr-lsg': {
+    headline: 'A spin-rich matchup where wicket preservation against mystery bowling becomes essential.',
+    venueStats: { avgFirstInningsScore: 181, chasingWins: 39, totalMatches: 93, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
+    headToHead: { team1Wins: 2, team2Wins: 3, noResult: 0, last5: 'LSG narrowly lead the rivalry 3-2.' },
+    playerBattles: [
+      { batter: 'Nicholas Pooran', bowler: 'Sunil Narine', runs: 31, balls: 28, dismissals: 3, note: 'Narine’s powerplay overs have repeatedly challenged Pooran’s release shots.' },
+      { batter: 'Rinku Singh', bowler: 'Avesh Khan', runs: 43, balls: 29, dismissals: 2, note: 'Avesh mixes pace well enough to push Rinku square rather than straight.' },
+    ],
+    interestingStats: ['Kolkata has rewarded teams with dual-spin attacks who can squeeze overs 7-13.', 'LSG often surge when Pooran survives beyond the 12th over.'],
+  },
+  'rr-rcb': {
+    headline: 'High-profile top orders meet in a venue that rewards batting tempo through the middle overs.',
+    venueStats: { avgFirstInningsScore: 177, chasingWins: 5, totalMatches: 9, bestBowlingFigure: '4/17', boundaryPercentage: 54 },
+    headToHead: { team1Wins: 14, team2Wins: 15, noResult: 0, last5: 'RCB edge the recent series 3-2.' },
+    playerBattles: [
+      { batter: 'Virat Kohli', bowler: 'Jofra Archer', runs: 68, balls: 51, dismissals: 4, note: 'Archer’s hard length has produced four T20 dismissals of Kohli.' },
+      { batter: 'Sanju Samson', bowler: 'Josh Hazlewood', runs: 47, balls: 34, dismissals: 2, note: 'Hazlewood’s deck-hitting line has made Samson hit against the angle.' },
+    ],
+    interestingStats: ['The winning side in Guwahati has scored at least 55 in the powerplay in most completed games.', 'RR’s boundary percentage rises sharply whenever Samson bats beyond 12 overs.'],
+  },
+  'pbks-srh': {
+    headline: 'An aggressive matchup where seamers need strong slower balls to stay ahead at Mullanpur.',
+    venueStats: { avgFirstInningsScore: 172, chasingWins: 6, totalMatches: 11, bestBowlingFigure: '4/21', boundaryPercentage: 52 },
+    headToHead: { team1Wins: 7, team2Wins: 16, noResult: 0, last5: 'SRH lead 4-1 in the last five meetings.' },
+    playerBattles: [
+      { batter: 'Heinrich Klaasen', bowler: 'Arshdeep Singh', runs: 34, balls: 22, dismissals: 2, note: 'Arshdeep’s angle across the right-hander has still created two key dismissals.' },
+      { batter: 'Shreyas Iyer', bowler: 'Pat Cummins', runs: 61, balls: 47, dismissals: 2, note: 'Cummins uses the back-of-a-length cross-seam delivery to stop Iyer freeing his hands.' },
+    ],
+    interestingStats: ['SRH average among the highest powerplay scores in the league.', 'PBKS often rely on Arshdeep to break opening stands before the sixth over.'],
+  },
+  'csk-dc': {
+    headline: 'Chepauk adds a spin-and-discipline lens to a contest packed with stroke players.',
+    venueStats: { avgFirstInningsScore: 168, chasingWins: 33, totalMatches: 80, bestBowlingFigure: '5/13', boundaryPercentage: 45 },
+    headToHead: { team1Wins: 19, team2Wins: 11, noResult: 0, last5: 'CSK lead 4-1 across the last five meetings.' },
+    playerBattles: [
+      { batter: 'KL Rahul', bowler: 'Ravindra Jadeja', runs: 74, balls: 68, dismissals: 3, note: 'Jadeja attacks the stumps and forces Rahul to hit against the turn.' },
+      { batter: 'Shivam Dube', bowler: 'Kuldeep Yadav', runs: 30, balls: 26, dismissals: 2, note: 'Kuldeep has broken Dube’s rhythm with pace changes and wider lines.' },
+    ],
+    interestingStats: ['Chennai has historically favored sides that field two or more spin options.', 'DC’s wicket-taking percentage in the middle overs rises when Kuldeep bowls immediately after the powerplay.'],
+  },
+  'lsg-gt': {
+    headline: 'Expect a tactical, low-margin game where strike rotation could outrank brute force.',
+    venueStats: { avgFirstInningsScore: 166, chasingWins: 8, totalMatches: 16, bestBowlingFigure: '5/14', boundaryPercentage: 47 },
+    headToHead: { team1Wins: 1, team2Wins: 4, noResult: 0, last5: 'GT have won 4 of the 5 meetings so far.' },
+    playerBattles: [
+      { batter: 'Shubman Gill', bowler: 'Mayank Yadav', runs: 22, balls: 17, dismissals: 1, note: 'Mayank’s extra pace asks Gill to score straighter than usual.' },
+      { batter: 'Nicholas Pooran', bowler: 'Rashid Khan', runs: 51, balls: 42, dismissals: 3, note: 'Rashid’s googly has often checked Pooran’s acceleration late in the innings.' },
+    ],
+    interestingStats: ['Lucknow has the lowest boundary percentage of the venues in this opening stretch.', 'GT defend totals well when they pick up a wicket inside the first two overs.'],
+  },
+  'mi-rcb': {
+    headline: 'A marquee Wankhede game where top-order intent and death-bowling nerves are both tested.',
+    venueStats: { avgFirstInningsScore: 183, chasingWins: 61, totalMatches: 118, bestBowlingFigure: '5/18', boundaryPercentage: 58 },
+    headToHead: { team1Wins: 19, team2Wins: 14, noResult: 0, last5: 'MI lead the recent ledger 3-2.' },
+    playerBattles: [
+      { batter: 'Virat Kohli', bowler: 'Jasprit Bumrah', runs: 140, balls: 114, dismissals: 5, note: 'Bumrah’s change of pace and yorker length have created five IPL dismissals.' },
+      { batter: 'Rohit Sharma', bowler: 'Josh Hazlewood', runs: 57, balls: 44, dismissals: 3, note: 'Hazlewood keeps Rohit pinned to a strong off-stump channel.' },
+    ],
+    interestingStats: ['Wankhede rewards teams that preserve wickets for the last six overs.', 'RCB’s top order usually controls run rate, but MI’s pace attack improves sharply with early wickets.'],
+  },
+};
+
+const matchSeeds: MatchSeed[] = [
+  { matchNumber: 1, date: '2026-03-28', dateLabel: '28 Mar', day: 'Saturday', team1: 'rcb', team2: 'srh', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
+  { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+  { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
+  { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'Mullanpur', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+  { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+  { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+  { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+  { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+  { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+  { matchNumber: 10, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'srh', team2: 'lsg', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+  { matchNumber: 11, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'rcb', team2: 'csk', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
+  { matchNumber: 12, date: '2026-04-06', dateLabel: '06 Apr', day: 'Monday', team1: 'kkr', team2: 'pbks', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+  { matchNumber: 13, date: '2026-04-07', dateLabel: '07 Apr', day: 'Tuesday', team1: 'rr', team2: 'mi', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
+  { matchNumber: 14, date: '2026-04-08', dateLabel: '08 Apr', day: 'Wednesday', team1: 'dc', team2: 'gt', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+  { matchNumber: 15, date: '2026-04-09', dateLabel: '09 Apr', day: 'Thursday', team1: 'kkr', team2: 'lsg', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+  { matchNumber: 16, date: '2026-04-10', dateLabel: '10 Apr', day: 'Friday', team1: 'rr', team2: 'rcb', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
+  { matchNumber: 17, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'pbks', team2: 'srh', venueCity: 'Mullanpur', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+  { matchNumber: 18, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'csk', team2: 'dc', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+  { matchNumber: 19, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'lsg', team2: 'gt', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+  { matchNumber: 20, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'mi', team2: 'rcb', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
 ];
+
+export const schedule: Match[] = matchSeeds.map((seed) => {
+  const insightKey = `${seed.team1}-${seed.team2}`;
+  const insight = matchInsights[insightKey];
+
+  return {
+    id: `m${seed.matchNumber}`,
+    ...seed,
+    captain1: captainByTeam[seed.team1],
+    captain2: captainByTeam[seed.team2],
+    ...insight,
+  };
+});
