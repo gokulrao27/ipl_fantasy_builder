@@ -1,18 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info } from 'lucide-react';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList } from 'lucide-react';
 
 type Screen = 'home' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'match_details' | 'compare_xi' | 'fantasy_xi';
+type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
+
+const SAVED_XI_KEY = 'ipl-builder-saved-xis';
+const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
+
+const safeReadStorage = <T,>(key: string, fallback: T): T => {
+  if (typeof window === 'undefined') return fallback;
+
+  try {
+    const value = window.localStorage.getItem(key);
+    return value ? (JSON.parse(value) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+};
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [playing11, setPlaying11] = useState<Player[]>([]);
   const [impactPlayer, setImpactPlayer] = useState<Player | null>(null);
-  const [savedXIs, setSavedXIs] = useState<Record<string, { playing11: Player[], impactPlayer: Player | null }>>({});
+  const [savedXIs, setSavedXIs] = useState<Record<string, SavedXI>>(() => safeReadStorage(SAVED_XI_KEY, {}));
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [fantasyXI, setFantasyXI] = useState<Record<string, Player[]>>({});
+  const [fantasyXI, setFantasyXI] = useState<Record<string, Player[]>>(() => safeReadStorage(FANTASY_XI_KEY, {}));
+  const [showBuilderRoster, setShowBuilderRoster] = useState(false);
+  const [showFantasyRoster, setShowFantasyRoster] = useState(false);
+
+  useEffect(() => {
+    window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
+  }, [savedXIs]);
+
+  useEffect(() => {
+    window.localStorage.setItem(FANTASY_XI_KEY, JSON.stringify(fantasyXI));
+  }, [fantasyXI]);
+
+  useEffect(() => {
+    if (currentScreen !== 'builder') setShowBuilderRoster(false);
+    if (currentScreen !== 'fantasy_xi') setShowFantasyRoster(false);
+  }, [currentScreen]);
+
+  const builderSummary = useMemo(() => {
+    const canAddMore = playing11.length < 11;
+    const nextAction = canAddMore
+      ? `Select ${11 - playing11.length} more player${playing11.length === 10 ? '' : 's'} for your XI.`
+      : impactPlayer
+        ? 'Squad complete. Review the balance or open the dashboard.'
+        : 'Choose one impact player to finish the squad.';
+
+    return nextAction;
+  }, [impactPlayer, playing11.length]);
 
   const handleTeamSelect = (team: Team) => {
     setSelectedTeam(team);
@@ -74,13 +115,11 @@ export default function App() {
         ...prev,
         [matchId]: currentXI.filter(p => p.id !== player.id)
       }));
-    } else {
-      if (currentXI.length < 11) {
-        setFantasyXI(prev => ({
-          ...prev,
-          [matchId]: [...currentXI, player]
-        }));
-      }
+    } else if (currentXI.length < 11) {
+      setFantasyXI(prev => ({
+        ...prev,
+        [matchId]: [...currentXI, player]
+      }));
     }
   };
 
@@ -88,24 +127,15 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-900 text-slate-100 font-sans selection:bg-emerald-500/30">
       <AnimatePresence mode="wait">
         {currentScreen === 'home' && (
-          <motion.div
-            key="home"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="max-w-6xl mx-auto p-8"
-          >
-            <div className="text-center mb-16 mt-12">
-              <h1 className="text-6xl font-black tracking-tighter mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
+          <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-6 sm:p-8">
+            <div className="text-center mb-16 mt-8 sm:mt-12">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
                 IPL SQUAD BUILDER
               </h1>
-              <p className="text-blue-200 text-lg max-w-2xl mx-auto font-medium mb-8">
+              <p className="text-blue-200 text-base sm:text-lg max-w-2xl mx-auto font-medium mb-8">
                 Select your favorite franchise, build your ultimate playing 11, and choose your game-changing impact player.
               </p>
-              <button
-                onClick={() => setCurrentScreen('schedule')}
-                className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold inline-flex items-center gap-2 backdrop-blur-md border border-white/20 shadow-xl"
-              >
+              <button onClick={() => setCurrentScreen('schedule')} className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold inline-flex items-center gap-2 backdrop-blur-md border border-white/20 shadow-xl">
                 <Calendar className="w-5 h-5" /> View Tournament Schedule
               </button>
             </div>
@@ -113,8 +143,8 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {teams.map((team) => (
                 <motion.button
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.03, y: -5 }}
+                  whileTap={{ scale: 0.98 }}
                   key={team.id}
                   onClick={() => handleTeamSelect(team)}
                   className={`relative overflow-hidden rounded-3xl p-8 text-left transition-all duration-300 group border border-white/10 shadow-2xl bg-gradient-to-br ${team.gradient}`}
@@ -125,7 +155,6 @@ export default function App() {
                     <h2 className="text-4xl font-black mb-2 tracking-tight text-white drop-shadow-md">{team.shortName}</h2>
                     <p className="text-white/90 font-bold text-lg drop-shadow-sm">{team.name}</p>
                   </div>
-                  {/* Decorative circle */}
                   <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all" />
                 </motion.button>
               ))}
@@ -134,125 +163,90 @@ export default function App() {
         )}
 
         {currentScreen === 'squad' && selectedTeam && (
-          <motion.div
-            key="squad"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-8 flex flex-col overflow-y-auto custom-scrollbar relative`}
-          >
+          <motion.div key="squad" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-4 sm:p-8 flex flex-col overflow-y-auto custom-scrollbar relative`}>
             <div className="absolute inset-0 bg-black/40" />
             <div className="relative z-10 flex flex-col flex-1">
-              <header className="flex items-center justify-between mb-12 max-w-7xl mx-auto w-full">
-              <button
-                onClick={() => setCurrentScreen('home')}
-                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
-              >
-                <ChevronLeft className="w-5 h-5" /> Back to Teams
-              </button>
-              <div className="flex items-center gap-6">
-                <img src={selectedTeam.logoUrl} alt={selectedTeam.shortName} className="w-20 h-20 object-contain drop-shadow-2xl" />
-                <div className="text-left">
-                  <h2 className="text-5xl font-black tracking-tight text-white drop-shadow-lg uppercase">{selectedTeam.name}</h2>
-                  <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r ${selectedTeam.gradient} shadow-lg text-sm font-bold text-white uppercase tracking-wider mt-2`}>
-                    Full Squad 2026
+              <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-12 max-w-7xl mx-auto w-full">
+                <button onClick={() => setCurrentScreen('home')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10">
+                  <ChevronLeft className="w-5 h-5" /> Back to Teams
+                </button>
+                <div className="flex items-center gap-4 sm:gap-6">
+                  <img src={selectedTeam.logoUrl} alt={selectedTeam.shortName} className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-2xl" />
+                  <div className="text-left">
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-lg uppercase">{selectedTeam.name}</h2>
+                    <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r ${selectedTeam.gradient} shadow-lg text-sm font-bold text-white uppercase tracking-wider mt-2`}>
+                      Full Squad 2026
+                    </div>
                   </div>
                 </div>
-              </div>
-              <button
-                onClick={() => setCurrentScreen('builder')}
-                className={`px-8 py-3.5 rounded-full font-black transition-all flex items-center gap-3 shadow-2xl bg-gradient-to-r ${selectedTeam.gradient} text-white hover:scale-105 border border-white/20 text-lg`}
-              >
-                Playing XI <ChevronLeft className="w-6 h-6 rotate-180" />
-              </button>
-            </header>
+                <button onClick={() => setCurrentScreen('builder')} className={`w-fit px-8 py-3.5 rounded-full font-black transition-all flex items-center gap-3 shadow-2xl bg-gradient-to-r ${selectedTeam.gradient} text-white hover:scale-105 border border-white/20 text-lg`}>
+                  Playing XI <ChevronLeft className="w-6 h-6 rotate-180" />
+                </button>
+              </header>
 
-            <div className="flex-1 max-w-7xl mx-auto w-full pb-12">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                {selectedTeam.players.map(player => (
-                  <motion.div 
-                    whileHover={{ y: -5, scale: 1.02 }}
-                    key={player.id} 
-                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex flex-col items-center text-center shadow-xl hover:bg-white/10 transition-all group"
-                  >
-                    <div className={`relative w-28 h-28 mb-4 flex items-end justify-center`}>
-                      <div className={`absolute inset-0 rounded-full p-1 bg-gradient-to-br ${selectedTeam.gradient} shadow-lg group-hover:shadow-2xl transition-all`}>
-                        <div className="w-full h-full rounded-full bg-black/40" />
+              <div className="flex-1 max-w-7xl mx-auto w-full pb-12">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+                  {selectedTeam.players.map(player => (
+                    <motion.div whileHover={{ y: -5, scale: 1.02 }} key={player.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-4 sm:p-6 flex flex-col items-center text-center shadow-xl hover:bg-white/10 transition-all group">
+                      <div className="relative w-24 h-24 sm:w-28 sm:h-28 mb-4 flex items-end justify-center">
+                        <div className={`absolute inset-0 rounded-full p-1 bg-gradient-to-br ${selectedTeam.gradient} shadow-lg group-hover:shadow-2xl transition-all`}>
+                          <div className="w-full h-full rounded-full bg-black/40" />
+                        </div>
+                        <img src={player.imageUrl} alt={player.name} className="w-24 h-28 sm:w-28 sm:h-32 object-contain object-bottom relative z-10" />
                       </div>
-                      <img src={player.imageUrl} alt={player.name} className="w-28 h-32 object-contain object-bottom relative z-10" />
-                    </div>
-                    <h3 className="text-lg font-black text-white leading-tight mb-1">{player.name}</h3>
-                    <span className="text-xs font-bold uppercase tracking-wider text-white/60">{player.role}</span>
-                  </motion.div>
-                ))}
+                      <h3 className="text-base sm:text-lg font-black text-white leading-tight mb-1">{player.name}</h3>
+                      <span className="text-xs font-bold uppercase tracking-wider text-white/60">{player.role}</span>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
             </div>
           </motion.div>
         )}
 
         {currentScreen === 'builder' && selectedTeam && (
-          <motion.div
-            key="builder"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={`h-screen flex flex-col overflow-hidden bg-gradient-to-br ${selectedTeam.gradient}`}
-          >
-            <header className={`flex-none bg-black/30 backdrop-blur-md border-b border-white/10 p-4 flex items-center justify-between z-20 shadow-lg`}>
+          <motion.div key="builder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`min-h-screen lg:h-screen flex flex-col overflow-hidden bg-gradient-to-br ${selectedTeam.gradient}`}>
+            <header className="flex-none bg-black/30 backdrop-blur-md border-b border-white/10 p-4 flex flex-wrap items-center justify-between gap-3 z-20 shadow-lg">
               <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setCurrentScreen('squad')}
-                  className="p-2 hover:bg-black/20 rounded-full transition-colors text-white"
-                >
+                <button onClick={() => setCurrentScreen('squad')} className="p-2 hover:bg-black/20 rounded-full transition-colors text-white">
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <div>
-                  <h2 className="text-2xl font-black flex items-center gap-2 text-white drop-shadow-sm">
-                    {selectedTeam.name}
-                  </h2>
-                  <p className="text-sm font-medium text-white/80">
-                    {playing11.length}/11 Selected • {impactPlayer ? '1' : '0'}/1 Impact Player
-                  </p>
+                  <h2 className="text-xl sm:text-2xl font-black flex items-center gap-2 text-white drop-shadow-sm">{selectedTeam.name}</h2>
+                  <p className="text-sm font-medium text-white/80">{playing11.length}/11 Selected • {impactPlayer ? '1' : '0'}/1 Impact Player</p>
                 </div>
               </div>
-              <button
-                disabled={playing11.length < 11}
-                onClick={() => setCurrentScreen('dashboard')}
-                className={`px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${
-                  playing11.length === 11
-                    ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105'
-                    : 'bg-black/20 text-white/50 cursor-not-allowed'
-                }`}
-              >
-                View Dashboard <Trophy className="w-5 h-5" />
-              </button>
+
+              <div className="flex items-center gap-3 ml-auto">
+                <button onClick={() => setShowBuilderRoster(prev => !prev)} className="lg:hidden px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold inline-flex items-center gap-2">
+                  <LayoutList className="w-4 h-4" /> {showBuilderRoster ? 'Hide roster' : 'Show roster'}
+                </button>
+                <button disabled={playing11.length < 11} onClick={() => setCurrentScreen('dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${playing11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
+                  View Dashboard <Trophy className="w-5 h-5" />
+                </button>
+              </div>
             </header>
 
-            <div className="flex-1 flex overflow-hidden relative">
+            <div className="bg-black/25 border-b border-white/10 px-4 py-3 text-sm text-white/85 font-medium z-10">
+              {builderSummary}
+            </div>
+
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
               <div className="absolute inset-0 bg-black/40" />
-              {/* Left Board - The Pitch */}
-              <div className="flex-1 relative p-6 overflow-y-auto custom-scrollbar z-10">
+              <div className="flex-1 relative p-4 sm:p-6 overflow-y-auto custom-scrollbar z-10 order-2 lg:order-1">
                 <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-                  <img src={selectedTeam.logoUrl} alt={selectedTeam.name} className="w-[500px] h-[500px] object-contain" />
+                  <img src={selectedTeam.logoUrl} alt={selectedTeam.name} className="w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] object-contain" />
                 </div>
                 <div className="max-w-4xl mx-auto relative z-10">
                   <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-emerald-400 uppercase tracking-wider">
                     <Shield className="w-6 h-6" /> Playing 11
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     {Array.from({ length: 11 }).map((_, i) => {
                       const player = playing11[i];
                       return (
-                        <div
-                          key={`slot-${i}`}
-                          className={`rounded-2xl border p-4 flex flex-col justify-center min-h-[110px] transition-all ${
-                            player 
-                              ? 'bg-white/10 border-white/20 shadow-xl backdrop-blur-md' 
-                              : 'bg-black/20 border-white/10 border-dashed text-white/40'
-                          }`}
-                        >
+                        <div key={`slot-${i}`} className={`rounded-2xl border p-4 flex flex-col justify-center min-h-[110px] transition-all ${player ? 'bg-white/10 border-white/20 shadow-xl backdrop-blur-md' : 'bg-black/20 border-white/10 border-dashed text-white/40'}`}>
                           {player ? (
                             <div className="flex items-center gap-3">
                               <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
@@ -260,18 +254,13 @@ export default function App() {
                                 <img src={player.imageUrl} alt={player.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
                               </div>
                               <div className="flex-1">
-                                <div className="flex justify-between items-start mb-1">
+                                <div className="flex justify-between items-start mb-1 gap-2">
                                   <span className="font-bold text-white leading-tight">{player.name}</span>
-                                  <button 
-                                    onClick={() => handlePlayerToggle(player)}
-                                    className="text-white/50 hover:text-red-400 transition-colors -mt-1 -mr-1 p-1"
-                                  >
+                                  <button onClick={() => handlePlayerToggle(player)} className="text-white/50 hover:text-red-400 transition-colors -mt-1 -mr-1 p-1" aria-label={`Remove ${player.name}`}>
                                     <X className="w-4 h-4" />
                                   </button>
                                 </div>
-                                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-white/80 w-fit">
-                                  {player.role}
-                                </span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-black/30 text-white/80 w-fit">{player.role}</span>
                               </div>
                             </div>
                           ) : (
@@ -282,48 +271,32 @@ export default function App() {
                     })}
                   </div>
 
-                  <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-yellow-400 uppercase tracking-wider">
-                    <Zap className="w-6 h-6" /> Impact Player
-                  </h3>
-                  <div className="max-w-sm">
-                    <div
-                      className={`rounded-2xl border p-4 flex flex-col justify-center min-h-[110px] transition-all ${
-                        impactPlayer 
-                          ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/50 shadow-[0_0_20px_rgba(234,179,8,0.2)] backdrop-blur-md' 
-                          : 'bg-black/20 border-white/10 border-dashed text-white/40'
-                      }`}
-                    >
-                      {impactPlayer ? (
-                        <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
-                            <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full shadow-md" />
-                            <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start mb-1">
-                              <span className="font-bold text-white leading-tight">{impactPlayer.name}</span>
-                              <button 
-                                onClick={() => handlePlayerToggle(impactPlayer)}
-                                className="text-white/50 hover:text-red-400 transition-colors -mt-1 -mr-1 p-1"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 w-fit">
-                              {impactPlayer.role}
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center text-sm font-bold uppercase tracking-wider">Impact Player Slot</div>
-                      )}
+                  <div className="rounded-3xl border border-yellow-400/30 bg-yellow-500/10 backdrop-blur-md p-4 sm:p-5 shadow-xl">
+                    <div className="flex items-center gap-2 mb-3 text-yellow-300 uppercase tracking-wider text-sm font-black">
+                      <Zap className="w-4 h-4" /> Impact Player
                     </div>
+                    {impactPlayer ? (
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
+                          <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full shadow-md" />
+                          <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-bold text-white">{impactPlayer.name}</div>
+                          <div className="text-xs text-yellow-200/80 uppercase tracking-wider font-bold">{impactPlayer.role}</div>
+                        </div>
+                        <button onClick={() => handlePlayerToggle(impactPlayer)} className="text-white/60 hover:text-red-400 transition-colors p-1" aria-label={`Remove ${impactPlayer.name} as impact player`}>
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-white/70">Once the playing XI is full, tap one more player from the roster to assign the impact role.</p>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Right Sidebar - Squad List */}
-              <div className="w-[400px] bg-black/60 backdrop-blur-xl border-l border-white/10 flex flex-col z-10 shadow-2xl">
+              <div className={`${showBuilderRoster ? 'flex' : 'hidden'} lg:flex lg:w-[400px] bg-black/60 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/10 flex-col z-20 shadow-2xl order-1 lg:order-2 max-h-[45vh] lg:max-h-none`}>
                 <div className="p-5 border-b border-white/10 bg-black/20 sticky top-0">
                   <h3 className="font-black text-lg flex items-center gap-2 text-white uppercase tracking-wider">
                     <Users className="w-5 h-5 text-blue-400" /> Squad Roster
@@ -336,34 +309,17 @@ export default function App() {
                     const isDisabled = !isSelected && playing11.length === 11 && impactPlayer !== null;
 
                     return (
-                      <button
-                        key={player.id}
-                        disabled={isDisabled}
-                        onClick={() => handlePlayerToggle(player)}
-                        className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${
-                          isSelected
-                            ? status === 'Playing 11'
-                              ? `bg-white/20 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.2)]`
-                              : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]'
-                            : isDisabled
-                            ? 'bg-black/20 border-white/5 opacity-40 cursor-not-allowed'
-                            : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
-                        }`}
-                      >
+                      <button key={player.id} disabled={isDisabled} onClick={() => handlePlayerToggle(player)} className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isSelected ? status === 'Playing 11' ? 'bg-white/20 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : isDisabled ? 'bg-black/20 border-white/5 opacity-40 cursor-not-allowed' : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'}`}>
                         <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                           <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
                           <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
                         </div>
                         <div className="flex-1">
-                          <div className={`font-bold ${isSelected ? 'text-white' : 'text-blue-100'}`}>
-                            {player.name}
-                          </div>
+                          <div className={`font-bold ${isSelected ? 'text-white' : 'text-blue-100'}`}>{player.name}</div>
                           <div className="text-[11px] font-semibold uppercase tracking-wider text-blue-300/70 mt-0.5">{player.role}</div>
                         </div>
                         {isSelected && (
-                          <div className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md ${
-                            status === 'Playing 11' ? 'bg-white text-black shadow-md' : 'bg-yellow-500 text-blue-950 shadow-md'
-                          }`}>
+                          <div className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md ${status === 'Playing 11' ? 'bg-white text-black shadow-md' : 'bg-yellow-500 text-blue-950 shadow-md'}`}>
                             {status === 'Playing 11' ? <Check className="w-3 h-3" /> : 'IP'}
                           </div>
                         )}
@@ -377,110 +333,66 @@ export default function App() {
         )}
 
         {currentScreen === 'dashboard' && selectedTeam && (
-          <motion.div
-            key="dashboard"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-8 flex flex-col relative`}
-          >
+          <motion.div key="dashboard" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-4 sm:p-8 flex flex-col relative`}>
             <div className="absolute inset-0 bg-black/40" />
             <div className="relative z-10 flex flex-col flex-1">
-              <header className="flex items-center justify-between mb-8">
-                <button
-                  onClick={() => setCurrentScreen('builder')}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
-                >
+              <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-8">
+                <button onClick={() => setCurrentScreen('builder')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10">
                   <ChevronLeft className="w-5 h-5" /> Edit Squad
                 </button>
                 <div className="text-center">
-                  <h2 className="text-4xl font-black tracking-tight text-white mb-2 drop-shadow-lg uppercase">{selectedTeam.name}</h2>
-                  <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md shadow-lg text-sm font-bold text-white uppercase tracking-wider border border-white/10`}>
-                    Matchday Squad
-                  </div>
+                  <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-2 drop-shadow-lg uppercase">{selectedTeam.name}</h2>
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md shadow-lg text-sm font-bold text-white uppercase tracking-wider border border-white/10">Matchday Squad</div>
                 </div>
-                <div className="w-[140px]" /> {/* Spacer for centering */}
+                <div className="hidden lg:block w-[140px]" />
               </header>
 
-              <div className="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Pitch View */}
-              <div className="lg:col-span-2 border-4 border-white/20 rounded-[3rem] p-8 relative overflow-hidden flex flex-col items-center justify-center min-h-[700px] shadow-2xl bg-black/20 backdrop-blur-sm">
-                <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-                  <img src={selectedTeam.logoUrl} alt={selectedTeam.name} className="w-[500px] h-[500px] object-contain" />
-                </div>
-                {/* Field markings */}
-                <div className="absolute inset-4 border-[3px] border-white/20 rounded-[2.5rem]" />
-                <div className="absolute inset-x-1/4 top-[20%] bottom-[20%] border-[3px] border-white/10 rounded-[4rem]" />
-                <div className="absolute left-1/2 top-[25%] bottom-[25%] w-20 -ml-10 border-[3px] border-white/30 bg-white/5" />
-                
-                <div className="relative z-10 w-full h-full flex flex-col justify-between py-8">
-                  {/* Top order */}
-                  <div className="flex justify-center gap-16">
-                    {playing11.slice(0, 2).map(p => <PlayerNode key={p.id} player={p} />)}
+              <div className="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="xl:col-span-2 border-4 border-white/20 rounded-[3rem] p-5 sm:p-8 relative overflow-hidden flex flex-col items-center justify-center min-h-[560px] xl:min-h-[700px] shadow-2xl bg-black/20 backdrop-blur-sm">
+                  <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+                    <img src={selectedTeam.logoUrl} alt={selectedTeam.name} className="w-[320px] h-[320px] sm:w-[500px] sm:h-[500px] object-contain" />
                   </div>
-                  {/* Upper Middle */}
-                  <div className="flex justify-center gap-24">
-                    {playing11.slice(2, 5).map(p => <PlayerNode key={p.id} player={p} />)}
-                  </div>
-                  {/* Lower Middle */}
-                  <div className="flex justify-center gap-24">
-                    {playing11.slice(5, 8).map(p => <PlayerNode key={p.id} player={p} />)}
-                  </div>
-                  {/* Tail */}
-                  <div className="flex justify-center gap-16">
-                    {playing11.slice(8, 11).map(p => <PlayerNode key={p.id} player={p} />)}
-                  </div>
-                </div>
-              </div>
+                  <div className="absolute inset-4 border-[3px] border-white/20 rounded-[2.5rem]" />
+                  <div className="absolute inset-x-[18%] top-[20%] bottom-[20%] border-[3px] border-white/10 rounded-[4rem]" />
+                  <div className="absolute left-1/2 top-[25%] bottom-[25%] w-16 sm:w-20 -ml-8 sm:-ml-10 border-[3px] border-white/30 bg-white/5" />
 
-              {/* Sidebar Stats & Impact */}
-              <div className="space-y-6">
-                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                  <h3 className="text-2xl font-black mb-6 flex items-center gap-2 text-yellow-400 uppercase tracking-wider">
-                    <Zap className="w-6 h-6" /> Impact Player
-                  </h3>
-                  {impactPlayer ? (
-                    <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-2xl p-6 text-center relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl" />
-                      <div className="relative w-24 h-24 mx-auto mb-4 flex items-end justify-center">
-                        <div className="absolute inset-0 bg-black/40 border-4 border-yellow-400 rounded-full shadow-xl" />
-                        <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-24 h-28 object-contain object-bottom relative z-10" />
+                  <div className="relative z-10 w-full h-full flex flex-col justify-between py-8 gap-8">
+                    <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(0, 2).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
+                    <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(2, 5).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
+                    <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(5, 8).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
+                    <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(8, 11).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                    <h3 className="text-2xl font-black mb-6 flex items-center gap-2 text-yellow-400 uppercase tracking-wider"><Zap className="w-6 h-6" /> Impact Player</h3>
+                    {impactPlayer ? (
+                      <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-2xl p-6 text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl" />
+                        <div className="relative w-24 h-24 mx-auto mb-4 flex items-end justify-center">
+                          <div className="absolute inset-0 bg-black/40 border-4 border-yellow-400 rounded-full shadow-xl" />
+                          <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-24 h-28 object-contain object-bottom relative z-10" />
+                        </div>
+                        <h4 className="text-2xl font-black text-white mb-1 relative z-10">{impactPlayer.name}</h4>
+                        <span className="text-xs font-bold uppercase tracking-wider text-yellow-300 relative z-10">{impactPlayer.role}</span>
                       </div>
-                      <h4 className="text-2xl font-black text-white mb-1 relative z-10">{impactPlayer.name}</h4>
-                      <span className="text-xs font-bold uppercase tracking-wider text-yellow-300 relative z-10">{impactPlayer.role}</span>
-                    </div>
-                  ) : (
-                    <div className="text-white/50 text-center py-8 font-bold uppercase tracking-wider">No impact player selected</div>
-                  )}
-                </div>
+                    ) : (
+                      <div className="text-white/50 text-center py-8 font-bold uppercase tracking-wider">No impact player selected</div>
+                    )}
+                  </div>
 
-                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                  <h3 className="text-2xl font-black mb-6 text-white uppercase tracking-wider">Team Balance</h3>
-                  <div className="space-y-5">
-                    <BalanceBar 
-                      label="Batsmen" 
-                      count={playing11.filter(p => p.role === 'Batsman').length} 
-                      color="bg-blue-400" 
-                    />
-                    <BalanceBar 
-                      label="Bowlers" 
-                      count={playing11.filter(p => p.role === 'Bowler').length} 
-                      color="bg-red-400" 
-                    />
-                    <BalanceBar 
-                      label="All-rounders" 
-                      count={playing11.filter(p => p.role === 'All-rounder').length} 
-                      color="bg-purple-400" 
-                    />
-                    <BalanceBar 
-                      label="Wicket-keepers" 
-                      count={playing11.filter(p => p.role === 'Wicket-keeper').length} 
-                      color="bg-yellow-400" 
-                    />
+                  <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl">
+                    <h3 className="text-2xl font-black mb-6 text-white uppercase tracking-wider">Team Balance</h3>
+                    <div className="space-y-5">
+                      <BalanceBar label="Batsmen" count={playing11.filter(p => p.role === 'Batsman').length} color="bg-blue-400" />
+                      <BalanceBar label="Bowlers" count={playing11.filter(p => p.role === 'Bowler').length} color="bg-red-400" />
+                      <BalanceBar label="All-rounders" count={playing11.filter(p => p.role === 'All-rounder').length} color="bg-purple-400" />
+                      <BalanceBar label="Wicket-keepers" count={playing11.filter(p => p.role === 'Wicket-keeper').length} color="bg-yellow-400" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           </motion.div>
         )}
@@ -919,7 +831,13 @@ export default function App() {
                   <div className="absolute inset-0 bg-black/40" />
                   
                   <header className="flex-none bg-black/40 backdrop-blur-md border-b border-white/10 p-4 flex items-center justify-between z-50">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        <button
+                          onClick={() => setShowFantasyRoster(prev => !prev)}
+                          className="lg:hidden px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold inline-flex items-center gap-2"
+                        >
+                          <LayoutList className="w-4 h-4" /> {showFantasyRoster ? 'Hide roster' : 'Show roster'}
+                        </button>
                       <button
                         onClick={() => setCurrentScreen('match_details')}
                         className="p-2 hover:bg-black/20 rounded-full transition-colors text-white"
@@ -1001,7 +919,7 @@ export default function App() {
                     </div>
 
                     {/* Right Sidebar - Players List */}
-                    <div className="w-[400px] bg-black/60 backdrop-blur-xl border-l border-white/10 flex flex-col z-10 shadow-2xl">
+                    <div className={`${showFantasyRoster ? 'flex' : 'hidden'} lg:flex lg:w-[400px] bg-black/60 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/10 flex-col z-20 shadow-2xl max-h-[45vh] lg:max-h-none`}>
                       <div className="p-5 border-b border-white/10 bg-black/20 sticky top-0 flex gap-2">
                         <div className="flex-1 text-center py-2 bg-white/10 rounded-lg font-bold text-white text-sm">
                           {team1.shortName}
@@ -1063,7 +981,7 @@ export default function App() {
   );
 }
 
-function PlayerNode({ player }: { player: Player }) {
+function PlayerNode({ player }: { player: Player; key?: React.Key }) {
   return (
     <div className="flex flex-col items-center group cursor-pointer">
       <div className="relative w-16 h-16 flex items-end justify-center">
