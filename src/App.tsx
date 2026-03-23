@@ -357,10 +357,10 @@ export default function App() {
                   <div className="absolute left-1/2 top-[25%] bottom-[25%] w-16 sm:w-20 -ml-8 sm:-ml-10 border-[3px] border-white/30 bg-white/5" />
 
                   <div className="relative z-10 w-full h-full flex flex-col justify-between py-8 gap-8">
-                    <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(0, 2).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
-                    <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(2, 5).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
-                    <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(5, 8).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
-                    <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(8, 11).map((p) => <PlayerNode key={p.id} player={p} />)}</div>
+                    <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(0, 2).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                    <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(2, 5).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                    <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(5, 8).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                    <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(8, 11).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
                   </div>
                 </div>
 
@@ -981,7 +981,7 @@ export default function App() {
   );
 }
 
-function PlayerNode({ player }: { player: Player; key?: React.Key }) {
+function PlayerNode({ player }: { player: Player }) {
   return (
     <div className="flex flex-col items-center group cursor-pointer">
       <div className="relative w-16 h-16 flex items-end justify-center">
