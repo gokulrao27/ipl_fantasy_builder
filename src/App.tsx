@@ -20,7 +20,7 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
   }
 };
 
-const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.22]' : ''}`;
+const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.55] origin-bottom' : ''}`;
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
@@ -32,6 +32,7 @@ export default function App() {
   const [fantasyXI, setFantasyXI] = useState<Record<string, Player[]>>(() => safeReadStorage(FANTASY_XI_KEY, {}));
   const [showBuilderRoster, setShowBuilderRoster] = useState(false);
   const [showFantasyRoster, setShowFantasyRoster] = useState(false);
+  const [builderReturnScreen, setBuilderReturnScreen] = useState<Screen | null>(null);
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -44,6 +45,7 @@ export default function App() {
   useEffect(() => {
     if (currentScreen !== 'builder') setShowBuilderRoster(false);
     if (currentScreen !== 'fantasy_xi') setShowFantasyRoster(false);
+    if (currentScreen !== 'builder' && currentScreen !== 'compare_xi') setBuilderReturnScreen(null);
   }, [currentScreen]);
 
   const builderSummary = useMemo(() => {
@@ -57,7 +59,7 @@ export default function App() {
     return nextAction;
   }, [impactPlayer, playing11.length]);
 
-  const handleTeamSelect = (team: Team) => {
+  const handleTeamSelect = (team: Team, nextScreen: Screen = 'squad', returnScreen: Screen | null = null) => {
     setSelectedTeam(team);
     if (savedXIs[team.id]) {
       setPlaying11(savedXIs[team.id].playing11);
@@ -66,7 +68,8 @@ export default function App() {
       setPlaying11([]);
       setImpactPlayer(null);
     }
-    setCurrentScreen('squad');
+    setBuilderReturnScreen(returnScreen);
+    setCurrentScreen(nextScreen);
   };
 
   const saveCurrentXI = (newPlaying11: Player[], newImpactPlayer: Player | null) => {
@@ -223,8 +226,8 @@ export default function App() {
                 <button onClick={() => setShowBuilderRoster(prev => !prev)} className="lg:hidden px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold inline-flex items-center gap-2">
                   <LayoutList className="w-4 h-4" /> {showBuilderRoster ? 'Hide roster' : 'Show roster'}
                 </button>
-                <button disabled={playing11.length < 11} onClick={() => setCurrentScreen('dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${playing11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
-                  View Dashboard <Trophy className="w-5 h-5" />
+                <button disabled={playing11.length < 11} onClick={() => setCurrentScreen(builderReturnScreen === 'compare_xi' ? 'compare_xi' : 'dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${playing11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
+                  {builderReturnScreen === 'compare_xi' ? 'Save & Compare' : 'View Dashboard'} <Trophy className="w-5 h-5" />
                 </button>
               </div>
             </header>
@@ -748,8 +751,7 @@ export default function App() {
                             <p className="text-white/60 mb-6">Build a playing 11 for {team1.shortName} to compare.</p>
                             <button
                               onClick={() => {
-                                handleTeamSelect(team1);
-                                setCurrentScreen('builder');
+                                handleTeamSelect(team1, 'builder', 'compare_xi');
                               }}
                               className="px-6 py-2 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors"
                             >
@@ -817,8 +819,7 @@ export default function App() {
                             <p className="text-white/60 mb-6">Build a playing 11 for {team2.shortName} to compare.</p>
                             <button
                               onClick={() => {
-                                handleTeamSelect(team2);
-                                setCurrentScreen('builder');
+                                handleTeamSelect(team2, 'builder', 'compare_xi');
                               }}
                               className="px-6 py-2 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors"
                             >
