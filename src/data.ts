@@ -415,11 +415,11 @@ type MatchSeed = {
 const captainByTeam: Record<string, string> = {
   csk: 'Ruturaj Gaikwad',
   mi: 'Hardik Pandya',
-  rcb: 'Virat Kohli',
+  rcb: 'Rajat Patidar',
   kkr: 'Ajinkya Rahane',
   dc: 'Axar Patel',
   pbks: 'Shreyas Iyer',
-  rr: 'Sanju Samson',
+  rr: 'Riyan Parag',
   gt: 'Shubman Gill',
   srh: 'Ishan Kishan',
   lsg: 'Rishabh Pant',
