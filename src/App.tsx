@@ -20,6 +20,8 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
   }
 };
 
+const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.22]' : ''}`;
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -192,7 +194,7 @@ export default function App() {
                               <div className={`absolute inset-0 rounded-full p-1 bg-gradient-to-br ${selectedTeam.gradient} shadow-lg group-hover:shadow-2xl transition-all`}>
                                 <div className="w-full h-full rounded-full bg-black/40" />
                               </div>
-                              <img src={player.imageUrl} alt={player.name} className="w-24 h-28 sm:w-28 sm:h-32 object-contain object-bottom relative z-10" />
+                              <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-24 h-28 sm:w-28 sm:h-32 object-contain object-bottom relative z-10")} />
                             </div>
                             <h3 className="text-base sm:text-lg font-black text-white leading-tight mb-1">{player.name}</h3>
                             <span className="text-xs font-bold uppercase tracking-wider text-white/60">{player.role}</span>
@@ -251,7 +253,7 @@ export default function App() {
                                     <div className="flex items-center gap-3">
                                       <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                         <div className="absolute inset-0 bg-black/40 border-2 border-white/20 rounded-full shadow-md" />
-                                        <img src={player.imageUrl} alt={player.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                        <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                                       </div>
                                       <div className="flex-1">
                                         <div className="flex justify-between items-start mb-1 gap-2">
@@ -279,7 +281,7 @@ export default function App() {
                             <div className="flex items-center gap-3">
                               <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                 <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full shadow-md" />
-                                <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className={getPlayerImageClass(impactPlayer.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                               </div>
                               <div className="flex-1">
                                 <div className="font-bold text-white">{impactPlayer.name}</div>
@@ -312,7 +314,7 @@ export default function App() {
                             <button key={player.id} disabled={isDisabled} onClick={() => handlePlayerToggle(player)} className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isSelected ? status === 'Playing 11' ? 'bg-white/20 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : isDisabled ? 'bg-black/20 border-white/5 opacity-40 cursor-not-allowed' : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'}`}>
                               <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                 <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                                <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                                <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                               </div>
                               <div className="flex-1">
                                 <div className={`font-bold ${isSelected ? 'text-white' : 'text-blue-100'}`}>{player.name}</div>
@@ -372,7 +374,7 @@ export default function App() {
                               <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl" />
                               <div className="relative w-24 h-24 mx-auto mb-4 flex items-end justify-center">
                                 <div className="absolute inset-0 bg-black/40 border-4 border-yellow-400 rounded-full shadow-xl" />
-                                <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className="w-24 h-28 object-contain object-bottom relative z-10" />
+                                <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className={getPlayerImageClass(impactPlayer.id, "w-24 h-28 object-contain object-bottom relative z-10")} />
                               </div>
                               <h4 className="text-2xl font-black text-white mb-1 relative z-10">{impactPlayer.name}</h4>
                               <span className="text-xs font-bold uppercase tracking-wider text-yellow-300 relative z-10">{impactPlayer.role}</span>
@@ -439,9 +441,10 @@ export default function App() {
 
                           {/* Date & Venue */}
                           <div className="flex flex-col items-center md:items-start min-w-[200px]">
-                            <div className="text-yellow-400 font-black text-xl mb-1">{new Date(match.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                            <div className="text-yellow-400 font-black text-xl mb-1">{match.dateLabel}</div>
+                            <div className="text-xs font-bold uppercase tracking-[0.3em] text-white/50 mb-2">{match.day}</div>
                             <div className="flex items-center gap-1.5 text-white/70 text-sm font-medium">
-                              <MapPin className="w-4 h-4" /> {match.venue}
+                              <MapPin className="w-4 h-4" /> {match.stadium}, {match.venueCity}
                             </div>
                           </div>
 
@@ -464,20 +467,13 @@ export default function App() {
                             </div>
                           </div>
 
-                          {/* Match Stats */}
-                          <div className="min-w-[220px] bg-black/20 rounded-2xl p-4 border border-white/5 flex flex-col gap-3">
+                          {/* Match Summary */}
+                          <div className="min-w-[260px] bg-black/20 rounded-2xl p-4 border border-white/5 flex flex-col gap-3">
                             <div className="flex items-start gap-2">
                               <Info className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
                               <div>
-                                <div className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Avg 1st Innings</div>
-                                <div className="text-lg font-black text-white">{match.avgFirstInningsScore} Runs</div>
-                              </div>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <Trophy className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-                              <div>
-                                <div className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Bat First Wins</div>
-                                <div className="text-lg font-black text-white">{match.batFirstWins} <span className="text-sm text-white/50 font-medium">/ {match.totalMatches}</span></div>
+                                <div className="text-[10px] text-white/60 uppercase tracking-wider font-bold">Preview hook</div>
+                                <div className="text-sm font-bold text-white leading-relaxed">{match.headline}</div>
                               </div>
                             </div>
                           </div>
@@ -490,135 +486,167 @@ export default function App() {
           {currentScreen === 'match_details' && selectedMatch && (
               <motion.div
                   key="match_details"
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="min-h-screen flex flex-col overflow-hidden bg-slate-900"
+                  className="min-h-screen bg-slate-950 p-4 sm:p-6 lg:p-8"
               >
                 {(() => {
                   const team1 = teams.find(t => t.id === selectedMatch.team1);
                   const team2 = teams.find(t => t.id === selectedMatch.team2);
                   if (!team1 || !team2) return null;
 
-                  const captain1Player = team1.players.find(p => p.name === selectedMatch.captain1);
-                  const captain2Player = team2.players.find(p => p.name === selectedMatch.captain2);
+                  const winShare1 = Math.round((selectedMatch.headToHead.team1Wins / (selectedMatch.headToHead.team1Wins + selectedMatch.headToHead.team2Wins || 1)) * 100);
+                  const winShare2 = 100 - winShare1;
+                  const chaseRate = Math.round((selectedMatch.venueStats.chasingWins / selectedMatch.venueStats.totalMatches) * 100);
 
                   return (
-                      <>
-                        <header className="absolute top-0 left-0 right-0 z-50 p-6 flex justify-between items-center">
-                          <button
-                              onClick={() => setCurrentScreen('schedule')}
-                              className="px-4 py-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
-                          >
-                            <ChevronLeft className="w-5 h-5" /> Back to Schedule
-                          </button>
-                          <div className="flex gap-4">
+                      <div className="max-w-7xl mx-auto space-y-6">
+                        <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <button
+                                onClick={() => setCurrentScreen('schedule')}
+                                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
+                            >
+                              <ChevronLeft className="w-5 h-5" /> Back to Schedule
+                            </button>
                             <button
                                 onClick={() => setCurrentScreen('compare_xi')}
-                                className="px-6 py-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/20 shadow-xl"
+                                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/20 shadow-xl"
                             >
                               <Users className="w-5 h-5" /> Compare Playing XI
                             </button>
                             <button
                                 onClick={() => setCurrentScreen('fantasy_xi')}
-                                className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:scale-105 rounded-full transition-transform text-white font-bold flex items-center gap-2 shadow-xl border border-white/20"
+                                className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:scale-105 rounded-full transition-transform text-white font-bold flex items-center gap-2 shadow-xl border border-white/20"
                             >
                               <Trophy className="w-5 h-5" /> Fantasy XI
                             </button>
                           </div>
+                          <div className="text-left xl:text-right">
+                            <div className="text-xs uppercase tracking-[0.35em] text-yellow-300/80 font-black">Match {selectedMatch.matchNumber}</div>
+                            <div className="text-lg font-bold text-white">{selectedMatch.dateLabel} • {selectedMatch.day}</div>
+                            <div className="text-sm text-white/60">{selectedMatch.stadium}, {selectedMatch.venueCity}</div>
+                          </div>
                         </header>
 
-                        <div className="flex-1 flex flex-col md:flex-row relative">
-                          {/* VS Badge */}
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
-                            <div className="w-24 h-24 bg-black/80 backdrop-blur-xl rounded-full flex items-center justify-center border-4 border-white/10 shadow-2xl">
-                              <span className="text-4xl font-black text-white italic">VS</span>
-                            </div>
-                            <div className="mt-6 bg-black/60 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10 text-center shadow-2xl">
-                              <div className="text-yellow-400 font-black text-xl mb-1">
-                                {new Date(selectedMatch.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                              </div>
-                              <div className="flex items-center justify-center gap-1.5 text-white/80 text-sm font-medium">
-                                <MapPin className="w-4 h-4" /> {selectedMatch.venue}
+                        <section className="rounded-[2rem] border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden shadow-2xl">
+                          <div className="grid lg:grid-cols-[1fr_auto_1fr] items-stretch">
+                            <div className={`relative p-8 md:p-10 bg-gradient-to-br ${team1.gradient}`}>
+                              <div className="absolute inset-0 bg-black/40" />
+                              <div className="relative z-10 flex flex-col gap-4">
+                                <img src={team1.logoUrl} alt={team1.shortName} className="w-20 h-20 object-contain drop-shadow-xl" />
+                                <div className="text-4xl font-black text-white">{team1.shortName}</div>
+                                <div className="text-xl font-bold text-white/90">{team1.name}</div>
+                                <div className="inline-flex w-fit items-center gap-2 px-4 py-2 rounded-full bg-black/30 border border-white/10 text-sm font-bold text-white/80">Captain: {selectedMatch.captain1}</div>
                               </div>
                             </div>
-                          </div>
-
-                          {/* Team 1 Side */}
-                          <div className={`flex-1 relative overflow-hidden flex flex-col items-center justify-center p-8 bg-gradient-to-br ${team1.gradient}`}>
-                            <div className="absolute inset-0 bg-black/20" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-                              <img src={team1.logoUrl} alt={team1.name} className="w-[800px] h-[800px] object-contain -ml-40" />
+                            <div className="bg-black/80 px-6 py-8 flex flex-col items-center justify-center border-y lg:border-y-0 lg:border-x border-white/10">
+                              <div className="text-5xl font-black italic text-white">VS</div>
+                              <div className="mt-4 text-center text-sm text-white/70 max-w-[15rem]">{selectedMatch.headline}</div>
                             </div>
-
-                            <div className="relative z-20 flex flex-col items-center text-center mt-12">
-                              <img src={team1.logoUrl} alt={team1.shortName} className="w-32 h-32 object-contain drop-shadow-2xl mb-6" />
-                              <h2 className="text-5xl font-black text-white drop-shadow-lg uppercase tracking-tight mb-2">{team1.name}</h2>
-
-                              {captain1Player && (
-                                  <div className="mt-12 flex flex-col items-center">
-                                    <div className="relative w-48 h-48 flex items-end justify-center">
-                                      <div className="absolute inset-0 bg-white/20 rounded-full blur-xl" />
-                                      <div className="absolute inset-0 bg-black/40 border-4 border-white/30 rounded-full shadow-2xl" />
-                                      <img src={captain1Player.imageUrl} alt={captain1Player.name} className="w-48 h-56 object-contain object-bottom relative z-10" />
-                                    </div>
-                                    <div className="mt-4 bg-black/40 backdrop-blur-md px-6 py-2 rounded-xl border border-white/10">
-                                      <div className="text-2xl font-black text-white">{captain1Player.name}</div>
-                                      <div className="text-xs text-white/70 uppercase tracking-widest font-bold">Captain</div>
-                                    </div>
-                                  </div>
-                              )}
+                            <div className={`relative p-8 md:p-10 bg-gradient-to-bl ${team2.gradient}`}>
+                              <div className="absolute inset-0 bg-black/40" />
+                              <div className="relative z-10 flex flex-col gap-4 items-start lg:items-end text-left lg:text-right">
+                                <img src={team2.logoUrl} alt={team2.shortName} className="w-20 h-20 object-contain drop-shadow-xl" />
+                                <div className="text-4xl font-black text-white">{team2.shortName}</div>
+                                <div className="text-xl font-bold text-white/90">{team2.name}</div>
+                                <div className="inline-flex w-fit items-center gap-2 px-4 py-2 rounded-full bg-black/30 border border-white/10 text-sm font-bold text-white/80">Captain: {selectedMatch.captain2}</div>
+                              </div>
                             </div>
                           </div>
+                        </section>
 
-                          {/* Team 2 Side */}
-                          <div className={`flex-1 relative overflow-hidden flex flex-col items-center justify-center p-8 bg-gradient-to-bl ${team2.gradient}`}>
-                            <div className="absolute inset-0 bg-black/20" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-                              <img src={team2.logoUrl} alt={team2.name} className="w-[800px] h-[800px] object-contain ml-40" />
+                        <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+                          <div className="grid gap-6">
+                            <div className="grid md:grid-cols-3 gap-4">
+                              <StatCard label="Average 1st innings" value={`${selectedMatch.venueStats.avgFirstInningsScore}`} note="Venue scoring trend" />
+                              <StatCard label="Chasing success" value={`${chaseRate}%`} note={`${selectedMatch.venueStats.chasingWins}/${selectedMatch.venueStats.totalMatches} matches won batting second`} />
+                              <StatCard label="Best bowling here" value={selectedMatch.venueStats.bestBowlingFigure} note={`${selectedMatch.venueStats.boundaryPercentage}% of scoring shots at this venue are boundaries`} />
                             </div>
 
-                            <div className="relative z-20 flex flex-col items-center text-center mt-12">
-                              <img src={team2.logoUrl} alt={team2.shortName} className="w-32 h-32 object-contain drop-shadow-2xl mb-6" />
-                              <h2 className="text-5xl font-black text-white drop-shadow-lg uppercase tracking-tight mb-2">{team2.name}</h2>
+                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl">
+                              <div className="flex items-center justify-between gap-4 mb-5">
+                                <div>
+                                  <h3 className="text-2xl font-black text-white">Head-to-head</h3>
+                                  <p className="text-sm text-white/60">How the rivalry stacks up overall.</p>
+                                </div>
+                                <div className="text-sm font-bold text-yellow-300">{selectedMatch.headToHead.last5}</div>
+                              </div>
+                              <div className="grid sm:grid-cols-2 gap-4 mb-4">
+                                <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+                                  <div className="text-sm uppercase tracking-[0.25em] text-white/50 font-black mb-2">{team1.shortName}</div>
+                                  <div className="text-4xl font-black text-white">{selectedMatch.headToHead.team1Wins}</div>
+                                  <div className="text-sm text-white/60">wins</div>
+                                </div>
+                                <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+                                  <div className="text-sm uppercase tracking-[0.25em] text-white/50 font-black mb-2">{team2.shortName}</div>
+                                  <div className="text-4xl font-black text-white">{selectedMatch.headToHead.team2Wins}</div>
+                                  <div className="text-sm text-white/60">wins</div>
+                                </div>
+                              </div>
+                              <div className="h-3 rounded-full bg-white/10 overflow-hidden mb-3">
+                                <div className="h-full bg-gradient-to-r from-blue-400 to-cyan-300" style={{ width: `${winShare1}%` }} />
+                              </div>
+                              <div className="flex justify-between text-sm text-white/60 font-semibold">
+                                <span>{team1.shortName} {winShare1}% share</span>
+                                <span>No result: {selectedMatch.headToHead.noResult}</span>
+                                <span>{team2.shortName} {winShare2}% share</span>
+                              </div>
+                            </div>
 
-                              {captain2Player && (
-                                  <div className="mt-12 flex flex-col items-center">
-                                    <div className="relative w-48 h-48 flex items-end justify-center">
-                                      <div className="absolute inset-0 bg-white/20 rounded-full blur-xl" />
-                                      <div className="absolute inset-0 bg-black/40 border-4 border-white/30 rounded-full shadow-2xl" />
-                                      <img src={captain2Player.imageUrl} alt={captain2Player.name} className="w-48 h-56 object-contain object-bottom relative z-10" />
+                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl">
+                              <h3 className="text-2xl font-black text-white mb-2">Matchup battles to watch</h3>
+                              <p className="text-sm text-white/60 mb-5">Opponent-specific contests that could decide momentum.</p>
+                              <div className="grid gap-4 md:grid-cols-2">
+                                {selectedMatch.playerBattles.map((battle) => (
+                                    <div key={`${battle.batter}-${battle.bowler}`} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+                                      <div className="text-xs uppercase tracking-[0.3em] text-emerald-300 font-black mb-2">Player vs player</div>
+                                      <div className="text-xl font-black text-white mb-1">{battle.batter} vs {battle.bowler}</div>
+                                      <div className="flex flex-wrap gap-2 mb-3 text-xs font-bold">
+                                        <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/70">{battle.runs} runs</span>
+                                        <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/70">{battle.balls} balls</span>
+                                        <span className="px-2.5 py-1 rounded-full bg-red-500/20 text-red-200">{battle.dismissals} dismissals</span>
+                                      </div>
+                                      <p className="text-sm text-white/70 leading-relaxed">{battle.note}</p>
                                     </div>
-                                    <div className="mt-4 bg-black/40 backdrop-blur-md px-6 py-2 rounded-xl border border-white/10">
-                                      <div className="text-2xl font-black text-white">{captain2Player.name}</div>
-                                      <div className="text-xs text-white/70 uppercase tracking-widest font-bold">Captain</div>
-                                    </div>
-                                  </div>
-                              )}
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Bottom Stats Bar */}
-                        <div className="absolute bottom-0 left-0 right-0 z-40 bg-black/60 backdrop-blur-xl border-t border-white/10 p-6">
-                          <div className="max-w-4xl mx-auto flex justify-around items-center">
-                            <div className="text-center">
-                              <div className="text-white/60 text-xs uppercase tracking-widest font-bold mb-1">Avg 1st Innings Score</div>
-                              <div className="text-3xl font-black text-white">{selectedMatch.avgFirstInningsScore}</div>
+                          <div className="space-y-6">
+                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl">
+                              <h3 className="text-2xl font-black text-white mb-4">Interesting stats</h3>
+                              <div className="space-y-3">
+                                {selectedMatch.interestingStats.map((stat) => (
+                                    <div key={stat} className="rounded-2xl bg-slate-950/60 border border-white/10 p-4 text-sm text-white/75 leading-relaxed">
+                                      {stat}
+                                    </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="w-px h-12 bg-white/10" />
-                            <div className="text-center">
-                              <div className="text-white/60 text-xs uppercase tracking-widest font-bold mb-1">Bat First Wins</div>
-                              <div className="text-3xl font-black text-white">{selectedMatch.batFirstWins} <span className="text-lg text-white/40">/ {selectedMatch.totalMatches}</span></div>
-                            </div>
-                            <div className="w-px h-12 bg-white/10" />
-                            <div className="text-center">
-                              <div className="text-white/60 text-xs uppercase tracking-widest font-bold mb-1">Win Percentage (Bat 1st)</div>
-                              <div className="text-3xl font-black text-yellow-400">{Math.round((selectedMatch.batFirstWins / selectedMatch.totalMatches) * 100)}%</div>
+
+                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl">
+                              <h3 className="text-2xl font-black text-white mb-4">Quick read</h3>
+                              <div className="space-y-4 text-sm text-white/70">
+                                <div className="rounded-2xl bg-slate-950/60 border border-white/10 p-4">
+                                  <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Venue trend</div>
+                                  Teams chasing have won {selectedMatch.venueStats.chasingWins} of {selectedMatch.venueStats.totalMatches} IPL matches here.
+                                </div>
+                                <div className="rounded-2xl bg-slate-950/60 border border-white/10 p-4">
+                                  <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Boundary profile</div>
+                                  About {selectedMatch.venueStats.boundaryPercentage}% of scoring shots here come from boundaries, so defensive lengths matter.
+                                </div>
+                                <div className="rounded-2xl bg-slate-950/60 border border-white/10 p-4">
+                                  <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Rivalry form</div>
+                                  {selectedMatch.headToHead.last5}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </>
+                        </section>
+                      </div>
                   );
                 })()}
               </motion.div>
@@ -684,7 +712,7 @@ export default function App() {
                                               <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                               <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                                 <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                                                <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                                                <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                                               </div>
                                               <div className="flex-1">
                                                 <div className="font-bold text-white text-sm">{player.name}</div>
@@ -703,7 +731,7 @@ export default function App() {
                                           <div className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-yellow-500/20">
                                             <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                               <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full" />
-                                              <img src={team1XI.impactPlayer.imageUrl} alt={team1XI.impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                              <img src={team1XI.impactPlayer.imageUrl} alt={team1XI.impactPlayer.name} className={getPlayerImageClass(team1XI.impactPlayer.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                                             </div>
                                             <div>
                                               <div className="font-bold text-white">{team1XI.impactPlayer.name}</div>
@@ -753,7 +781,7 @@ export default function App() {
                                               <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                               <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                                 <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                                                <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                                                <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                                               </div>
                                               <div className="flex-1">
                                                 <div className="font-bold text-white text-sm">{player.name}</div>
@@ -772,7 +800,7 @@ export default function App() {
                                           <div className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-yellow-500/20 flex-row-reverse text-right">
                                             <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                               <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full" />
-                                              <img src={team2XI.impactPlayer.imageUrl} alt={team2XI.impactPlayer.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                              <img src={team2XI.impactPlayer.imageUrl} alt={team2XI.impactPlayer.name} className={getPlayerImageClass(team2XI.impactPlayer.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                                             </div>
                                             <div>
                                               <div className="font-bold text-white">{team2XI.impactPlayer.name}</div>
@@ -886,7 +914,7 @@ export default function App() {
                                             <div className="flex items-center gap-3">
                                               <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                                 <div className="absolute inset-0 bg-black/40 border-2 border-white/20 rounded-full shadow-md" />
-                                                <img src={player.imageUrl} alt={player.name} className="w-12 h-14 object-contain object-bottom relative z-10" />
+                                                <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
                                               </div>
                                               <div className="flex-1">
                                                 <div className="flex justify-between items-start mb-1">
@@ -949,7 +977,7 @@ export default function App() {
                                     >
                                       <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                         <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
-                                        <img src={player.imageUrl} alt={player.name} className="w-10 h-12 object-contain object-bottom relative z-10" />
+                                        <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
                                       </div>
                                       <div className="flex-1">
                                         <div className={`font-bold flex items-center gap-2 ${isSelected ? 'text-white' : 'text-blue-100'}`}>
@@ -990,13 +1018,24 @@ function PlayerNode({ player }: { player: Player }) {
           <img
               src={player.imageUrl}
               alt={player.name}
-              className="w-16 h-20 object-contain object-bottom relative z-10 group-hover:scale-110 transition-transform duration-300"
+              className={getPlayerImageClass(player.id, "w-16 h-20 object-contain object-bottom relative z-10 group-hover:scale-110 transition-transform duration-300")}
           />
         </div>
         <div className="bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-lg border border-white/20 text-center mt-3 shadow-xl">
           <div className="text-sm font-black text-white whitespace-nowrap">{player.name}</div>
           <div className="text-[9px] text-white/70 uppercase tracking-widest font-bold mt-0.5">{player.role}</div>
         </div>
+      </div>
+  );
+}
+
+
+function StatCard({ label, value, note }: { label: string; value: string; note: string }) {
+  return (
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-xl">
+        <div className="text-xs uppercase tracking-[0.3em] text-white/50 font-black mb-2">{label}</div>
+        <div className="text-3xl font-black text-white mb-1">{value}</div>
+        <div className="text-sm text-white/60 leading-relaxed">{note}</div>
       </div>
   );
 }
