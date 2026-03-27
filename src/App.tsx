@@ -41,7 +41,7 @@ const Navigation = ({
   isMobileHeaderVisible: boolean
 }) => {
   const navItems = [
-    { id: 'schedule', label: 'Matches', icon: Calendar },
+    { id: 'schedule_list', label: 'Matches', icon: Calendar },
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
     { id: 'teams', label: 'Teams', icon: Shield },
   ];
@@ -51,7 +51,7 @@ const Navigation = ({
       <>
         {/* Mobile Top Header */}
         <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-          <div className={`mx-4 mt-3 rounded-2xl px-4 py-3 backdrop-blur-xl border flex items-center justify-between ${isDark ? 'bg-black/80 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
+          <div className={`mx-2 mt-0 rounded-b-2xl px-4 h-16 backdrop-blur-xl border border-t-0 flex items-center justify-between ${isDark ? 'bg-black/85 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
             <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
               <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
             </button>
@@ -134,6 +134,7 @@ export default function App() {
   const [isDark, setIsDark] = useState<boolean>(() => safeReadStorage('cricto-theme-dark', true));
   const [isLogoTransitioning, setIsLogoTransitioning] = useState(false);
   const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
+  const [showInitialSplash, setShowInitialSplash] = useState(true);
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -148,6 +149,11 @@ export default function App() {
     document.body.classList.toggle('theme-dark', isDark);
     document.body.classList.toggle('theme-light', !isDark);
   }, [isDark]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowInitialSplash(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     setIsMobileHeaderVisible(true);
@@ -260,7 +266,19 @@ export default function App() {
   };
 
   return (
-      <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-24 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+      <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+        {showInitialSplash && (
+            <div className={`fixed inset-0 z-[80] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
+              <motion.img
+                  src={isDark ? logoLight : logoDark}
+                  alt="Cricto loading"
+                  initial={{ scale: 0.65, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                  className="h-36 w-auto object-contain"
+              />
+            </div>
+        )}
         <Navigation
             currentScreen={currentScreen}
             setCurrentScreen={setCurrentScreen}
@@ -572,15 +590,7 @@ export default function App() {
                         <section>
                           <div className="flex items-center justify-between mb-4">
                             <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Current Matches</h2>
-                            <div className="flex items-center gap-3">
-                              <button
-                                  onClick={() => setCurrentScreen('schedule_list')}
-                                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold border backdrop-blur-xl shadow-lg ${isDark ? 'bg-white/10 border-white/25 text-white hover:bg-white/20' : 'bg-white/70 border-black/20 text-slate-900 hover:bg-white'}`}
-                              >
-                                Full Schedule
-                              </button>
-                              <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Scroll right for next cards</p>
-                            </div>
+                            <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Scroll right for next cards</p>
                           </div>
                           <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory custom-scrollbar">
                             {featuredMatches.map((match) => {
