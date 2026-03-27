@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
 import iplHero from '../ipl.jpeg';
@@ -41,17 +41,21 @@ const Navigation = ({
   isMobileHeaderVisible: boolean
 }) => {
   const navItems = [
-    { id: 'schedule', label: 'Matches', icon: Calendar },
+    { id: 'schedule_list', label: 'Matches', icon: Calendar },
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
     { id: 'teams', label: 'Teams', icon: Shield },
+  ];
+  const mobileNavItems = [
+    { id: 'schedule', label: 'Home', icon: Home },
+    ...navItems
   ];
   const showBottomNav = ['schedule', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
 
   return (
       <>
         {/* Mobile Top Header */}
-        <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${currentScreen === 'schedule' ? (isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full') : 'translate-y-0'}`}>
-          <div className={`mx-4 mt-3 rounded-2xl px-4 py-3 backdrop-blur-xl border flex items-center justify-between ${isDark ? 'bg-black/80 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
+        <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+          <div className={`mx-2 mt-0 rounded-b-2xl px-4 h-16 backdrop-blur-xl border border-t-0 flex items-center justify-between ${isDark ? 'bg-black/85 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
             <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
               <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
             </button>
@@ -68,7 +72,7 @@ const Navigation = ({
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <div className="relative flex justify-around items-center h-14 px-1">
-              {navItems.map(item => {
+              {mobileNavItems.map(item => {
                 const isActive = currentScreen === item.id;
                 return (
                     <button
@@ -128,11 +132,13 @@ export default function App() {
   const [fantasyXI, setFantasyXI] = useState<Record<string, Player[]>>(() => safeReadStorage(FANTASY_XI_KEY, {}));
   const [showBuilderRoster, setShowBuilderRoster] = useState(false);
   const [showFantasyRoster, setShowFantasyRoster] = useState(false);
+  const [fantasyFilter, setFantasyFilter] = useState<'all' | 'team1' | 'team2'>('all');
   const [builderReturnScreen, setBuilderReturnScreen] = useState<Screen | null>(null);
   const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null);
   const [isDark, setIsDark] = useState<boolean>(() => safeReadStorage('cricto-theme-dark', true));
   const [isLogoTransitioning, setIsLogoTransitioning] = useState(false);
   const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
+  const [showInitialSplash, setShowInitialSplash] = useState(true);
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -149,11 +155,11 @@ export default function App() {
   }, [isDark]);
 
   useEffect(() => {
-    if (currentScreen !== 'schedule') {
-      setIsMobileHeaderVisible(false);
-      return;
-    }
+    const timer = window.setTimeout(() => setShowInitialSplash(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, []);
 
+  useEffect(() => {
     setIsMobileHeaderVisible(true);
     let lastY = window.scrollY;
 
@@ -170,6 +176,7 @@ export default function App() {
   useEffect(() => {
     if (currentScreen !== 'builder') setShowBuilderRoster(false);
     if (currentScreen !== 'fantasy_xi') setShowFantasyRoster(false);
+    if (currentScreen !== 'fantasy_xi') setFantasyFilter('all');
     if (currentScreen !== 'builder' && currentScreen !== 'compare_xi') setBuilderReturnScreen(null);
     if (currentScreen !== 'points_table') setExpandedTeamId(null);
   }, [currentScreen]);
@@ -263,7 +270,19 @@ export default function App() {
   };
 
   return (
-      <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-16 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+      <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+        {showInitialSplash && (
+            <div className={`fixed inset-0 z-[80] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
+              <motion.img
+                  src={isDark ? logoLight : logoDark}
+                  alt="Cricto loading"
+                  initial={{ scale: 0.65, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                  className="h-36 w-auto object-contain"
+              />
+            </div>
+        )}
         <Navigation
             currentScreen={currentScreen}
             setCurrentScreen={setCurrentScreen}
@@ -575,7 +594,6 @@ export default function App() {
                         <section>
                           <div className="flex items-center justify-between mb-4">
                             <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Current Matches</h2>
-                            <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Scroll right for next cards</p>
                           </div>
                           <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory custom-scrollbar">
                             {featuredMatches.map((match) => {
@@ -612,15 +630,6 @@ export default function App() {
                                       </div>
                                     </div>
                                     <p className={`mt-4 text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{match.stadium}, {match.venueCity}</p>
-                                    <button
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                          setCurrentScreen('schedule_list');
-                                        }}
-                                        className={`mt-4 w-full rounded-xl px-3 py-2 text-sm font-bold transition-colors border ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white border-blue-300/30' : 'bg-slate-900 hover:bg-black text-white border-slate-600/40'}`}
-                                    >
-                                      Schedule
-                                    </button>
                                   </article>
                               );
                             })}
@@ -1164,6 +1173,11 @@ export default function App() {
 
                   const currentXI = fantasyXI[selectedMatch.id] || [];
                   const allPlayers = [...team1.players, ...team2.players];
+                  const filteredPlayers = allPlayers.filter((player) => {
+                    if (fantasyFilter === 'all') return true;
+                    const isTeam1Player = team1.players.some((p) => p.id === player.id);
+                    return fantasyFilter === 'team1' ? isTeam1Player : !isTeam1Player;
+                  });
 
                   return (
                       <>
@@ -1265,16 +1279,15 @@ export default function App() {
 
                           {/* Right Sidebar - Players List */}
                           <div className={`${showFantasyRoster ? 'flex' : 'hidden'} lg:flex lg:w-[400px] bg-black/60 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/25 flex-col z-20 shadow-2xl max-h-[45vh] lg:max-h-none`}>
-                            <div className="p-5 border-b border-white/25 bg-black/20 sticky top-0 flex gap-2">
-                              <div className="flex-1 text-center py-2 bg-white/10 rounded-lg font-bold text-white text-sm">
-                                {team1.shortName}
-                              </div>
-                              <div className="flex-1 text-center py-2 bg-white/10 rounded-lg font-bold text-white text-sm">
-                                {team2.shortName}
+                            <div className="p-5 border-b border-white/25 bg-black/20 sticky top-0 space-y-2">
+                              <div className="grid grid-cols-3 gap-2">
+                                <button onClick={() => setFantasyFilter('all')} className={`text-center py-2 rounded-lg font-bold text-xs ${fantasyFilter === 'all' ? 'bg-white text-slate-900' : 'bg-white/10 text-white'}`}>All</button>
+                                <button onClick={() => setFantasyFilter('team1')} className={`text-center py-2 rounded-lg font-bold text-xs ${fantasyFilter === 'team1' ? 'bg-white text-slate-900' : 'bg-white/10 text-white'}`}>{team1.shortName}</button>
+                                <button onClick={() => setFantasyFilter('team2')} className={`text-center py-2 rounded-lg font-bold text-xs ${fantasyFilter === 'team2' ? 'bg-white text-slate-900' : 'bg-white/10 text-white'}`}>{team2.shortName}</button>
                               </div>
                             </div>
                             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-                              {allPlayers.map((player) => {
+                              {filteredPlayers.map((player) => {
                                 const isSelected = currentXI.some(p => p.id === player.id);
                                 const isDisabled = !isSelected && currentXI.length === 11;
                                 const isTeam1 = team1.players.some(p => p.id === player.id);
