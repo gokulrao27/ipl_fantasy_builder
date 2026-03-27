@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Home } from 'lucide-react';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon } from 'lucide-react';
+import logoLight from '../logo_light_mode.png';
+import logoDark from '../logo_dark_mode.png';
+import iplHero from '../ipl.jpeg';
 
 type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table';
 type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
@@ -22,7 +25,7 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
 
 const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.55] origin-bottom' : ''}`;
 
-const Navigation = ({ currentScreen, setCurrentScreen }: { currentScreen: Screen, setCurrentScreen: (s: Screen) => void }) => {
+const Navigation = ({ currentScreen, setCurrentScreen, isDark, onToggleTheme }: { currentScreen: Screen, setCurrentScreen: (s: Screen) => void, isDark: boolean, onToggleTheme: () => void }) => {
   const navItems = [
     { id: 'schedule', label: 'Matches', icon: Calendar },
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
@@ -33,7 +36,7 @@ const Navigation = ({ currentScreen, setCurrentScreen }: { currentScreen: Screen
       <>
         {/* Mobile Bottom Nav */}
         <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
-          <div className="bg-white/5 backdrop-blur-[40px] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] rounded-full overflow-hidden relative">
+          <div className={`backdrop-blur-[40px] border rounded-full overflow-hidden relative shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/[0.04] border-black/10'}`}>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5" />
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -44,7 +47,7 @@ const Navigation = ({ currentScreen, setCurrentScreen }: { currentScreen: Screen
                     <button
                         key={item.id}
                         onClick={() => setCurrentScreen(item.id as Screen)}
-                        className={`flex flex-col items-center justify-center w-full h-full space-y-0.5 relative transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
+                        className={`flex flex-col items-center justify-center w-full h-full space-y-0.5 relative transition-colors duration-300 ${isActive ? (isDark ? 'text-white' : 'text-black') : (isDark ? 'text-white/40 hover:text-white/70' : 'text-black/40 hover:text-black/70')}`}
                     >
                       {isActive && (
                           <motion.div
@@ -63,17 +66,21 @@ const Navigation = ({ currentScreen, setCurrentScreen }: { currentScreen: Screen
         </div>
 
         {/* Desktop Top Nav */}
-        <div className="hidden md:block fixed top-0 left-0 right-0 bg-[#0B0F19]/90 backdrop-blur-xl border-b border-white/10 z-50">
+        <div className={`hidden md:block fixed top-0 left-0 right-0 backdrop-blur-xl border-b z-50 ${isDark ? 'bg-[#000000]/95 border-white/10' : 'bg-white/95 border-black/10'}`}>
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentScreen('schedule')}>
-              <span className="text-xl font-black tracking-tight text-white">IPL<span className="text-blue-500">2026</span></span>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentScreen('schedule')}>
+              <img src={isDark ? logoDark : logoLight} alt="Cricto" className="h-8 w-8 object-contain" />
+              <span className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-black'}`}>cricto</span>
             </div>
             <div className="flex items-center gap-1">
+              <button onClick={onToggleTheme} className={`mr-2 p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/15 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
               {navItems.map(item => (
                   <button
                       key={item.id}
                       onClick={() => setCurrentScreen(item.id as Screen)}
-                      className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${currentScreen === item.id ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}`}
+                      className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${currentScreen === item.id ? (isDark ? 'bg-white/10 text-white' : 'bg-black/10 text-black') : (isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-white/5' : 'text-slate-600 hover:text-black hover:bg-black/5')}`}
                   >
                     {item.label}
                   </button>
@@ -97,6 +104,7 @@ export default function App() {
   const [showFantasyRoster, setShowFantasyRoster] = useState(false);
   const [builderReturnScreen, setBuilderReturnScreen] = useState<Screen | null>(null);
   const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState<boolean>(() => safeReadStorage('cricto-theme-dark', true));
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -105,6 +113,12 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem(FANTASY_XI_KEY, JSON.stringify(fantasyXI));
   }, [fantasyXI]);
+
+  useEffect(() => {
+    window.localStorage.setItem('cricto-theme-dark', JSON.stringify(isDark));
+    document.body.classList.toggle('theme-dark', isDark);
+    document.body.classList.toggle('theme-light', !isDark);
+  }, [isDark]);
 
   useEffect(() => {
     if (currentScreen !== 'builder') setShowBuilderRoster(false);
@@ -194,9 +208,9 @@ export default function App() {
   };
 
   return (
-      <div className="min-h-screen bg-[#0B0F19] text-slate-100 font-sans selection:bg-blue-500/30 pb-16 md:pb-0 md:pt-16">
+      <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
         {currentScreen !== 'builder' && currentScreen !== 'fantasy_xi' && currentScreen !== 'compare_xi' && currentScreen !== 'dashboard' && currentScreen !== 'squad' && (
-            <Navigation currentScreen={currentScreen} setCurrentScreen={setCurrentScreen} />
+            <Navigation currentScreen={currentScreen} setCurrentScreen={setCurrentScreen} isDark={isDark} onToggleTheme={() => setIsDark(prev => !prev)} />
         )}
         <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
           {currentScreen === 'teams' && (
@@ -473,69 +487,110 @@ export default function App() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="p-4 sm:p-6 lg:p-8 flex flex-col overflow-y-auto custom-scrollbar max-w-5xl mx-auto w-full"
+                  className="p-4 sm:p-6 lg:p-8 flex flex-col overflow-y-auto custom-scrollbar max-w-6xl mx-auto w-full"
               >
-                <div className="space-y-4 sm:space-y-6 pb-12">
-                  {schedule.map((match) => {
-                    const team1 = teams.find(t => t.id === match.team1);
-                    const team2 = teams.find(t => t.id === match.team2);
-                    if (!team1 || !team2) return null;
+                {(() => {
+                  const today = new Date().toISOString().slice(0, 10);
+                  const upcomingMatches = schedule.filter((match) => match.date >= today).slice(0, 3);
+                  const featuredMatches = upcomingMatches.length > 0 ? upcomingMatches : schedule.slice(0, 3);
 
-                    return (
-                        <motion.button
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
-                            onClick={() => {
-                              setSelectedMatch(match);
-                              setCurrentScreen('match_details');
-                            }}
-                            key={match.id}
-                            className="w-full text-left bg-[#151A27] hover:bg-[#1A2133] transition-colors border border-white/5 rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col gap-4 relative overflow-hidden cursor-pointer group"
-                        >
-                          {/* Subtle top gradient border */}
-                          <div className="absolute top-0 left-0 right-0 h-1 flex">
-                            <div className={`flex-1 bg-gradient-to-r ${team1.gradient}`} />
-                            <div className={`flex-1 bg-gradient-to-l ${team2.gradient}`} />
+                  return (
+                      <div className="space-y-8 pb-12">
+                        <section className={`rounded-3xl overflow-hidden border ${isDark ? 'border-white/10 bg-[#0d111a]' : 'border-black/10 bg-slate-50'} shadow-xl`}>
+                          <img src={iplHero} alt="IPL" className="w-full h-52 sm:h-72 md:h-80 object-cover" />
+                          <div className="p-5 sm:p-6">
+                            <h1 className={`text-3xl sm:text-4xl font-black tracking-tight ${isDark ? 'text-white' : 'text-black'}`}>Welcome to cricto</h1>
+                            <p className={`mt-2 text-sm sm:text-base ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Your IPL hub for live schedule scouting, Playing XI drafts, and Fantasy XI preparation.</p>
                           </div>
+                        </section>
 
-                          {/* Header: Match Info */}
-                          <div className="flex justify-between items-center text-xs sm:text-sm font-medium text-slate-400 uppercase tracking-wider">
-                            <span>Match {match.matchNumber} • {match.stadium}, {match.venueCity}</span>
-                            <span className="text-slate-300 font-bold">{match.dateLabel}</span>
+                        <section>
+                          <div className="flex items-center justify-between mb-4">
+                            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Current Matches</h2>
+                            <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Scroll right for next cards</p>
                           </div>
+                          <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory custom-scrollbar">
+                            {featuredMatches.map((match) => {
+                              const team1 = teams.find(t => t.id === match.team1);
+                              const team2 = teams.find(t => t.id === match.team2);
+                              if (!team1 || !team2) return null;
 
-                          {/* Main: Teams VS */}
-                          <div className="flex items-center justify-between py-2 sm:py-4">
-                            <div className="flex items-center gap-3 sm:gap-4 flex-1">
-                              <img src={team1.logoUrl} alt={team1.shortName} className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-md" />
-                              <div className="flex flex-col">
-                                <span className="font-black text-xl sm:text-2xl text-white tracking-tight">{team1.shortName}</span>
-                                <span className="text-xs text-slate-500 hidden sm:block">{team1.name}</span>
-                              </div>
-                            </div>
-
-                            <div className="flex flex-col items-center justify-center px-4">
-                              <div className="text-lg sm:text-xl font-black text-slate-600 italic">VS</div>
-                            </div>
-
-                            <div className="flex items-center gap-3 sm:gap-4 flex-1 justify-end text-right">
-                              <div className="flex flex-col">
-                                <span className="font-black text-xl sm:text-2xl text-white tracking-tight">{team2.shortName}</span>
-                                <span className="text-xs text-slate-500 hidden sm:block">{team2.name}</span>
-                              </div>
-                              <img src={team2.logoUrl} alt={team2.shortName} className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-md" />
-                            </div>
+                              return (
+                                  <article key={match.id} className={`min-w-[290px] sm:min-w-[360px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg ${isDark ? 'bg-[#111827] border-white/10' : 'bg-white border-black/10'}`}>
+                                    <div className="flex items-center justify-between text-xs font-semibold">
+                                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{match.day}</span>
+                                      <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{match.dateLabel}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between mt-4">
+                                      <div className="flex flex-col items-center gap-2">
+                                        <img src={team1.logoUrl} alt={team1.shortName} className="w-12 h-12 object-contain" />
+                                        <span className={`font-black text-lg ${isDark ? 'text-white' : 'text-black'}`}>{team1.shortName}</span>
+                                      </div>
+                                      <span className={`text-lg font-black ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>VS</span>
+                                      <div className="flex flex-col items-center gap-2">
+                                        <img src={team2.logoUrl} alt={team2.shortName} className="w-12 h-12 object-contain" />
+                                        <span className={`font-black text-lg ${isDark ? 'text-white' : 'text-black'}`}>{team2.shortName}</span>
+                                      </div>
+                                    </div>
+                                    <p className={`mt-4 text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{match.stadium}, {match.venueCity}</p>
+                                    <button
+                                        onClick={() => {
+                                          setSelectedMatch(match);
+                                          setCurrentScreen('match_details');
+                                        }}
+                                        className={`mt-4 w-full rounded-xl px-3 py-2 text-sm font-bold transition-colors ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-slate-900 hover:bg-black text-white'}`}
+                                    >
+                                      Schedule
+                                    </button>
+                                  </article>
+                              );
+                            })}
                           </div>
+                        </section>
 
-                          {/* Footer: Headline */}
-                          <div className="pt-4 border-t border-white/5 flex items-start gap-2">
-                            <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                            <div className="text-sm text-slate-300 leading-relaxed font-medium group-hover:text-white transition-colors">{match.headline}</div>
+                        <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/10' : 'bg-white border-black/10'} shadow-xl`}>
+                          <div className={`px-4 sm:px-6 py-4 border-b ${isDark ? 'border-white/10 text-white' : 'border-black/10 text-black'} font-black text-lg`}>
+                            Points Table
                           </div>
-                        </motion.button>
-                    );
-                  })}
-                </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                              <thead>
+                              <tr className={`text-[10px] sm:text-xs uppercase tracking-wider ${isDark ? 'bg-black/30 text-slate-400' : 'bg-slate-100 text-slate-600'}`}>
+                                <th className="p-2 sm:p-4 font-bold">Team</th>
+                                <th className="p-2 sm:p-4 font-bold text-center">P</th>
+                                <th className="p-2 sm:p-4 font-bold text-center">W</th>
+                                <th className="p-2 sm:p-4 font-bold text-center">L</th>
+                                <th className="p-2 sm:p-4 font-bold text-center">NRR</th>
+                                <th className="p-2 sm:p-4 font-bold text-center">Pts</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              {[...pointsTable].sort((a, b) => b.points - a.points || b.nrr - a.nrr).map((entry) => {
+                                const team = teams.find(t => t.id === entry.teamId);
+                                if (!team) return null;
+                                return (
+                                    <tr key={entry.teamId} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                                      <td className="p-2 sm:p-4">
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                          <img src={team.logoUrl} alt={team.shortName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
+                                          <span className={`font-bold text-xs sm:text-sm ${isDark ? 'text-white' : 'text-black'}`}>{team.shortName}</span>
+                                        </div>
+                                      </td>
+                                      <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.played}</td>
+                                      <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.won}</td>
+                                      <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.lost}</td>
+                                      <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.nrr > 0 ? `+${entry.nrr}` : entry.nrr}</td>
+                                      <td className={`p-2 sm:p-4 text-center text-sm sm:text-base font-black ${isDark ? 'text-white' : 'text-black'}`}>{entry.points}</td>
+                                    </tr>
+                                );
+                              })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </section>
+                      </div>
+                  );
+                })()}
               </motion.div>
           )}
           {currentScreen === 'match_details' && selectedMatch && (
