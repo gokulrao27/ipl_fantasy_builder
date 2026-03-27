@@ -371,6 +371,30 @@ export interface PlayerBattle {
   note: string;
 }
 
+export interface PointsTableEntry {
+  teamId: string;
+  played: number;
+  won: number;
+  lost: number;
+  tied: number;
+  nrr: number;
+  points: number;
+  form: ('W' | 'L')[];
+}
+
+export const pointsTable: PointsTableEntry[] = [
+  { teamId: 'csk', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'W', 'L', 'W', 'L'] },
+  { teamId: 'kkr', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'W', 'W', 'W'] },
+  { teamId: 'rr', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'W', 'L'] },
+  { teamId: 'srh', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'W', 'W', 'W'] },
+  { teamId: 'rcb', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'W', 'W', 'W', 'W'] },
+  { teamId: 'dc', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'L', 'L', 'W'] },
+  { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
+  { teamId: 'gt', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
+  { teamId: 'pbks', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'L', 'W'] },
+  { teamId: 'mi', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'W', 'L', 'L'] },
+];
+
 export interface Match {
   id: string;
   matchNumber: number;
@@ -399,6 +423,7 @@ export interface Match {
   };
   playerBattles: PlayerBattle[];
   interestingStats: string[];
+  pitchReport: string;
 }
 
 type MatchSeed = {
@@ -425,7 +450,7 @@ const captainByTeam: Record<string, string> = {
   lsg: 'Rishabh Pant',
 };
 
-const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 'dateLabel' | 'day' | 'team1' | 'team2' | 'venueCity' | 'stadium' | 'captain1' | 'captain2'>> = {
+const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 'dateLabel' | 'day' | 'team1' | 'team2' | 'venueCity' | 'stadium' | 'captain1' | 'captain2' | 'pitchReport'>> = {
   'rcb-srh': {
     headline: 'Powerplay fireworks meeting one of the most explosive middle orders in the league.',
     venueStats: { avgFirstInningsScore: 189, chasingWins: 52, totalMatches: 96, bestBowlingFigure: '6/12', boundaryPercentage: 61 },
@@ -651,6 +676,19 @@ const matchSeeds: MatchSeed[] = [
   { matchNumber: 20, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'mi', team2: 'rcb', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
 ];
 
+const pitchReportsByVenue: Record<string, string> = {
+  'Bengaluru': 'Historically a batting paradise with short boundaries. Expect high scores, though spinners can get some grip in the first innings.',
+  'Mumbai': 'True bounce and carry. The red soil pitch favors pace early on, but it becomes excellent for stroke-making under lights.',
+  'Guwahati': 'A relatively new venue with a balanced surface. Dew can be a major factor in evening games, making chasing preferable.',
+  'Mullanpur': 'A fresh pitch that has shown good pace and bounce. Fast bowlers get early assistance, but it settles down nicely for batters.',
+  'Lucknow': 'Known for its slow and gripping surface. Spinners and medium pacers with good variations will be the key here. Par score is usually lower.',
+  'Kolkata': 'A good batting surface with a fast outfield. Spinners get some turn, but batters who apply themselves can score heavily.',
+  'Chennai': 'Traditionally slow and low, heavily favoring spin. However, recent pitches have been better for batting. Toss is crucial.',
+  'Delhi': 'Small boundaries and a flat deck make it a high-scoring ground. Spinners can be effective if they bowl slowly through the air.',
+  'Ahmedabad': 'A hybrid pitch that offers something for everyone. It can be two-paced initially but generally plays well for batters later.',
+  'Hyderabad': 'A flat track that is excellent for batting. The ball comes onto the bat nicely, and high totals are common.',
+};
+
 export const schedule: Match[] = matchSeeds.map((seed) => {
   const insightKey = `${seed.team1}-${seed.team2}`;
   const insight = matchInsights[insightKey];
@@ -661,5 +699,6 @@ export const schedule: Match[] = matchSeeds.map((seed) => {
     captain1: captainByTeam[seed.team1],
     captain2: captainByTeam[seed.team2],
     ...insight,
+    pitchReport: pitchReportsByVenue[seed.venueCity] || 'A balanced surface expected to provide an even contest between bat and ball.',
   };
 });

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { teams, Team, Player, schedule, Match } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList } from 'lucide-react';
+import { teams, Team, Player, schedule, Match, pointsTable } from './data';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Home } from 'lucide-react';
 
-type Screen = 'home' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'match_details' | 'compare_xi' | 'fantasy_xi';
+type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table';
 type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
@@ -23,7 +23,7 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
 const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.55] origin-bottom' : ''}`;
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('home');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('schedule');
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [playing11, setPlaying11] = useState<Player[]>([]);
   const [impactPlayer, setImpactPlayer] = useState<Player | null>(null);
@@ -131,8 +131,8 @@ export default function App() {
   return (
       <div className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-900 text-slate-100 font-sans selection:bg-emerald-500/30">
         <AnimatePresence mode="wait">
-          {currentScreen === 'home' && (
-              <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-6 sm:p-8">
+          {currentScreen === 'teams' && (
+              <motion.div key="teams" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-6 sm:p-8">
                 <div className="text-center mb-16 mt-8 sm:mt-12">
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
                     IPL SQUAD BUILDER
@@ -140,9 +140,14 @@ export default function App() {
                   <p className="text-blue-200 text-base sm:text-lg max-w-2xl mx-auto font-medium mb-8">
                     Select your favorite franchise, build your ultimate playing 11, and choose your game-changing impact player.
                   </p>
-                  <button onClick={() => setCurrentScreen('schedule')} className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold inline-flex items-center gap-2 backdrop-blur-md border border-white/20 shadow-xl">
-                    <Calendar className="w-5 h-5" /> View Tournament Schedule
-                  </button>
+                  <div className="flex flex-wrap justify-center gap-4">
+                    <button onClick={() => setCurrentScreen('schedule')} className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold inline-flex items-center gap-2 backdrop-blur-md border border-white/20 shadow-xl">
+                      <Calendar className="w-5 h-5" /> View Tournament Schedule
+                    </button>
+                    <button onClick={() => setCurrentScreen('points_table')} className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold inline-flex items-center gap-2 backdrop-blur-md border border-white/20 shadow-xl">
+                      <ListOrdered className="w-5 h-5" /> Points Table
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -172,7 +177,7 @@ export default function App() {
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10 flex flex-col flex-1">
                   <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-12 max-w-7xl mx-auto w-full">
-                    <button onClick={() => setCurrentScreen('home')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10">
+                    <button onClick={() => setCurrentScreen('teams')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10">
                       <ChevronLeft className="w-5 h-5" /> Back to Teams
                     </button>
                     <div className="flex items-center gap-4 sm:gap-6">
@@ -410,17 +415,24 @@ export default function App() {
                   exit={{ opacity: 0, y: -20 }}
                   className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-900 p-8 flex flex-col overflow-y-auto custom-scrollbar"
               >
-                <header className="flex items-center justify-between mb-12 max-w-5xl mx-auto w-full">
-                  <button
-                      onClick={() => setCurrentScreen('home')}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
-                  >
-                    <ChevronLeft className="w-5 h-5" /> Back to Home
-                  </button>
-                  <h2 className="text-4xl font-black tracking-tight text-white drop-shadow-lg uppercase flex items-center gap-3">
-                    <Calendar className="w-8 h-8 text-yellow-400" /> Tournament Schedule
+                <header className="flex flex-col sm:flex-row items-center justify-between mb-12 max-w-5xl mx-auto w-full gap-4">
+                  <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-lg uppercase flex items-center gap-3">
+                    <Calendar className="w-8 h-8 text-yellow-400" /> IPL 2026
                   </h2>
-                  <div className="w-[140px]" /> {/* Spacer */}
+                  <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setCurrentScreen('teams')}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
+                    >
+                      <Users className="w-5 h-5" /> Teams
+                    </button>
+                    <button
+                        onClick={() => setCurrentScreen('points_table')}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
+                    >
+                      <ListOrdered className="w-5 h-5" /> Points Table
+                    </button>
+                  </div>
                 </header>
 
                 <div className="max-w-5xl mx-auto w-full space-y-6 pb-12">
@@ -499,6 +511,9 @@ export default function App() {
                   const team2 = teams.find(t => t.id === selectedMatch.team2);
                   if (!team1 || !team2) return null;
 
+                  const captain1Player = team1.players.find(p => p.name === selectedMatch.captain1);
+                  const captain2Player = team2.players.find(p => p.name === selectedMatch.captain2);
+
                   const winShare1 = Math.round((selectedMatch.headToHead.team1Wins / (selectedMatch.headToHead.team1Wins + selectedMatch.headToHead.team2Wins || 1)) * 100);
                   const winShare2 = 100 - winShare1;
                   const chaseRate = Math.round((selectedMatch.venueStats.chasingWins / selectedMatch.venueStats.totalMatches) * 100);
@@ -535,26 +550,42 @@ export default function App() {
 
                         <section className="rounded-[2rem] border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden shadow-2xl">
                           <div className="grid lg:grid-cols-[1fr_auto_1fr] items-stretch">
-                            <div className={`relative p-8 md:p-10 bg-gradient-to-br ${team1.gradient}`}>
+                            <div className={`relative p-6 sm:p-8 md:p-10 bg-gradient-to-br ${team1.gradient} overflow-hidden`}>
                               <div className="absolute inset-0 bg-black/40" />
-                              <div className="relative z-10 flex flex-col gap-4">
-                                <img src={team1.logoUrl} alt={team1.shortName} className="w-20 h-20 object-contain drop-shadow-xl" />
-                                <div className="text-4xl font-black text-white">{team1.shortName}</div>
-                                <div className="text-xl font-bold text-white/90">{team1.name}</div>
-                                <div className="inline-flex w-fit items-center gap-2 px-4 py-2 rounded-full bg-black/30 border border-white/10 text-sm font-bold text-white/80">Captain: {selectedMatch.captain1}</div>
+                              {captain1Player && (
+                                  <div className="absolute right-0 bottom-0 pointer-events-none opacity-30 sm:opacity-100 z-0">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent sm:hidden z-10" />
+                                    <img src={captain1Player.imageUrl} alt={captain1Player.name} className={getPlayerImageClass(captain1Player.id, "w-40 h-48 sm:w-64 sm:h-72 object-contain object-bottom drop-shadow-2xl")} />
+                                  </div>
+                              )}
+                              <div className="relative z-10 flex flex-col gap-3 sm:gap-4 sm:max-w-[60%]">
+                                <img src={team1.logoUrl} alt={team1.shortName} className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl" />
+                                <div className="text-3xl sm:text-4xl font-black text-white drop-shadow-md">{team1.shortName}</div>
+                                <div className="text-lg sm:text-xl font-bold text-white/90 drop-shadow-md leading-tight">{team1.name}</div>
+                                <div className="inline-flex w-fit items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 text-xs sm:text-sm font-bold text-white/90 shadow-lg mt-2">
+                                  Captain: {selectedMatch.captain1}
+                                </div>
                               </div>
                             </div>
-                            <div className="bg-black/80 px-6 py-8 flex flex-col items-center justify-center border-y lg:border-y-0 lg:border-x border-white/10">
-                              <div className="text-5xl font-black italic text-white">VS</div>
-                              <div className="mt-4 text-center text-sm text-white/70 max-w-[15rem]">{selectedMatch.headline}</div>
+                            <div className="bg-black/80 px-6 py-8 flex flex-col items-center justify-center border-y lg:border-y-0 lg:border-x border-white/10 z-20 relative">
+                              <div className="text-4xl sm:text-5xl font-black italic text-white">VS</div>
+                              <div className="mt-4 text-center text-xs sm:text-sm text-white/70 max-w-[15rem]">{selectedMatch.headline}</div>
                             </div>
-                            <div className={`relative p-8 md:p-10 bg-gradient-to-bl ${team2.gradient}`}>
+                            <div className={`relative p-6 sm:p-8 md:p-10 bg-gradient-to-bl ${team2.gradient} overflow-hidden`}>
                               <div className="absolute inset-0 bg-black/40" />
-                              <div className="relative z-10 flex flex-col gap-4 items-start lg:items-end text-left lg:text-right">
-                                <img src={team2.logoUrl} alt={team2.shortName} className="w-20 h-20 object-contain drop-shadow-xl" />
-                                <div className="text-4xl font-black text-white">{team2.shortName}</div>
-                                <div className="text-xl font-bold text-white/90">{team2.name}</div>
-                                <div className="inline-flex w-fit items-center gap-2 px-4 py-2 rounded-full bg-black/30 border border-white/10 text-sm font-bold text-white/80">Captain: {selectedMatch.captain2}</div>
+                              {captain2Player && (
+                                  <div className="absolute left-0 bottom-0 pointer-events-none opacity-30 sm:opacity-100 z-0">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent sm:hidden z-10" />
+                                    <img src={captain2Player.imageUrl} alt={captain2Player.name} className={getPlayerImageClass(captain2Player.id, "w-40 h-48 sm:w-64 sm:h-72 object-contain object-bottom drop-shadow-2xl")} />
+                                  </div>
+                              )}
+                              <div className="relative z-10 flex flex-col gap-3 sm:gap-4 items-start lg:items-end text-left lg:text-right sm:max-w-[60%] sm:ml-auto">
+                                <img src={team2.logoUrl} alt={team2.shortName} className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl" />
+                                <div className="text-3xl sm:text-4xl font-black text-white drop-shadow-md">{team2.shortName}</div>
+                                <div className="text-lg sm:text-xl font-bold text-white/90 drop-shadow-md leading-tight">{team2.name}</div>
+                                <div className="inline-flex w-fit items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 text-xs sm:text-sm font-bold text-white/90 shadow-lg mt-2">
+                                  Captain: {selectedMatch.captain2}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -562,6 +593,25 @@ export default function App() {
 
                         <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
                           <div className="grid gap-6">
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl flex flex-col justify-center">
+                                <h3 className="text-xl font-black text-white mb-1">Win Predictor</h3>
+                                <p className="text-xs text-white/60 mb-4">Based on historical head-to-head and venue performance.</p>
+                                <div className="flex items-center justify-between mb-2 text-sm font-bold">
+                                  <span className="text-white">{team1.shortName} ({winShare1}%)</span>
+                                  <span className="text-white">{team2.shortName} ({winShare2}%)</span>
+                                </div>
+                                <div className="h-3 w-full bg-white/10 rounded-full overflow-hidden flex">
+                                  <div className={`h-full bg-gradient-to-r ${team1.gradient}`} style={{ width: `${winShare1}%` }} />
+                                  <div className={`h-full bg-gradient-to-l ${team2.gradient}`} style={{ width: `${winShare2}%` }} />
+                                </div>
+                              </div>
+                              <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl flex flex-col justify-center">
+                                <h3 className="text-xl font-black text-white mb-2 flex items-center gap-2"><MapPin className="w-5 h-5 text-yellow-400" /> Pitch Report</h3>
+                                <p className="text-sm text-white/80 leading-relaxed">{selectedMatch.pitchReport}</p>
+                              </div>
+                            </div>
+
                             <div className="grid md:grid-cols-3 gap-4">
                               <StatCard label="Average 1st innings" value={`${selectedMatch.venueStats.avgFirstInningsScore}`} note="Venue scoring trend" />
                               <StatCard label="Chasing success" value={`${chaseRate}%`} note={`${selectedMatch.venueStats.chasingWins}/${selectedMatch.venueStats.totalMatches} matches won batting second`} />
@@ -1003,6 +1053,90 @@ export default function App() {
                       </>
                   );
                 })()}
+              </motion.div>
+          )}
+
+          {currentScreen === 'points_table' && (
+              <motion.div
+                  key="points_table"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="min-h-screen bg-gradient-to-br from-blue-950 via-indigo-950 to-slate-900 p-8 flex flex-col overflow-y-auto custom-scrollbar"
+              >
+                <header className="flex flex-col sm:flex-row items-center justify-between mb-12 max-w-5xl mx-auto w-full gap-4">
+                  <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-lg uppercase flex items-center gap-3">
+                    <ListOrdered className="w-8 h-8 text-yellow-400" /> Points Table
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setCurrentScreen('schedule')}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
+                    >
+                      <Calendar className="w-5 h-5" /> Schedule
+                    </button>
+                    <button
+                        onClick={() => setCurrentScreen('teams')}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10"
+                    >
+                      <Users className="w-5 h-5" /> Teams
+                    </button>
+                  </div>
+                </header>
+
+                <div className="max-w-5xl mx-auto w-full">
+                  <div className="bg-black/40 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                        <tr className="bg-white/5 border-b border-white/10 text-white/70 text-sm uppercase tracking-wider">
+                          <th className="p-4 font-bold">Team</th>
+                          <th className="p-4 font-bold text-center">Pld</th>
+                          <th className="p-4 font-bold text-center">Won</th>
+                          <th className="p-4 font-bold text-center">Lost</th>
+                          <th className="p-4 font-bold text-center">Tied</th>
+                          <th className="p-4 font-bold text-center">NRR</th>
+                          <th className="p-4 font-bold text-center">Pts</th>
+                          <th className="p-4 font-bold text-center">Form</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {pointsTable.sort((a, b) => b.points - a.points || b.nrr - a.nrr).map((entry, index) => {
+                          const team = teams.find(t => t.id === entry.teamId);
+                          if (!team) return null;
+                          return (
+                              <tr key={entry.teamId} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${index < 4 ? 'bg-emerald-500/5' : ''}`}>
+                                <td className="p-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-6 text-center font-bold text-white/50">{index + 1}</div>
+                                    <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
+                                    <span className="font-bold text-white hidden sm:inline">{team.name}</span>
+                                    <span className="font-bold text-white sm:hidden">{team.shortName}</span>
+                                  </div>
+                                </td>
+                                <td className="p-4 text-center text-white/90">{entry.played}</td>
+                                <td className="p-4 text-center text-emerald-400 font-medium">{entry.won}</td>
+                                <td className="p-4 text-center text-red-400 font-medium">{entry.lost}</td>
+                                <td className="p-4 text-center text-white/90">{entry.tied}</td>
+                                <td className="p-4 text-center text-white/90 font-mono">{entry.nrr > 0 ? `+${entry.nrr}` : entry.nrr}</td>
+                                <td className="p-4 text-center text-white font-bold text-lg">{entry.points}</td>
+                                <td className="p-4">
+                                  <div className="flex items-center justify-center gap-1">
+                                    {entry.form.map((result, i) => (
+                                        <span key={i} className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${result === 'W' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                                      {result}
+                                    </span>
+                                    ))}
+                                  </div>
+                                </td>
+                              </tr>
+                          );
+                        })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
           )}
         </AnimatePresence>
