@@ -568,9 +568,9 @@ export default function App() {
 
                   return (
                       <div className="space-y-8 pb-12">
-                        <section className={`rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl`}>
-                          <img src={iplHero} alt="IPL" className="w-full h-52 sm:h-72 md:h-80 object-cover" />
-                        </section>
+                          <section className={`w-full aspect-[16/9] md:aspect-[20/10] rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl relative`}>
+                              <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%]" />
+                          </section>
 
                         <section>
                           <div className="flex items-center justify-between mb-4">
