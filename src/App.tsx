@@ -41,6 +41,7 @@ const Navigation = ({
   isMobileHeaderVisible: boolean
 }) => {
   const navItems = [
+    { id: 'schedule', label: 'Home', icon: Home },
     { id: 'schedule_list', label: 'Matches', icon: Calendar },
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
     { id: 'teams', label: 'Teams', icon: Shield },
