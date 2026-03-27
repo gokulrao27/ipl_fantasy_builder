@@ -26,13 +26,13 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
 const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.55] origin-bottom' : ''}`;
 
 const Navigation = ({
-                      currentScreen,
-                      setCurrentScreen,
-                      isDark,
-                      onToggleTheme,
-                      onLogoClick,
-                      isMobileHeaderVisible
-                    }: {
+  currentScreen,
+  setCurrentScreen,
+  isDark,
+  onToggleTheme,
+  onLogoClick,
+  isMobileHeaderVisible
+}: {
   currentScreen: Screen,
   setCurrentScreen: (s: Screen) => void,
   isDark: boolean,
