@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
 import iplHero from '../ipl.jpeg';
@@ -45,6 +45,10 @@ const Navigation = ({
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
     { id: 'teams', label: 'Teams', icon: Shield },
   ];
+  const mobileNavItems = [
+    { id: 'schedule', label: 'Home', icon: Home },
+    ...navItems
+  ];
   const showBottomNav = ['schedule', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
 
   return (
@@ -68,7 +72,7 @@ const Navigation = ({
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <div className="relative flex justify-around items-center h-14 px-1">
-              {navItems.map(item => {
+              {mobileNavItems.map(item => {
                 const isActive = currentScreen === item.id;
                 return (
                     <button
