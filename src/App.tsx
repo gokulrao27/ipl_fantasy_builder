@@ -45,23 +45,24 @@ const Navigation = ({
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
     { id: 'teams', label: 'Teams', icon: Shield },
   ];
+  const showBottomNav = ['schedule', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
 
   return (
       <>
         {/* Mobile Top Header */}
-        <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${currentScreen === 'schedule' && isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+        <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${currentScreen === 'schedule' ? (isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full') : 'translate-y-0'}`}>
           <div className={`mx-4 mt-3 rounded-2xl px-4 py-3 backdrop-blur-xl border flex items-center justify-between ${isDark ? 'bg-black/80 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
             <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
-              <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-11 w-auto object-contain" />
+              <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
             </button>
-            <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/15 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
+            <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Bottom Nav */}
-        <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
+        <div className={`md:hidden fixed bottom-6 left-6 right-6 z-50 transition-opacity ${showBottomNav ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           <div className={`backdrop-blur-[40px] border rounded-full overflow-hidden relative shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] ${isDark ? 'bg-white/5 border-white/20' : 'bg-white border-black/20'}`}>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5" />
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
@@ -78,7 +79,7 @@ const Navigation = ({
                       {isActive && (
                           <motion.div
                               layoutId="mobile-nav-pill"
-                              className="absolute inset-1 bg-white/10 rounded-full border border-white/10 shadow-[inset_0_1px_4px_rgba(255,255,255,0.2)]"
+                              className="absolute inset-1 bg-white/10 rounded-full border border-white/25 shadow-[inset_0_1px_4px_rgba(255,255,255,0.2)]"
                               transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                           />
                       )}
@@ -98,7 +99,7 @@ const Navigation = ({
               <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
             </button>
             <div className="flex items-center gap-1">
-              <button onClick={onToggleTheme} className={`mr-2 p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/15 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
+              <button onClick={onToggleTheme} className={`mr-2 p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
               {navItems.map(item => (
@@ -285,30 +286,30 @@ export default function App() {
         )}
         <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
           {currentScreen === 'teams' && (
-              <motion.div key="teams" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-6 sm:p-8">
-                <div className="text-center mb-16 mt-8 sm:mt-12">
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
+              <motion.div key="teams" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-4 sm:p-8">
+                <div className="text-center mb-8 sm:mb-16 mt-4 sm:mt-12">
+                  <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-3 sm:mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
                     IPL SQUAD BUILDER
                   </h1>
-                  <p className="text-blue-200 text-base sm:text-lg max-w-2xl mx-auto font-medium mb-8">
+                  <p className="text-blue-200 text-sm sm:text-lg max-w-2xl mx-auto font-medium mb-5 sm:mb-8 px-2">
                     Select your favorite franchise, build your ultimate playing 11, and choose your game-changing impact player.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   {teams.map((team) => (
                       <motion.button
                           whileHover={{ scale: 1.03, y: -5 }}
                           whileTap={{ scale: 0.98 }}
                           key={team.id}
                           onClick={() => handleTeamSelect(team)}
-                          className={`relative overflow-hidden rounded-3xl p-8 text-left transition-all duration-300 group border border-white/10 shadow-2xl bg-gradient-to-br ${team.gradient}`}
+                          className={`relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-left transition-all duration-300 group border border-white/25 shadow-2xl bg-gradient-to-br ${team.gradient}`}
                       >
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
                         <div className="relative z-10">
-                          <img src={team.logoUrl} alt={team.shortName} className="w-16 h-16 object-contain mb-4 drop-shadow-xl" />
-                          <h2 className="text-4xl font-black mb-2 tracking-tight text-white drop-shadow-md">{team.shortName}</h2>
-                          <p className="text-white/90 font-bold text-lg drop-shadow-sm">{team.name}</p>
+                          <img src={team.logoUrl} alt={team.shortName} className="w-12 h-12 sm:w-16 sm:h-16 object-contain mb-2 sm:mb-4 drop-shadow-xl" />
+                          <h2 className="text-2xl sm:text-4xl font-black mb-1 sm:mb-2 tracking-tight text-white drop-shadow-md">{team.shortName}</h2>
+                          <p className="text-white/90 font-bold text-xs sm:text-lg drop-shadow-sm line-clamp-2">{team.name}</p>
                         </div>
                         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all" />
                       </motion.button>
@@ -318,23 +319,23 @@ export default function App() {
           )}
 
           {currentScreen === 'squad' && selectedTeam && (
-              <motion.div key="squad" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-4 sm:p-8 flex flex-col overflow-y-auto custom-scrollbar relative`}>
+              <motion.div key="squad" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-3 sm:p-8 flex flex-col overflow-y-auto custom-scrollbar relative`}>
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10 flex flex-col flex-1">
-                  <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-12 max-w-7xl mx-auto w-full">
-                    <button onClick={() => setCurrentScreen('teams')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10">
+                  <header className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between mb-8 sm:mb-12 max-w-7xl mx-auto w-full">
+                    <button onClick={() => setCurrentScreen('teams')} className="w-fit px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white text-sm sm:text-base font-bold flex items-center gap-2 backdrop-blur-md border border-white/25">
                       <ChevronLeft className="w-5 h-5" /> Back to Teams
                     </button>
-                    <div className="flex items-center gap-4 sm:gap-6">
-                      <img src={selectedTeam.logoUrl} alt={selectedTeam.shortName} className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-2xl" />
+                    <div className="flex items-center gap-3 sm:gap-6">
+                      <img src={selectedTeam.logoUrl} alt={selectedTeam.shortName} className="w-12 h-12 sm:w-20 sm:h-20 object-contain drop-shadow-2xl" />
                       <div className="text-left">
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-lg uppercase">{selectedTeam.name}</h2>
-                        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r ${selectedTeam.gradient} shadow-lg text-sm font-bold text-white uppercase tracking-wider mt-2`}>
+                        <h2 className="text-xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-lg uppercase leading-tight">{selectedTeam.name}</h2>
+                        <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1 rounded-full bg-gradient-to-r ${selectedTeam.gradient} shadow-lg text-[10px] sm:text-sm font-bold text-white uppercase tracking-wider mt-2`}>
                           Full Squad 2026
                         </div>
                       </div>
                     </div>
-                    <button onClick={() => setCurrentScreen('builder')} className={`w-fit px-8 py-3.5 rounded-full font-black transition-all flex items-center gap-3 shadow-2xl bg-gradient-to-r ${selectedTeam.gradient} text-white hover:scale-105 border border-white/20 text-lg`}>
+                    <button onClick={() => setCurrentScreen('builder')} className={`w-fit px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-black transition-all flex items-center gap-2 sm:gap-3 shadow-2xl bg-gradient-to-r ${selectedTeam.gradient} text-white hover:scale-105 border border-white/20 text-sm sm:text-lg`}>
                       Playing XI <ChevronLeft className="w-6 h-6 rotate-180" />
                     </button>
                   </header>
@@ -342,7 +343,7 @@ export default function App() {
                   <div className="flex-1 max-w-7xl mx-auto w-full pb-12">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
                       {selectedTeam.players.map(player => (
-                          <motion.div whileHover={{ y: -5, scale: 1.02 }} key={player.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-4 sm:p-6 flex flex-col items-center text-center shadow-xl hover:bg-white/10 transition-all group">
+                          <motion.div whileHover={{ y: -5, scale: 1.02 }} key={player.id} className="bg-white/5 backdrop-blur-md border border-white/25 rounded-3xl p-4 sm:p-6 flex flex-col items-center text-center shadow-xl hover:bg-white/10 transition-all group">
                             <div className="relative w-24 h-24 sm:w-28 sm:h-28 mb-4 flex items-end justify-center">
                               <div className={`absolute inset-0 rounded-full p-1 bg-gradient-to-br ${selectedTeam.gradient} shadow-lg group-hover:shadow-2xl transition-all`}>
                                 <div className="w-full h-full rounded-full bg-black/40" />
@@ -361,7 +362,7 @@ export default function App() {
 
           {currentScreen === 'builder' && selectedTeam && (
               <motion.div key="builder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`min-h-screen lg:h-screen flex flex-col overflow-hidden bg-gradient-to-br ${selectedTeam.gradient}`}>
-                <header className="flex-none bg-black/30 backdrop-blur-md border-b border-white/10 p-4 flex flex-wrap items-center justify-between gap-3 z-20 shadow-lg">
+                <header className="flex-none bg-black/30 backdrop-blur-md border-b border-white/25 p-4 flex flex-wrap items-center justify-between gap-3 z-20 shadow-lg">
                   <div className="flex items-center gap-4">
                     <button onClick={() => setCurrentScreen('squad')} className="p-2 hover:bg-black/20 rounded-full transition-colors text-white">
                       <ChevronLeft className="w-6 h-6" />
@@ -373,7 +374,7 @@ export default function App() {
                   </div>
 
                   <div className="flex items-center gap-3 ml-auto">
-                    <button onClick={() => setShowBuilderRoster(prev => !prev)} className="lg:hidden px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold inline-flex items-center gap-2">
+                    <button onClick={() => setShowBuilderRoster(prev => !prev)} className="lg:hidden px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold inline-flex items-center gap-2">
                       <LayoutList className="w-4 h-4" /> {showBuilderRoster ? 'Hide roster' : 'Show roster'}
                     </button>
                     <button disabled={playing11.length < 11} onClick={() => setCurrentScreen(builderReturnScreen === 'compare_xi' ? 'compare_xi' : 'dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${playing11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
@@ -382,7 +383,7 @@ export default function App() {
                   </div>
                 </header>
 
-                <div className="bg-black/25 border-b border-white/10 px-4 py-3 text-sm text-white/85 font-medium z-10">
+                <div className="bg-black/25 border-b border-white/25 px-4 py-3 text-sm text-white/85 font-medium z-10">
                   {builderSummary}
                 </div>
 
@@ -401,7 +402,7 @@ export default function App() {
                         {Array.from({ length: 11 }).map((_, i) => {
                           const player = playing11[i];
                           return (
-                              <div key={`slot-${i}`} className={`rounded-2xl border p-4 flex flex-col justify-center min-h-[110px] transition-all ${player ? 'bg-white/10 border-white/20 shadow-xl backdrop-blur-md' : 'bg-black/20 border-white/10 border-dashed text-white/40'}`}>
+                              <div key={`slot-${i}`} className={`rounded-2xl border p-4 flex flex-col justify-center min-h-[110px] transition-all ${player ? 'bg-white/10 border-white/20 shadow-xl backdrop-blur-md' : 'bg-black/20 border-white/25 border-dashed text-white/40'}`}>
                                 {player ? (
                                     <div className="flex items-center gap-3">
                                       <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
@@ -451,8 +452,8 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className={`${showBuilderRoster ? 'flex' : 'hidden'} lg:flex lg:w-[400px] bg-black/60 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/10 flex-col z-20 shadow-2xl order-1 lg:order-2 max-h-[45vh] lg:max-h-none`}>
-                    <div className="p-5 border-b border-white/10 bg-black/20 sticky top-0">
+                  <div className={`${showBuilderRoster ? 'flex' : 'hidden'} lg:flex lg:w-[400px] bg-black/60 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/25 flex-col z-20 shadow-2xl order-1 lg:order-2 max-h-[45vh] lg:max-h-none`}>
+                    <div className="p-5 border-b border-white/25 bg-black/20 sticky top-0">
                       <h3 className="font-black text-lg flex items-center gap-2 text-white uppercase tracking-wider">
                         <Users className="w-5 h-5 text-blue-400" /> Squad Roster
                       </h3>
@@ -464,7 +465,7 @@ export default function App() {
                         const isDisabled = !isSelected && playing11.length === 11 && impactPlayer !== null;
 
                         return (
-                            <button key={player.id} disabled={isDisabled} onClick={() => handlePlayerToggle(player)} className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isSelected ? status === 'Playing 11' ? 'bg-white/20 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : isDisabled ? 'bg-black/20 border-white/5 opacity-40 cursor-not-allowed' : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'}`}>
+                            <button key={player.id} disabled={isDisabled} onClick={() => handlePlayerToggle(player)} className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isSelected ? status === 'Playing 11' ? 'bg-white/20 border-white/200 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : isDisabled ? 'bg-black/20 border-white/20 opacity-40 cursor-not-allowed' : 'bg-white/5 border-white/25 hover:border-white/30 hover:bg-white/10'}`}>
                               <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                 <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
                                 <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
@@ -492,12 +493,12 @@ export default function App() {
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10 flex flex-col flex-1">
                   <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-8">
-                    <button onClick={() => setCurrentScreen('builder')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/10">
+                    <button onClick={() => setCurrentScreen('builder')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/25">
                       <ChevronLeft className="w-5 h-5" /> Edit Squad
                     </button>
                     <div className="text-center">
                       <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-2 drop-shadow-lg uppercase">{selectedTeam.name}</h2>
-                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md shadow-lg text-sm font-bold text-white uppercase tracking-wider border border-white/10">Matchday Squad</div>
+                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md shadow-lg text-sm font-bold text-white uppercase tracking-wider border border-white/25">Matchday Squad</div>
                     </div>
                     <div className="hidden lg:block w-[140px]" />
                   </header>
@@ -508,7 +509,7 @@ export default function App() {
                         <img src={selectedTeam.logoUrl} alt={selectedTeam.name} className="w-[320px] h-[320px] sm:w-[500px] sm:h-[500px] object-contain" />
                       </div>
                       <div className="absolute inset-4 border-[3px] border-white/20 rounded-[2.5rem]" />
-                      <div className="absolute inset-x-[18%] top-[20%] bottom-[20%] border-[3px] border-white/10 rounded-[4rem]" />
+                      <div className="absolute inset-x-[18%] top-[20%] bottom-[20%] border-[3px] border-white/25 rounded-[4rem]" />
                       <div className="absolute left-1/2 top-[25%] bottom-[25%] w-16 sm:w-20 -ml-8 sm:-ml-10 border-[3px] border-white/30 bg-white/5" />
 
                       <div className="relative z-10 w-full h-full flex flex-col justify-between py-8 gap-8">
@@ -567,9 +568,9 @@ export default function App() {
 
                   return (
                       <div className="space-y-8 pb-12">
-                        <section className={`w-full aspect-[16/9] md:aspect-[20/10] rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl relative`}>
-                          <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%]" />
-                        </section>
+                          <section className={`w-full aspect-[16/9] md:aspect-[20/10] rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl relative`}>
+                              <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%]" />
+                          </section>
 
                         <section>
                           <div className="flex items-center justify-between mb-4">
@@ -589,8 +590,12 @@ export default function App() {
                                         setSelectedMatch(match);
                                         setCurrentScreen('match_details');
                                       }}
-                                      className={`cursor-pointer min-w-[290px] sm:min-w-[360px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg transition-transform hover:-translate-y-0.5 ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'}`}
+                                      className={`cursor-pointer min-w-[290px] sm:min-w-[360px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg transition-transform hover:-translate-y-0.5 relative overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'}`}
                                   >
+                                    <div className="absolute top-0 left-0 right-0 h-1 flex">
+                                      <div className={`flex-1 bg-gradient-to-r ${team1.gradient}`} />
+                                      <div className={`flex-1 bg-gradient-to-l ${team2.gradient}`} />
+                                    </div>
                                     <div className="flex items-center justify-between text-xs font-semibold">
                                       <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{match.day}</span>
                                       <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{match.dateLabel}</span>
@@ -643,7 +648,7 @@ export default function App() {
                                 const team = teams.find(t => t.id === entry.teamId);
                                 if (!team) return null;
                                 return (
-                                    <tr key={entry.teamId} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                                    <tr key={entry.teamId} className={`border-t ${isDark ? 'border-white/25' : 'border-black/20'}`}>
                                       <td className="p-2 sm:p-4">
                                         <div className="flex items-center gap-2 sm:gap-3">
                                           <img src={team.logoUrl} alt={team.shortName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
@@ -727,7 +732,7 @@ export default function App() {
                               <img src={team2.logoUrl} alt={team2.shortName} className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-md" />
                             </div>
                           </div>
-                          <div className={`pt-4 border-t flex items-start gap-2 ${isDark ? 'border-white/20' : 'border-black/15'}`}>
+                          <div className={`pt-4 border-t flex items-start gap-2 ${isDark ? 'border-white/20' : 'border-black/25'}`}>
                             <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                             <div className={`text-sm leading-relaxed font-medium ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'} transition-colors`}>{match.headline}</div>
                           </div>
@@ -808,7 +813,7 @@ export default function App() {
                                   <div className="text-2xl sm:text-4xl font-black text-white tracking-tight">{team1.shortName}</div>
                                   <div className="text-xs sm:text-sm text-slate-400 font-medium hidden sm:block">{team1.name}</div>
                                 </div>
-                                <div className="mt-1 sm:mt-2 px-3 py-1 bg-black/40 rounded-full border border-white/5 text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider">
+                                <div className="mt-1 sm:mt-2 px-3 py-1 bg-black/40 rounded-full border border-white/20 text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider">
                                   C: {selectedMatch.captain1}
                                 </div>
                               </div>
@@ -836,7 +841,7 @@ export default function App() {
                                   <div className="text-2xl sm:text-4xl font-black text-white tracking-tight">{team2.shortName}</div>
                                   <div className="text-xs sm:text-sm text-slate-400 font-medium hidden sm:block">{team2.name}</div>
                                 </div>
-                                <div className="mt-1 sm:mt-2 px-3 py-1 bg-black/40 rounded-full border border-white/5 text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider">
+                                <div className="mt-1 sm:mt-2 px-3 py-1 bg-black/40 rounded-full border border-white/20 text-[10px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider">
                                   C: {selectedMatch.captain2}
                                 </div>
                               </div>
@@ -844,7 +849,7 @@ export default function App() {
                           </div>
 
                           {/* Bottom Headline */}
-                          <div className="bg-[#0B0F19]/50 px-4 sm:px-8 py-4 border-t border-white/5 text-center">
+                          <div className="bg-[#0B0F19]/50 px-4 sm:px-8 py-4 border-t border-white/20 text-center">
                             <p className="text-sm sm:text-base text-slate-300 font-medium">{selectedMatch.headline}</p>
                           </div>
                         </section>
@@ -854,19 +859,19 @@ export default function App() {
                           <div className="grid gap-4 sm:gap-6">
                             {/* Win Predictor & Pitch Report */}
                             <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-                              <div className="rounded-3xl border border-white/5 bg-[#151A27] p-5 sm:p-6 shadow-lg flex flex-col justify-center">
+                              <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg flex flex-col justify-center">
                                 <h3 className="text-lg sm:text-xl font-black text-white mb-1">Win Predictor</h3>
                                 <p className="text-xs text-slate-400 mb-4">Based on historical head-to-head and venue performance.</p>
                                 <div className="flex items-center justify-between mb-2 text-sm font-bold">
                                   <span className="text-white">{team1.shortName} <span className="text-slate-400 font-medium">({winShare1}%)</span></span>
                                   <span className="text-white"><span className="text-slate-400 font-medium">({winShare2}%)</span> {team2.shortName}</span>
                                 </div>
-                                <div className="h-2.5 w-full bg-[#0B0F19] rounded-full overflow-hidden flex border border-white/5">
+                                <div className="h-2.5 w-full bg-[#0B0F19] rounded-full overflow-hidden flex border border-white/20">
                                   <div className={`h-full bg-gradient-to-r ${team1.gradient}`} style={{ width: `${winShare1}%` }} />
                                   <div className={`h-full bg-gradient-to-l ${team2.gradient}`} style={{ width: `${winShare2}%` }} />
                                 </div>
                               </div>
-                              <div className="rounded-3xl border border-white/5 bg-[#151A27] p-5 sm:p-6 shadow-lg flex flex-col justify-center">
+                              <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg flex flex-col justify-center">
                                 <h3 className="text-lg sm:text-xl font-black text-white mb-2 flex items-center gap-2"><MapPin className="w-5 h-5 text-blue-400" /> Pitch Report</h3>
                                 <p className="text-sm text-slate-300 leading-relaxed">{selectedMatch.pitchReport}</p>
                               </div>
@@ -880,20 +885,20 @@ export default function App() {
                             </div>
 
                             {/* Head to Head */}
-                            <div className="rounded-3xl border border-white/5 bg-[#151A27] p-5 sm:p-6 shadow-lg">
+                            <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg">
                               <div className="flex items-center justify-between gap-4 mb-5">
                                 <div>
                                   <h3 className="text-xl font-black text-white">Head-to-head</h3>
                                   <p className="text-sm text-slate-400">How the rivalry stacks up overall.</p>
                                 </div>
-                                <div className="text-xs sm:text-sm font-bold text-slate-300 bg-white/5 px-3 py-1 rounded-full border border-white/5 hidden sm:block">{selectedMatch.headToHead.last5}</div>
+                                <div className="text-xs sm:text-sm font-bold text-slate-300 bg-white/5 px-3 py-1 rounded-full border border-white/20 hidden sm:block">{selectedMatch.headToHead.last5}</div>
                               </div>
                               <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="rounded-2xl bg-[#0B0F19] border border-white/5 p-4 text-center sm:text-left">
+                                <div className="rounded-2xl bg-[#0B0F19] border border-white/20 p-4 text-center sm:text-left">
                                   <div className="text-xs uppercase tracking-[0.2em] text-slate-500 font-black mb-1">{team1.shortName}</div>
                                   <div className="text-3xl sm:text-4xl font-black text-white">{selectedMatch.headToHead.team1Wins} <span className="text-sm text-slate-500 font-medium">wins</span></div>
                                 </div>
-                                <div className="rounded-2xl bg-[#0B0F19] border border-white/5 p-4 text-center sm:text-right">
+                                <div className="rounded-2xl bg-[#0B0F19] border border-white/20 p-4 text-center sm:text-right">
                                   <div className="text-xs uppercase tracking-[0.2em] text-slate-500 font-black mb-1">{team2.shortName}</div>
                                   <div className="text-3xl sm:text-4xl font-black text-white"><span className="text-sm text-slate-500 font-medium">wins</span> {selectedMatch.headToHead.team2Wins}</div>
                                 </div>
@@ -906,17 +911,17 @@ export default function App() {
                             </div>
 
                             {/* Matchup Battles */}
-                            <div className="rounded-3xl border border-white/5 bg-[#151A27] p-5 sm:p-6 shadow-lg">
+                            <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg">
                               <h3 className="text-xl font-black text-white mb-1">Key Matchups</h3>
                               <p className="text-sm text-slate-400 mb-5">Opponent-specific contests that could decide momentum.</p>
                               <div className="grid gap-4 sm:grid-cols-2">
                                 {selectedMatch.playerBattles.map((battle) => (
-                                    <div key={`${battle.batter}-${battle.bowler}`} className="rounded-2xl border border-white/5 bg-[#0B0F19] p-4 sm:p-5">
+                                    <div key={`${battle.batter}-${battle.bowler}`} className="rounded-2xl border border-white/20 bg-[#0B0F19] p-4 sm:p-5">
                                       <div className="text-[10px] uppercase tracking-[0.2em] text-blue-400 font-black mb-2">Player vs Player</div>
                                       <div className="text-lg font-black text-white mb-2 leading-tight">{battle.batter} <span className="text-slate-500 text-sm font-medium italic mx-1">vs</span> {battle.bowler}</div>
                                       <div className="flex flex-wrap gap-2 mb-3 text-[10px] sm:text-xs font-bold">
-                                        <span className="px-2 py-1 rounded bg-white/5 text-slate-300 border border-white/5">{battle.runs} runs</span>
-                                        <span className="px-2 py-1 rounded bg-white/5 text-slate-300 border border-white/5">{battle.balls} balls</span>
+                                        <span className="px-2 py-1 rounded bg-white/5 text-slate-300 border border-white/20">{battle.runs} runs</span>
+                                        <span className="px-2 py-1 rounded bg-white/5 text-slate-300 border border-white/20">{battle.balls} balls</span>
                                         <span className="px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20">{battle.dismissals} outs</span>
                                       </div>
                                       <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{battle.note}</p>
@@ -927,29 +932,29 @@ export default function App() {
                           </div>
 
                           <div className="space-y-6">
-                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl">
+                            <div className="rounded-3xl border border-white/25 bg-white/5 p-6 shadow-xl">
                               <h3 className="text-2xl font-black text-white mb-4">Interesting stats</h3>
                               <div className="space-y-3">
                                 {selectedMatch.interestingStats.map((stat) => (
-                                    <div key={stat} className="rounded-2xl bg-slate-950/60 border border-white/10 p-4 text-sm text-white/75 leading-relaxed">
+                                    <div key={stat} className="rounded-2xl bg-slate-950/60 border border-white/25 p-4 text-sm text-white/75 leading-relaxed">
                                       {stat}
                                     </div>
                                 ))}
                               </div>
                             </div>
 
-                            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl">
+                            <div className="rounded-3xl border border-white/25 bg-white/5 p-6 shadow-xl">
                               <h3 className="text-2xl font-black text-white mb-4">Quick read</h3>
                               <div className="space-y-4 text-sm text-white/70">
-                                <div className="rounded-2xl bg-slate-950/60 border border-white/10 p-4">
+                                <div className="rounded-2xl bg-slate-950/60 border border-white/25 p-4">
                                   <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Venue trend</div>
                                   Teams chasing have won {selectedMatch.venueStats.chasingWins} of {selectedMatch.venueStats.totalMatches} IPL matches here.
                                 </div>
-                                <div className="rounded-2xl bg-slate-950/60 border border-white/10 p-4">
+                                <div className="rounded-2xl bg-slate-950/60 border border-white/25 p-4">
                                   <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Boundary profile</div>
                                   About {selectedMatch.venueStats.boundaryPercentage}% of scoring shots here come from boundaries, so defensive lengths matter.
                                 </div>
-                                <div className="rounded-2xl bg-slate-950/60 border border-white/10 p-4">
+                                <div className="rounded-2xl bg-slate-950/60 border border-white/25 p-4">
                                   <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Rivalry form</div>
                                   {selectedMatch.headToHead.last5}
                                 </div>
@@ -980,10 +985,10 @@ export default function App() {
 
                   return (
                       <>
-                        <header className="flex-none bg-black/40 backdrop-blur-md border-b border-white/10 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 z-50">
+                        <header className="flex-none bg-black/40 backdrop-blur-md border-b border-white/25 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 z-50">
                           <button
                               onClick={() => setCurrentScreen('match_details')}
-                              className="w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center justify-center gap-2 backdrop-blur-md border border-white/10"
+                              className="w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center justify-center gap-2 backdrop-blur-md border border-white/25"
                           >
                             <ChevronLeft className="w-5 h-5" /> Back
                           </button>
@@ -999,12 +1004,12 @@ export default function App() {
                         <div className="flex-1 flex flex-col md:flex-row relative">
                           {/* VS Divider */}
                           <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/10 z-30 hidden md:block" />
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 hidden md:flex w-16 h-16 bg-black/80 backdrop-blur-xl rounded-full items-center justify-center border-2 border-white/10 shadow-2xl">
+                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 hidden md:flex w-16 h-16 bg-black/80 backdrop-blur-xl rounded-full items-center justify-center border-2 border-white/25 shadow-2xl">
                             <span className="text-xl font-black text-white italic">VS</span>
                           </div>
 
                           {/* Team 1 Side */}
-                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-8 bg-gradient-to-br ${team1.gradient}`}>
+                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-4 sm:p-8 bg-gradient-to-br ${team1.gradient}`}>
                             <div className="absolute inset-0 bg-black/40" />
                             <div className="relative z-20 max-w-md mx-auto">
                               <div className="flex items-center gap-4 mb-8">
@@ -1020,7 +1025,7 @@ export default function App() {
                                       </h4>
                                       <div className="space-y-2">
                                         {team1XI.playing11.map((player, idx) => (
-                                            <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/5">
+                                            <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/20">
                                               <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                               <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                                 <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
@@ -1054,7 +1059,7 @@ export default function App() {
                                     )}
                                   </div>
                               ) : (
-                                  <div className="bg-black/40 backdrop-blur-md rounded-3xl p-8 text-center border border-white/10">
+                                  <div className="bg-black/40 backdrop-blur-md rounded-3xl p-8 text-center border border-white/25">
                                     <Users className="w-16 h-16 text-white/20 mx-auto mb-4" />
                                     <h4 className="text-xl font-bold text-white mb-2">No Squad Saved</h4>
                                     <p className="text-white/60 mb-6">Build a playing 11 for {team1.shortName} to compare.</p>
@@ -1072,7 +1077,7 @@ export default function App() {
                           </div>
 
                           {/* Team 2 Side */}
-                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-8 bg-gradient-to-bl ${team2.gradient}`}>
+                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-4 sm:p-8 bg-gradient-to-bl ${team2.gradient}`}>
                             <div className="absolute inset-0 bg-black/40" />
                             <div className="relative z-20 max-w-md mx-auto">
                               <div className="flex items-center gap-4 mb-8 justify-end">
@@ -1088,7 +1093,7 @@ export default function App() {
                                       </h4>
                                       <div className="space-y-2">
                                         {team2XI.playing11.map((player, idx) => (
-                                            <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/5 flex-row-reverse text-right">
+                                            <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/20 flex-row-reverse text-right">
                                               <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                               <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                                 <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
@@ -1122,7 +1127,7 @@ export default function App() {
                                     )}
                                   </div>
                               ) : (
-                                  <div className="bg-black/40 backdrop-blur-md rounded-3xl p-8 text-center border border-white/10">
+                                  <div className="bg-black/40 backdrop-blur-md rounded-3xl p-8 text-center border border-white/25">
                                     <Users className="w-16 h-16 text-white/20 mx-auto mb-4" />
                                     <h4 className="text-xl font-bold text-white mb-2">No Squad Saved</h4>
                                     <p className="text-white/60 mb-6">Build a playing 11 for {team2.shortName} to compare.</p>
@@ -1168,7 +1173,7 @@ export default function App() {
                         </div>
                         <div className="absolute inset-0 bg-black/40" />
 
-                        <header className="flex-none bg-black/40 backdrop-blur-md border-b border-white/10 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 z-50">
+                        <header className="flex-none bg-black/40 backdrop-blur-md border-b border-white/25 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 z-50">
                           <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
                             <div className="flex items-center gap-3">
                               <button
@@ -1188,13 +1193,13 @@ export default function App() {
                             </div>
                             <button
                                 onClick={() => setShowFantasyRoster(prev => !prev)}
-                                className="lg:hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold inline-flex items-center gap-2 text-xs sm:text-sm"
+                                className="lg:hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold inline-flex items-center gap-2 text-xs sm:text-sm"
                             >
                               <LayoutList className="w-4 h-4" /> {showFantasyRoster ? 'Hide' : 'Roster'}
                             </button>
                           </div>
                           <div className="flex items-center gap-4 w-full sm:w-auto justify-center sm:justify-end">
-                            <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/10">
+                            <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/25">
                               <img src={team1.logoUrl} alt={team1.shortName} className="w-6 h-6 object-contain" />
                               <span className="text-white font-bold">{currentXI.filter(p => team1.players.some(t1p => t1p.id === p.id)).length}</span>
                               <span className="text-white/40 mx-2">|</span>
@@ -1219,7 +1224,7 @@ export default function App() {
                                           className={`rounded-2xl border p-4 flex flex-col justify-center min-h-[110px] transition-all ${
                                               player
                                                   ? 'bg-white/10 border-white/20 shadow-xl backdrop-blur-md'
-                                                  : 'bg-black/20 border-white/10 border-dashed text-white/40'
+                                                  : 'bg-black/20 border-white/25 border-dashed text-white/40'
                                           }`}
                                       >
                                         {player ? (
@@ -1259,8 +1264,8 @@ export default function App() {
                           </div>
 
                           {/* Right Sidebar - Players List */}
-                          <div className={`${showFantasyRoster ? 'flex' : 'hidden'} lg:flex lg:w-[400px] bg-black/60 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/10 flex-col z-20 shadow-2xl max-h-[45vh] lg:max-h-none`}>
-                            <div className="p-5 border-b border-white/10 bg-black/20 sticky top-0 flex gap-2">
+                          <div className={`${showFantasyRoster ? 'flex' : 'hidden'} lg:flex lg:w-[400px] bg-black/60 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/25 flex-col z-20 shadow-2xl max-h-[45vh] lg:max-h-none`}>
+                            <div className="p-5 border-b border-white/25 bg-black/20 sticky top-0 flex gap-2">
                               <div className="flex-1 text-center py-2 bg-white/10 rounded-lg font-bold text-white text-sm">
                                 {team1.shortName}
                               </div>
@@ -1283,8 +1288,8 @@ export default function App() {
                                             isSelected
                                                 ? 'bg-emerald-500/20 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
                                                 : isDisabled
-                                                    ? 'bg-black/20 border-white/5 opacity-40 cursor-not-allowed'
-                                                    : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
+                                                    ? 'bg-black/20 border-white/20 opacity-40 cursor-not-allowed'
+                                                    : 'bg-white/5 border-white/25 hover:border-white/30 hover:bg-white/10'
                                         }`}
                                     >
                                       <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
@@ -1326,11 +1331,11 @@ export default function App() {
                   className="p-4 sm:p-6 lg:p-8 flex flex-col overflow-y-auto custom-scrollbar max-w-5xl mx-auto w-full"
               >
                 <div className="max-w-5xl mx-auto w-full">
-                  <div className="bg-[#151A27] rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
+                  <div className="bg-[#151A27] rounded-3xl border border-white/20 overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                        <tr className="bg-[#0B0F19] border-b border-white/5 text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider">
+                        <tr className="bg-[#0B0F19] border-b border-white/20 text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider">
                           <th className="p-2 sm:p-4 font-bold">Team</th>
                           <th className="p-2 sm:p-4 font-bold text-center">P</th>
                           <th className="p-2 sm:p-4 font-bold text-center">W</th>
@@ -1352,7 +1357,7 @@ export default function App() {
                               <React.Fragment key={entry.teamId}>
                                 <tr
                                     onClick={() => setExpandedTeamId(isExpanded ? null : team.id)}
-                                    className={`border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer ${index < 4 ? 'bg-blue-500/5' : ''}`}
+                                    className={`border-b border-white/20 hover:bg-white/5 transition-colors cursor-pointer ${index < 4 ? 'bg-blue-500/5' : ''}`}
                                 >
                                   <td className="p-2 sm:p-4">
                                     <div className="flex items-center gap-1 sm:gap-3">
@@ -1380,7 +1385,7 @@ export default function App() {
                                   </td>
                                 </tr>
                                 {isExpanded && (
-                                    <tr className="bg-black/20 border-b border-white/5">
+                                    <tr className="bg-black/20 border-b border-white/20">
                                       <td colSpan={8} className="p-0">
                                         <div className="p-3 sm:p-6 space-y-3">
                                           <h4 className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sm:mb-3">Team Matches</h4>
@@ -1396,7 +1401,7 @@ export default function App() {
                                                         setSelectedMatch(match);
                                                         setCurrentScreen('match_details');
                                                       }}
-                                                      className="flex items-center justify-between p-2 sm:p-3 rounded-xl bg-[#151A27] border border-white/5 hover:bg-[#1A2133] cursor-pointer transition-colors"
+                                                      className="flex items-center justify-between p-2 sm:p-3 rounded-xl bg-[#151A27] border border-white/20 hover:bg-[#1A2133] cursor-pointer transition-colors"
                                                   >
                                                     <div className="flex flex-col">
                                                       <span className="text-[9px] sm:text-[10px] text-slate-500 font-bold">{match.dateLabel}</span>
@@ -1449,7 +1454,7 @@ function PlayerNode({ player }: { player: Player }) {
 
 function StatCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-xl">
+      <div className="rounded-2xl border border-white/25 bg-white/5 p-5 shadow-xl">
         <div className="text-xs uppercase tracking-[0.3em] text-white/50 font-black mb-2">{label}</div>
         <div className="text-3xl font-black text-white mb-1">{value}</div>
         <div className="text-sm text-white/60 leading-relaxed">{note}</div>
@@ -1465,7 +1470,7 @@ function BalanceBar({ label, count, color }: { label: string, count: number, col
           <span className="text-white/80 font-bold uppercase tracking-wider text-xs">{label}</span>
           <span className="font-black text-white">{count}</span>
         </div>
-        <div className="h-3 bg-black/40 rounded-full overflow-hidden border border-white/10 shadow-inner">
+        <div className="h-3 bg-black/40 rounded-full overflow-hidden border border-white/25 shadow-inner">
           <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${percentage}%` }}
