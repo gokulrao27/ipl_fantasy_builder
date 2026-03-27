@@ -880,21 +880,21 @@ export default function App() {
                           <div className="grid gap-4 sm:gap-6">
                             {/* Win Predictor & Pitch Report */}
                             <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-                              <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg flex flex-col justify-center">
-                                <h3 className="text-lg sm:text-xl font-black text-white mb-1">Win Predictor</h3>
-                                <p className="text-xs text-slate-400 mb-4">Based on historical head-to-head and venue performance.</p>
+                              <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg flex flex-col justify-center ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                <h3 className={`text-lg sm:text-xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Win Predictor</h3>
+                                <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Based on historical head-to-head and venue performance.</p>
                                 <div className="flex items-center justify-between mb-2 text-sm font-bold">
-                                  <span className="text-white">{team1.shortName} <span className="text-slate-400 font-medium">({winShare1}%)</span></span>
-                                  <span className="text-white"><span className="text-slate-400 font-medium">({winShare2}%)</span> {team2.shortName}</span>
+                                  <span className={isDark ? 'text-white' : 'text-slate-900'}>{team1.shortName} <span className={`${isDark ? 'text-slate-400' : 'text-slate-500'} font-medium`}>({winShare1}%)</span></span>
+                                  <span className={isDark ? 'text-white' : 'text-slate-900'}><span className={`${isDark ? 'text-slate-400' : 'text-slate-500'} font-medium`}>({winShare2}%)</span> {team2.shortName}</span>
                                 </div>
-                                <div className="h-2.5 w-full bg-[#0B0F19] rounded-full overflow-hidden flex border border-white/20">
+                                <div className={`h-2.5 w-full rounded-full overflow-hidden flex border ${isDark ? 'bg-[#0B0F19] border-white/20' : 'bg-slate-200 border-black/20'}`}>
                                   <div className={`h-full bg-gradient-to-r ${team1.gradient}`} style={{ width: `${winShare1}%` }} />
                                   <div className={`h-full bg-gradient-to-l ${team2.gradient}`} style={{ width: `${winShare2}%` }} />
                                 </div>
                               </div>
-                              <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg flex flex-col justify-center">
-                                <h3 className="text-lg sm:text-xl font-black text-white mb-2 flex items-center gap-2"><MapPin className="w-5 h-5 text-blue-400" /> Pitch Report</h3>
-                                <p className="text-sm text-slate-300 leading-relaxed">{selectedMatch.pitchReport}</p>
+                              <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg flex flex-col justify-center ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                <h3 className={`text-lg sm:text-xl font-black mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}><MapPin className="w-5 h-5 text-blue-400" /> Pitch Report</h3>
+                                <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{selectedMatch.pitchReport}</p>
                               </div>
                             </div>
 
@@ -906,25 +906,25 @@ export default function App() {
                             </div>
 
                             {/* Head to Head */}
-                            <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg">
+                            <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
                               <div className="flex items-center justify-between gap-4 mb-5">
                                 <div>
-                                  <h3 className="text-xl font-black text-white">Head-to-head</h3>
-                                  <p className="text-sm text-slate-400">How the rivalry stacks up overall.</p>
+                                  <h3 className={`text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>Head-to-head</h3>
+                                  <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>How the rivalry stacks up overall.</p>
                                 </div>
-                                <div className="text-xs sm:text-sm font-bold text-slate-300 bg-white/5 px-3 py-1 rounded-full border border-white/20 hidden sm:block">{selectedMatch.headToHead.last5}</div>
+                                <div className={`text-xs sm:text-sm font-bold px-3 py-1 rounded-full border hidden sm:block ${isDark ? 'text-slate-300 bg-white/5 border-white/20' : 'text-slate-700 bg-slate-100 border-black/20'}`}>{selectedMatch.headToHead.last5}</div>
                               </div>
                               <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="rounded-2xl bg-[#0B0F19] border border-white/20 p-4 text-center sm:text-left">
-                                  <div className="text-xs uppercase tracking-[0.2em] text-slate-500 font-black mb-1">{team1.shortName}</div>
-                                  <div className="text-3xl sm:text-4xl font-black text-white">{selectedMatch.headToHead.team1Wins} <span className="text-sm text-slate-500 font-medium">wins</span></div>
+                                <div className={`rounded-2xl border p-4 text-center sm:text-left ${isDark ? 'bg-[#0B0F19] border-white/20' : 'bg-slate-100 border-black/20'}`}>
+                                  <div className={`text-xs uppercase tracking-[0.2em] font-black mb-1 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{team1.shortName}</div>
+                                  <div className={`text-3xl sm:text-4xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedMatch.headToHead.team1Wins} <span className={`text-sm font-medium ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>wins</span></div>
                                 </div>
-                                <div className="rounded-2xl bg-[#0B0F19] border border-white/20 p-4 text-center sm:text-right">
-                                  <div className="text-xs uppercase tracking-[0.2em] text-slate-500 font-black mb-1">{team2.shortName}</div>
-                                  <div className="text-3xl sm:text-4xl font-black text-white"><span className="text-sm text-slate-500 font-medium">wins</span> {selectedMatch.headToHead.team2Wins}</div>
+                                <div className={`rounded-2xl border p-4 text-center sm:text-right ${isDark ? 'bg-[#0B0F19] border-white/20' : 'bg-slate-100 border-black/20'}`}>
+                                  <div className={`text-xs uppercase tracking-[0.2em] font-black mb-1 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{team2.shortName}</div>
+                                  <div className={`text-3xl sm:text-4xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}><span className={`text-sm font-medium ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>wins</span> {selectedMatch.headToHead.team2Wins}</div>
                                 </div>
                               </div>
-                              <div className="flex justify-between text-xs text-slate-500 font-semibold px-1">
+                              <div className={`flex justify-between text-xs font-semibold px-1 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                                 <span>{team1.shortName} {winShare1}%</span>
                                 <span>Draws: {selectedMatch.headToHead.noResult}</span>
                                 <span>{team2.shortName} {winShare2}%</span>
@@ -932,20 +932,20 @@ export default function App() {
                             </div>
 
                             {/* Matchup Battles */}
-                            <div className="rounded-3xl border border-white/20 bg-[#151A27] p-5 sm:p-6 shadow-lg">
-                              <h3 className="text-xl font-black text-white mb-1">Key Matchups</h3>
-                              <p className="text-sm text-slate-400 mb-5">Opponent-specific contests that could decide momentum.</p>
+                            <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                              <h3 className={`text-xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Key Matchups</h3>
+                              <p className={`text-sm mb-5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Opponent-specific contests that could decide momentum.</p>
                               <div className="grid gap-4 sm:grid-cols-2">
                                 {selectedMatch.playerBattles.map((battle) => (
-                                    <div key={`${battle.batter}-${battle.bowler}`} className="rounded-2xl border border-white/20 bg-[#0B0F19] p-4 sm:p-5">
+                                    <div key={`${battle.batter}-${battle.bowler}`} className={`rounded-2xl border p-4 sm:p-5 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
                                       <div className="text-[10px] uppercase tracking-[0.2em] text-blue-400 font-black mb-2">Player vs Player</div>
-                                      <div className="text-lg font-black text-white mb-2 leading-tight">{battle.batter} <span className="text-slate-500 text-sm font-medium italic mx-1">vs</span> {battle.bowler}</div>
+                                      <div className={`text-lg font-black mb-2 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{battle.batter} <span className="text-slate-500 text-sm font-medium italic mx-1">vs</span> {battle.bowler}</div>
                                       <div className="flex flex-wrap gap-2 mb-3 text-[10px] sm:text-xs font-bold">
-                                        <span className="px-2 py-1 rounded bg-white/5 text-slate-300 border border-white/20">{battle.runs} runs</span>
-                                        <span className="px-2 py-1 rounded bg-white/5 text-slate-300 border border-white/20">{battle.balls} balls</span>
+                                        <span className={`px-2 py-1 rounded border ${isDark ? 'bg-white/5 text-slate-300 border-white/20' : 'bg-white text-slate-700 border-black/20'}`}>{battle.runs} runs</span>
+                                        <span className={`px-2 py-1 rounded border ${isDark ? 'bg-white/5 text-slate-300 border-white/20' : 'bg-white text-slate-700 border-black/20'}`}>{battle.balls} balls</span>
                                         <span className="px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20">{battle.dismissals} outs</span>
                                       </div>
-                                      <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">{battle.note}</p>
+                                      <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{battle.note}</p>
                                     </div>
                                 ))}
                               </div>
@@ -953,29 +953,29 @@ export default function App() {
                           </div>
 
                           <div className="space-y-6">
-                            <div className="rounded-3xl border border-white/25 bg-white/5 p-6 shadow-xl">
-                              <h3 className="text-2xl font-black text-white mb-4">Interesting stats</h3>
+                            <div className={`rounded-3xl border p-6 shadow-xl ${isDark ? 'border-white/25 bg-white/5' : 'border-black/20 bg-white'}`}>
+                              <h3 className={`text-2xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Interesting stats</h3>
                               <div className="space-y-3">
                                 {selectedMatch.interestingStats.map((stat) => (
-                                    <div key={stat} className="rounded-2xl bg-slate-950/60 border border-white/25 p-4 text-sm text-white/75 leading-relaxed">
+                                    <div key={stat} className={`rounded-2xl border p-4 text-sm leading-relaxed ${isDark ? 'bg-slate-950/60 border-white/25 text-white/75' : 'bg-slate-100 border-black/20 text-slate-700'}`}>
                                       {stat}
                                     </div>
                                 ))}
                               </div>
                             </div>
 
-                            <div className="rounded-3xl border border-white/25 bg-white/5 p-6 shadow-xl">
-                              <h3 className="text-2xl font-black text-white mb-4">Quick read</h3>
-                              <div className="space-y-4 text-sm text-white/70">
-                                <div className="rounded-2xl bg-slate-950/60 border border-white/25 p-4">
+                            <div className={`rounded-3xl border p-6 shadow-xl ${isDark ? 'border-white/25 bg-white/5' : 'border-black/20 bg-white'}`}>
+                              <h3 className={`text-2xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Quick read</h3>
+                              <div className={`space-y-4 text-sm ${isDark ? 'text-white/70' : 'text-slate-700'}`}>
+                                <div className={`rounded-2xl border p-4 ${isDark ? 'bg-slate-950/60 border-white/25' : 'bg-slate-100 border-black/20'}`}>
                                   <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Venue trend</div>
                                   Teams chasing have won {selectedMatch.venueStats.chasingWins} of {selectedMatch.venueStats.totalMatches} IPL matches here.
                                 </div>
-                                <div className="rounded-2xl bg-slate-950/60 border border-white/25 p-4">
+                                <div className={`rounded-2xl border p-4 ${isDark ? 'bg-slate-950/60 border-white/25' : 'bg-slate-100 border-black/20'}`}>
                                   <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Boundary profile</div>
                                   About {selectedMatch.venueStats.boundaryPercentage}% of scoring shots here come from boundaries, so defensive lengths matter.
                                 </div>
-                                <div className="rounded-2xl bg-slate-950/60 border border-white/25 p-4">
+                                <div className={`rounded-2xl border p-4 ${isDark ? 'bg-slate-950/60 border-white/25' : 'bg-slate-100 border-black/20'}`}>
                                   <div className="text-xs uppercase tracking-[0.25em] text-yellow-300 font-black mb-2">Rivalry form</div>
                                   {selectedMatch.headToHead.last5}
                                 </div>
