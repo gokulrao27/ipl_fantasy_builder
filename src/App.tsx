@@ -6,7 +6,7 @@ import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
 import iplHero from '../ipl.jpeg';
 
-type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table';
+type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table';
 type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
@@ -50,9 +50,9 @@ const Navigation = ({
       <>
         {/* Mobile Top Header */}
         <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${currentScreen === 'schedule' && isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-          <div className={`mx-4 mt-3 rounded-2xl px-4 py-3 backdrop-blur-xl border flex items-center justify-between ${isDark ? 'bg-black/80 border-white/10' : 'bg-white/90 border-black/10'}`}>
+          <div className={`mx-4 mt-3 rounded-2xl px-4 py-3 backdrop-blur-xl border flex items-center justify-between ${isDark ? 'bg-black/80 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
             <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
-              <img src={isDark ? logoDark : logoLight} alt="Logo" className="h-12 w-auto object-contain" />
+              <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
             </button>
             <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/15 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -62,7 +62,7 @@ const Navigation = ({
 
         {/* Mobile Bottom Nav */}
         <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
-          <div className={`backdrop-blur-[40px] border rounded-full overflow-hidden relative shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/[0.04] border-black/10'}`}>
+          <div className={`backdrop-blur-[40px] border rounded-full overflow-hidden relative shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] ${isDark ? 'bg-white/5 border-white/20' : 'bg-white border-black/20'}`}>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5" />
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -92,10 +92,10 @@ const Navigation = ({
         </div>
 
         {/* Desktop Top Nav */}
-        <div className={`hidden md:block fixed top-0 left-0 right-0 backdrop-blur-xl border-b z-50 ${isDark ? 'bg-[#000000]/95 border-white/10' : 'bg-white/95 border-black/10'}`}>
+        <div className={`hidden md:block fixed top-0 left-0 right-0 backdrop-blur-xl border-b z-50 ${isDark ? 'bg-[#000000]/95 border-white/20' : 'bg-white/95 border-black/20 shadow-sm'}`}>
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <button className="flex items-center cursor-pointer" onClick={onLogoClick} aria-label="Go to home">
-              <img src={isDark ? logoDark : logoLight} alt="Logo" className="h-12 w-auto object-contain" />
+              <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
             </button>
             <div className="flex items-center gap-1">
               <button onClick={onToggleTheme} className={`mr-2 p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/15 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
@@ -274,7 +274,7 @@ export default function App() {
         {isLogoTransitioning && (
             <div className={`fixed inset-0 z-[70] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
               <motion.img
-                  src={isDark ? logoDark : logoLight}
+                  src={isDark ? logoLight : logoDark}
                   alt="Loading home"
                   initial={{ scale: 0.7, opacity: 0.2, rotate: -20 }}
                   animate={{ scale: [0.7, 1.15, 1], opacity: [0.2, 1, 1], rotate: [-20, 0, 6, 0] }}
@@ -567,7 +567,7 @@ export default function App() {
 
                   return (
                       <div className="space-y-8 pb-12">
-                        <section className={`rounded-3xl overflow-hidden border ${isDark ? 'border-white/10 bg-[#0d111a]' : 'border-black/10 bg-slate-50'} shadow-xl`}>
+                        <section className={`rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl`}>
                           <img src={iplHero} alt="IPL" className="w-full h-52 sm:h-72 md:h-80 object-cover" />
                         </section>
 
@@ -583,7 +583,14 @@ export default function App() {
                               if (!team1 || !team2) return null;
 
                               return (
-                                  <article key={match.id} className={`min-w-[290px] sm:min-w-[360px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg ${isDark ? 'bg-[#111827] border-white/10' : 'bg-white border-black/10'}`}>
+                                  <article
+                                      key={match.id}
+                                      onClick={() => {
+                                        setSelectedMatch(match);
+                                        setCurrentScreen('match_details');
+                                      }}
+                                      className={`cursor-pointer min-w-[290px] sm:min-w-[360px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg transition-transform hover:-translate-y-0.5 ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'}`}
+                                  >
                                     <div className="flex items-center justify-between text-xs font-semibold">
                                       <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{match.day}</span>
                                       <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{match.dateLabel}</span>
@@ -601,11 +608,11 @@ export default function App() {
                                     </div>
                                     <p className={`mt-4 text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{match.stadium}, {match.venueCity}</p>
                                     <button
-                                        onClick={() => {
-                                          setSelectedMatch(match);
-                                          setCurrentScreen('match_details');
+                                        onClick={(event) => {
+                                          event.stopPropagation();
+                                          setCurrentScreen('schedule_list');
                                         }}
-                                        className={`mt-4 w-full rounded-xl px-3 py-2 text-sm font-bold transition-colors ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-slate-900 hover:bg-black text-white'}`}
+                                        className={`mt-4 w-full rounded-xl px-3 py-2 text-sm font-bold transition-colors border ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white border-blue-300/30' : 'bg-slate-900 hover:bg-black text-white border-slate-600/40'}`}
                                     >
                                       Schedule
                                     </button>
@@ -615,8 +622,8 @@ export default function App() {
                           </div>
                         </section>
 
-                        <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/10' : 'bg-white border-black/10'} shadow-xl`}>
-                          <div className={`px-4 sm:px-6 py-4 border-b ${isDark ? 'border-white/10 text-white' : 'border-black/10 text-black'} font-black text-lg`}>
+                        <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
+                          <div className={`px-4 sm:px-6 py-4 border-b ${isDark ? 'border-white/20 text-white' : 'border-black/20 text-black'} font-black text-lg`}>
                             Points Table
                           </div>
                           <div className="overflow-x-auto">
@@ -660,6 +667,76 @@ export default function App() {
                 })()}
               </motion.div>
           )}
+          {currentScreen === 'schedule_list' && (
+              <motion.div
+                  key="schedule_list"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="p-4 sm:p-6 lg:p-8 flex flex-col overflow-y-auto custom-scrollbar max-w-5xl mx-auto w-full"
+              >
+                <div className="mb-5">
+                  <button
+                      onClick={() => setCurrentScreen('schedule')}
+                      className={`px-4 py-2 rounded-full font-bold border shadow-sm ${isDark ? 'bg-slate-800 text-slate-100 border-white/20 hover:bg-slate-700' : 'bg-white text-slate-900 border-black/20 hover:bg-slate-100'}`}
+                  >
+                    ← Back to Home
+                  </button>
+                </div>
+                <div className="space-y-4 sm:space-y-6 pb-12">
+                  {schedule.map((match) => {
+                    const team1 = teams.find(t => t.id === match.team1);
+                    const team2 = teams.find(t => t.id === match.team2);
+                    if (!team1 || !team2) return null;
+
+                    return (
+                        <motion.button
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            onClick={() => {
+                              setSelectedMatch(match);
+                              setCurrentScreen('match_details');
+                            }}
+                            key={match.id}
+                            className={`w-full text-left transition-colors border rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col gap-4 relative overflow-hidden cursor-pointer group ${isDark ? 'bg-[#151A27] hover:bg-[#1A2133] border-white/20' : 'bg-white hover:bg-slate-50 border-black/20'}`}
+                        >
+                          <div className="absolute top-0 left-0 right-0 h-1 flex">
+                            <div className={`flex-1 bg-gradient-to-r ${team1.gradient}`} />
+                            <div className={`flex-1 bg-gradient-to-l ${team2.gradient}`} />
+                          </div>
+                          <div className={`flex justify-between items-center text-xs sm:text-sm font-medium uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                            <span>Match {match.matchNumber} • {match.stadium}, {match.venueCity}</span>
+                            <span className={`${isDark ? 'text-slate-300' : 'text-slate-800'} font-bold`}>{match.dateLabel}</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2 sm:py-4">
+                            <div className="flex items-center gap-3 sm:gap-4 flex-1">
+                              <img src={team1.logoUrl} alt={team1.shortName} className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-md" />
+                              <div className="flex flex-col">
+                                <span className={`font-black text-xl sm:text-2xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{team1.shortName}</span>
+                                <span className={`text-xs hidden sm:block ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{team1.name}</span>
+                              </div>
+                            </div>
+                            <div className="px-4">
+                              <div className={`text-lg sm:text-xl font-black italic ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>VS</div>
+                            </div>
+                            <div className="flex items-center gap-3 sm:gap-4 flex-1 justify-end text-right">
+                              <div className="flex flex-col">
+                                <span className={`font-black text-xl sm:text-2xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{team2.shortName}</span>
+                                <span className={`text-xs hidden sm:block ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{team2.name}</span>
+                              </div>
+                              <img src={team2.logoUrl} alt={team2.shortName} className="w-12 h-12 sm:w-16 sm:h-16 object-contain drop-shadow-md" />
+                            </div>
+                          </div>
+                          <div className={`pt-4 border-t flex items-start gap-2 ${isDark ? 'border-white/20' : 'border-black/15'}`}>
+                            <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                            <div className={`text-sm leading-relaxed font-medium ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'} transition-colors`}>{match.headline}</div>
+                          </div>
+                        </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+          )}
           {currentScreen === 'match_details' && selectedMatch && (
               <motion.div
                   key="match_details"
@@ -686,14 +763,14 @@ export default function App() {
                         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                           <button
                               onClick={() => setCurrentScreen('schedule')}
-                              className="w-fit px-4 py-2 bg-[#151A27] hover:bg-[#1A2133] rounded-full transition-colors text-slate-300 font-bold flex items-center gap-2 border border-white/5 shadow-md"
+                              className="w-fit px-4 py-2 bg-[#151A27] hover:bg-[#1A2133] rounded-full transition-colors text-slate-300 font-bold flex items-center gap-2 border border-white/20 shadow-md"
                           >
                             <ChevronLeft className="w-5 h-5" /> Back
                           </button>
                           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                             <button
                                 onClick={() => setCurrentScreen('compare_xi')}
-                                className="flex-1 sm:flex-none px-4 py-2 bg-[#151A27] hover:bg-[#1A2133] rounded-full transition-colors text-slate-300 font-bold flex items-center justify-center gap-2 border border-white/5 shadow-md text-sm sm:text-base"
+                                className="flex-1 sm:flex-none px-4 py-2 bg-[#151A27] hover:bg-[#1A2133] rounded-full transition-colors text-slate-300 font-bold flex items-center justify-center gap-2 border border-white/20 shadow-md text-sm sm:text-base"
                             >
                               <Users className="w-4 h-4 sm:w-5 sm:h-5" /> Compare XI
                             </button>
@@ -707,9 +784,9 @@ export default function App() {
                         </header>
 
                         {/* Match Hero Card */}
-                        <section className="rounded-3xl border border-white/5 bg-[#151A27] overflow-hidden shadow-2xl relative">
+                        <section className="rounded-3xl border border-white/20 bg-[#151A27] overflow-hidden shadow-2xl relative">
                           {/* Top Info Bar */}
-                          <div className="bg-[#0B0F19]/50 px-4 py-3 border-b border-white/5 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-slate-400 font-medium tracking-wider uppercase gap-2 text-center sm:text-left">
+                          <div className="bg-[#0B0F19]/50 px-4 py-3 border-b border-white/20 flex flex-col sm:flex-row justify-between items-center text-xs sm:text-sm text-slate-400 font-medium tracking-wider uppercase gap-2 text-center sm:text-left">
                             <span>Match {selectedMatch.matchNumber} • {selectedMatch.stadium}, {selectedMatch.venueCity}</span>
                             <span className="text-slate-300 font-bold">{selectedMatch.dateLabel} • {selectedMatch.day}</span>
                           </div>
