@@ -47,7 +47,6 @@ const Navigation = ({
     { id: 'teams', label: 'Teams', icon: Shield },
   ];
   const mobileNavItems = [
-    { id: 'schedule', label: 'Home', icon: Home },
     ...navItems
   ];
   const showBottomNav = ['schedule', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
@@ -56,7 +55,7 @@ const Navigation = ({
       <>
         {/* Mobile Top Header */}
         <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-          <div className={`mx-2 mt-0 rounded-b-2xl px-4 h-16 backdrop-blur-xl border border-t-0 flex items-center justify-between ${isDark ? 'bg-black/85 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
+          <div className={`mx-2 mt-0 rounded-b-2xl px-4 h-16 backdrop-blur-xl flex items-center justify-between ${isDark ? 'bg-black/85 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
             <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
               <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
             </button>
