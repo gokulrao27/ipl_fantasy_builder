@@ -25,7 +25,21 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
 
 const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.55] origin-bottom' : ''}`;
 
-const Navigation = ({ currentScreen, setCurrentScreen, isDark, onToggleTheme }: { currentScreen: Screen, setCurrentScreen: (s: Screen) => void, isDark: boolean, onToggleTheme: () => void }) => {
+const Navigation = ({
+  currentScreen,
+  setCurrentScreen,
+  isDark,
+  onToggleTheme,
+  onLogoClick,
+  isMobileHeaderVisible
+}: {
+  currentScreen: Screen,
+  setCurrentScreen: (s: Screen) => void,
+  isDark: boolean,
+  onToggleTheme: () => void,
+  onLogoClick: () => void,
+  isMobileHeaderVisible: boolean
+}) => {
   const navItems = [
     { id: 'schedule', label: 'Matches', icon: Calendar },
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
@@ -34,6 +48,18 @@ const Navigation = ({ currentScreen, setCurrentScreen, isDark, onToggleTheme }: 
 
   return (
       <>
+        {/* Mobile Top Header */}
+        <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${currentScreen === 'schedule' && isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+          <div className={`mx-4 mt-3 rounded-2xl px-4 py-3 backdrop-blur-xl border flex items-center justify-between ${isDark ? 'bg-black/80 border-white/10' : 'bg-white/90 border-black/10'}`}>
+            <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
+              <img src={isDark ? logoDark : logoLight} alt="Logo" className="h-12 w-auto object-contain" />
+            </button>
+            <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/15 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+
         {/* Mobile Bottom Nav */}
         <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
           <div className={`backdrop-blur-[40px] border rounded-full overflow-hidden relative shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] ${isDark ? 'bg-white/5 border-white/10' : 'bg-black/[0.04] border-black/10'}`}>
@@ -68,10 +94,9 @@ const Navigation = ({ currentScreen, setCurrentScreen, isDark, onToggleTheme }: 
         {/* Desktop Top Nav */}
         <div className={`hidden md:block fixed top-0 left-0 right-0 backdrop-blur-xl border-b z-50 ${isDark ? 'bg-[#000000]/95 border-white/10' : 'bg-white/95 border-black/10'}`}>
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentScreen('schedule')}>
-              <img src={isDark ? logoDark : logoLight} alt="Cricto" className="h-8 w-8 object-contain" />
-              <span className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-black'}`}>cricto</span>
-            </div>
+            <button className="flex items-center cursor-pointer" onClick={onLogoClick} aria-label="Go to home">
+              <img src={isDark ? logoDark : logoLight} alt="Logo" className="h-12 w-auto object-contain" />
+            </button>
             <div className="flex items-center gap-1">
               <button onClick={onToggleTheme} className={`mr-2 p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/15 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -105,6 +130,8 @@ export default function App() {
   const [builderReturnScreen, setBuilderReturnScreen] = useState<Screen | null>(null);
   const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null);
   const [isDark, setIsDark] = useState<boolean>(() => safeReadStorage('cricto-theme-dark', true));
+  const [isLogoTransitioning, setIsLogoTransitioning] = useState(false);
+  const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -119,6 +146,25 @@ export default function App() {
     document.body.classList.toggle('theme-dark', isDark);
     document.body.classList.toggle('theme-light', !isDark);
   }, [isDark]);
+
+  useEffect(() => {
+    if (currentScreen !== 'schedule') {
+      setIsMobileHeaderVisible(false);
+      return;
+    }
+
+    setIsMobileHeaderVisible(true);
+    let lastY = window.scrollY;
+
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      setIsMobileHeaderVisible(currentY < 24 || currentY <= lastY);
+      lastY = currentY;
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [currentScreen]);
 
   useEffect(() => {
     if (currentScreen !== 'builder') setShowBuilderRoster(false);
@@ -207,10 +253,35 @@ export default function App() {
     }
   };
 
+  const triggerLogoHomeAnimation = () => {
+    setIsLogoTransitioning(true);
+    setTimeout(() => {
+      setCurrentScreen('schedule');
+      setIsLogoTransitioning(false);
+    }, 700);
+  };
+
   return (
-      <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
-        {currentScreen !== 'builder' && currentScreen !== 'fantasy_xi' && currentScreen !== 'compare_xi' && currentScreen !== 'dashboard' && currentScreen !== 'squad' && (
-            <Navigation currentScreen={currentScreen} setCurrentScreen={setCurrentScreen} isDark={isDark} onToggleTheme={() => setIsDark(prev => !prev)} />
+      <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-16 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+        <Navigation
+            currentScreen={currentScreen}
+            setCurrentScreen={setCurrentScreen}
+            isDark={isDark}
+            onToggleTheme={() => setIsDark(prev => !prev)}
+            onLogoClick={triggerLogoHomeAnimation}
+            isMobileHeaderVisible={isMobileHeaderVisible}
+        />
+        {isLogoTransitioning && (
+            <div className={`fixed inset-0 z-[70] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
+              <motion.img
+                  src={isDark ? logoDark : logoLight}
+                  alt="Loading home"
+                  initial={{ scale: 0.7, opacity: 0.2, rotate: -20 }}
+                  animate={{ scale: [0.7, 1.15, 1], opacity: [0.2, 1, 1], rotate: [-20, 0, 6, 0] }}
+                  transition={{ duration: 0.7, ease: 'easeInOut' }}
+                  className="h-32 w-auto object-contain"
+              />
+            </div>
         )}
         <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
           {currentScreen === 'teams' && (
@@ -498,10 +569,6 @@ export default function App() {
                       <div className="space-y-8 pb-12">
                         <section className={`rounded-3xl overflow-hidden border ${isDark ? 'border-white/10 bg-[#0d111a]' : 'border-black/10 bg-slate-50'} shadow-xl`}>
                           <img src={iplHero} alt="IPL" className="w-full h-52 sm:h-72 md:h-80 object-cover" />
-                          <div className="p-5 sm:p-6">
-                            <h1 className={`text-3xl sm:text-4xl font-black tracking-tight ${isDark ? 'text-white' : 'text-black'}`}>Welcome to cricto</h1>
-                            <p className={`mt-2 text-sm sm:text-base ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Your IPL hub for live schedule scouting, Playing XI drafts, and Fantasy XI preparation.</p>
-                          </div>
                         </section>
 
                         <section>
@@ -599,7 +666,7 @@ export default function App() {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="p-4 sm:p-6 lg:p-8 flex flex-col overflow-y-auto custom-scrollbar max-w-7xl mx-auto w-full"
+                  className="p-4 sm:p-6 lg:p-8 flex flex-col overflow-y-auto custom-scrollbar max-w-7xl mx-auto w-full bg-slate-900/95 rounded-3xl text-slate-100"
               >
                 {(() => {
                   const team1 = teams.find(t => t.id === selectedMatch.team1);
@@ -824,7 +891,7 @@ export default function App() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="min-h-screen flex flex-col overflow-hidden bg-slate-900"
+                  className="min-h-screen flex flex-col overflow-hidden bg-slate-900 text-slate-100"
               >
                 {(() => {
                   const team1 = teams.find(t => t.id === selectedMatch.team1);
@@ -1006,7 +1073,7 @@ export default function App() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="min-h-screen flex flex-col overflow-hidden bg-slate-900 relative"
+                  className="min-h-screen flex flex-col overflow-hidden bg-slate-900 relative text-slate-100"
               >
                 {(() => {
                   const team1 = teams.find(t => t.id === selectedMatch.team1);
