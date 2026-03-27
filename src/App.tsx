@@ -45,11 +45,12 @@ const Navigation = ({
     { id: 'points_table', label: 'Standings', icon: ListOrdered },
     { id: 'teams', label: 'Teams', icon: Shield },
   ];
+  const showBottomNav = ['schedule', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
 
   return (
       <>
         {/* Mobile Top Header */}
-        <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${currentScreen === 'schedule' && isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+        <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${currentScreen === 'schedule' ? (isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full') : 'translate-y-0'}`}>
           <div className={`mx-4 mt-3 rounded-2xl px-4 py-3 backdrop-blur-xl border flex items-center justify-between ${isDark ? 'bg-black/80 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
             <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
               <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
@@ -61,7 +62,7 @@ const Navigation = ({
         </div>
 
         {/* Mobile Bottom Nav */}
-        <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
+        <div className={`md:hidden fixed bottom-6 left-6 right-6 z-50 transition-opacity ${showBottomNav ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           <div className={`backdrop-blur-[40px] border rounded-full overflow-hidden relative shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] ${isDark ? 'bg-white/5 border-white/20' : 'bg-white border-black/20'}`}>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5" />
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
@@ -285,30 +286,30 @@ export default function App() {
         )}
         <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
           {currentScreen === 'teams' && (
-              <motion.div key="teams" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-6 sm:p-8">
-                <div className="text-center mb-16 mt-8 sm:mt-12">
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
+              <motion.div key="teams" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-4 sm:p-8">
+                <div className="text-center mb-8 sm:mb-16 mt-4 sm:mt-12">
+                  <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-3 sm:mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
                     IPL SQUAD BUILDER
                   </h1>
-                  <p className="text-blue-200 text-base sm:text-lg max-w-2xl mx-auto font-medium mb-8">
+                  <p className="text-blue-200 text-sm sm:text-lg max-w-2xl mx-auto font-medium mb-5 sm:mb-8 px-2">
                     Select your favorite franchise, build your ultimate playing 11, and choose your game-changing impact player.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   {teams.map((team) => (
                       <motion.button
                           whileHover={{ scale: 1.03, y: -5 }}
                           whileTap={{ scale: 0.98 }}
                           key={team.id}
                           onClick={() => handleTeamSelect(team)}
-                          className={`relative overflow-hidden rounded-3xl p-8 text-left transition-all duration-300 group border border-white/25 shadow-2xl bg-gradient-to-br ${team.gradient}`}
+                          className={`relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-left transition-all duration-300 group border border-white/25 shadow-2xl bg-gradient-to-br ${team.gradient}`}
                       >
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
                         <div className="relative z-10">
-                          <img src={team.logoUrl} alt={team.shortName} className="w-16 h-16 object-contain mb-4 drop-shadow-xl" />
-                          <h2 className="text-4xl font-black mb-2 tracking-tight text-white drop-shadow-md">{team.shortName}</h2>
-                          <p className="text-white/90 font-bold text-lg drop-shadow-sm">{team.name}</p>
+                          <img src={team.logoUrl} alt={team.shortName} className="w-12 h-12 sm:w-16 sm:h-16 object-contain mb-2 sm:mb-4 drop-shadow-xl" />
+                          <h2 className="text-2xl sm:text-4xl font-black mb-1 sm:mb-2 tracking-tight text-white drop-shadow-md">{team.shortName}</h2>
+                          <p className="text-white/90 font-bold text-xs sm:text-lg drop-shadow-sm line-clamp-2">{team.name}</p>
                         </div>
                         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-all" />
                       </motion.button>
@@ -318,23 +319,23 @@ export default function App() {
           )}
 
           {currentScreen === 'squad' && selectedTeam && (
-              <motion.div key="squad" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-4 sm:p-8 flex flex-col overflow-y-auto custom-scrollbar relative`}>
+              <motion.div key="squad" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className={`min-h-screen bg-gradient-to-br ${selectedTeam.gradient} p-3 sm:p-8 flex flex-col overflow-y-auto custom-scrollbar relative`}>
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="relative z-10 flex flex-col flex-1">
-                  <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-12 max-w-7xl mx-auto w-full">
-                    <button onClick={() => setCurrentScreen('teams')} className="w-fit px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white font-bold flex items-center gap-2 backdrop-blur-md border border-white/25">
+                  <header className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between mb-8 sm:mb-12 max-w-7xl mx-auto w-full">
+                    <button onClick={() => setCurrentScreen('teams')} className="w-fit px-3 sm:px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white text-sm sm:text-base font-bold flex items-center gap-2 backdrop-blur-md border border-white/25">
                       <ChevronLeft className="w-5 h-5" /> Back to Teams
                     </button>
-                    <div className="flex items-center gap-4 sm:gap-6">
-                      <img src={selectedTeam.logoUrl} alt={selectedTeam.shortName} className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-2xl" />
+                    <div className="flex items-center gap-3 sm:gap-6">
+                      <img src={selectedTeam.logoUrl} alt={selectedTeam.shortName} className="w-12 h-12 sm:w-20 sm:h-20 object-contain drop-shadow-2xl" />
                       <div className="text-left">
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-lg uppercase">{selectedTeam.name}</h2>
-                        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r ${selectedTeam.gradient} shadow-lg text-sm font-bold text-white uppercase tracking-wider mt-2`}>
+                        <h2 className="text-xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white drop-shadow-lg uppercase leading-tight">{selectedTeam.name}</h2>
+                        <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1 rounded-full bg-gradient-to-r ${selectedTeam.gradient} shadow-lg text-[10px] sm:text-sm font-bold text-white uppercase tracking-wider mt-2`}>
                           Full Squad 2026
                         </div>
                       </div>
                     </div>
-                    <button onClick={() => setCurrentScreen('builder')} className={`w-fit px-8 py-3.5 rounded-full font-black transition-all flex items-center gap-3 shadow-2xl bg-gradient-to-r ${selectedTeam.gradient} text-white hover:scale-105 border border-white/20 text-lg`}>
+                    <button onClick={() => setCurrentScreen('builder')} className={`w-fit px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-black transition-all flex items-center gap-2 sm:gap-3 shadow-2xl bg-gradient-to-r ${selectedTeam.gradient} text-white hover:scale-105 border border-white/20 text-sm sm:text-lg`}>
                       Playing XI <ChevronLeft className="w-6 h-6 rotate-180" />
                     </button>
                   </header>
@@ -589,8 +590,12 @@ export default function App() {
                                         setSelectedMatch(match);
                                         setCurrentScreen('match_details');
                                       }}
-                                      className={`cursor-pointer min-w-[290px] sm:min-w-[360px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg transition-transform hover:-translate-y-0.5 ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'}`}
+                                      className={`cursor-pointer min-w-[290px] sm:min-w-[360px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg transition-transform hover:-translate-y-0.5 relative overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'}`}
                                   >
+                                    <div className="absolute top-0 left-0 right-0 h-1 flex">
+                                      <div className={`flex-1 bg-gradient-to-r ${team1.gradient}`} />
+                                      <div className={`flex-1 bg-gradient-to-l ${team2.gradient}`} />
+                                    </div>
                                     <div className="flex items-center justify-between text-xs font-semibold">
                                       <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{match.day}</span>
                                       <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{match.dateLabel}</span>
@@ -1004,7 +1009,7 @@ export default function App() {
                           </div>
 
                           {/* Team 1 Side */}
-                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-8 bg-gradient-to-br ${team1.gradient}`}>
+                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-4 sm:p-8 bg-gradient-to-br ${team1.gradient}`}>
                             <div className="absolute inset-0 bg-black/40" />
                             <div className="relative z-20 max-w-md mx-auto">
                               <div className="flex items-center gap-4 mb-8">
@@ -1072,7 +1077,7 @@ export default function App() {
                           </div>
 
                           {/* Team 2 Side */}
-                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-8 bg-gradient-to-bl ${team2.gradient}`}>
+                          <div className={`flex-1 relative overflow-y-auto custom-scrollbar p-4 sm:p-8 bg-gradient-to-bl ${team2.gradient}`}>
                             <div className="absolute inset-0 bg-black/40" />
                             <div className="relative z-20 max-w-md mx-auto">
                               <div className="flex items-center gap-4 mb-8 justify-end">
