@@ -139,6 +139,7 @@ export default function App() {
   const [isLogoTransitioning, setIsLogoTransitioning] = useState(false);
   const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
   const [showInitialSplash, setShowInitialSplash] = useState(true);
+  const [completedInsightTab, setCompletedInsightTab] = useState<'improvements' | 'uiux'>('improvements');
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -180,6 +181,10 @@ export default function App() {
     if (currentScreen !== 'builder' && currentScreen !== 'compare_xi') setBuilderReturnScreen(null);
     if (currentScreen !== 'points_table') setExpandedTeamId(null);
   }, [currentScreen]);
+
+  useEffect(() => {
+    setCompletedInsightTab('improvements');
+  }, [selectedMatch?.id]);
 
   const builderSummary = useMemo(() => {
     const canAddMore = playing11.length < 11;
@@ -1016,17 +1021,65 @@ export default function App() {
                                   </ul>
                                 </div>
                                 <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'} lg:col-span-2`}>
-                                  <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Over-by-over Micro Analysis</h4>
-                                  <div className="grid sm:grid-cols-2 gap-2">
-                                    {completedDetails.overByOver.map((entry) => <div key={entry} className={`rounded-xl border p-3 text-xs sm:text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>{entry}</div>)}
+                                  <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Detailed Tactical Analysis</h4>
+                                  <div className="grid sm:grid-cols-2 gap-3">
+                                    {completedDetails.tacticalAnalysis.map((line) => <div key={line} className={`rounded-xl border p-3 text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>{line}</div>)}
                                   </div>
                                 </div>
                               </div>
 
                               <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
-                                <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Detailed Tactical Analysis</h4>
-                                <div className="grid sm:grid-cols-2 gap-3">
-                                  {completedDetails.analysis.map((line) => <div key={line} className={`rounded-xl border p-3 text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>{line}</div>)}
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                  <button
+                                      onClick={() => setCompletedInsightTab('improvements')}
+                                      className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'improvements'
+                                          ? (isDark ? 'bg-blue-600 text-white border-blue-400/40' : 'bg-blue-600 text-white border-blue-600')
+                                          : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}
+                                  >
+                                    Improvements Tab
+                                  </button>
+                                  <button
+                                      onClick={() => setCompletedInsightTab('uiux')}
+                                      className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'uiux'
+                                          ? (isDark ? 'bg-blue-600 text-white border-blue-400/40' : 'bg-blue-600 text-white border-blue-600')
+                                          : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}
+                                  >
+                                    UI/UX Plan
+                                  </button>
+                                </div>
+
+                                <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                  {completedInsightTab === 'improvements' ? 'Team & Player Improvements' : 'Detailed UI/UX Management Plan'}
+                                </h4>
+                                <div className="grid gap-4">
+                                  {completedInsightTab === 'improvements' ? (
+                                      <>
+                                        <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
+                                          <h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>SRH (Lacking Areas)</h5>
+                                          <ul className="space-y-2">
+                                            {completedDetails.improvements.team1.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
+                                          </ul>
+                                        </div>
+                                        <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
+                                          <h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>RCB (Can Improve Despite Win)</h5>
+                                          <ul className="space-y-2">
+                                            {completedDetails.improvements.team2.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
+                                          </ul>
+                                        </div>
+                                        <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
+                                          <h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Player Improvement Notes</h5>
+                                          <ul className="space-y-2">
+                                            {completedDetails.improvements.players.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
+                                          </ul>
+                                        </div>
+                                      </>
+                                  ) : (
+                                      <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
+                                        <ul className="space-y-2">
+                                          {completedDetails.uiUxPlan.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
+                                        </ul>
+                                      </div>
+                                  )}
                                 </div>
                               </div>
                             </section>

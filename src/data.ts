@@ -443,8 +443,13 @@ export interface CompletedMatchDetails {
   result: string;
   playerOfTheMatch: string;
   keyMoments: string[];
-  overByOver: string[];
-  analysis: string[];
+  tacticalAnalysis: string[];
+  improvements: {
+    team1: string[];
+    team2: string[];
+    players: string[];
+  };
+  uiUxPlan: string[];
   innings: [InningScorecard, InningScorecard];
 }
 
@@ -743,21 +748,7 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
       'Romario Shepherd removed Klaasen, Aniket Verma, and Harsh Dubey but still leaked boundaries at the death.',
       'RCB counterattacked in the chase: 76/1 in the powerplay and 203/4 in just 15.4 overs.'
     ],
-    overByOver: [
-      '2.1 ov: Abhishek Sharma fell at 18/1; SRH lost early left-hand momentum.',
-      '2.6 ov: Travis Head gone at 23/2; Duffy won both opening matchups in one over.',
-      '4.2 ov: Nitish Reddy out at 29/3; SRH were in early rescue mode.',
-      '4-10 ov phase: Kishan changed gears with clean lofted hitting against pace-off options.',
-      '13.1 ov: Klaasen fell at 126/4 after a vital 31 (22) in a 97-run stand.',
-      '15.6 ov: Kishan dismissed for 80 (38), but SRH were already at 155/6 with momentum.',
-      '18.6 ov: Aniket Verma fell for 43 (18), ending SRH at 201/9 after an explosive cameo.',
-      '1.1 ov chase: Phil Salt out at 9/1, early wicket but no slowdown.',
-      'Powerplay chase: RCB stormed to 76/1, immediately getting ahead of required rate.',
-      '8.4 ov: Padikkal out for 61 (26), after setting the chase tempo with Kohli.',
-      '12.2-12.3 ov: Patidar and Jitesh dismissed in back-to-back balls at 163/4.',
-      '15.4 ov: RCB reached 203/4, finishing the chase with 26 balls to spare.'
-    ],
-    analysis: [
+    tacticalAnalysis: [
       'RCB’s new-ball bowling created the platform: 29/3 in 4.2 overs changed SRH from attack mode to recovery mode.',
       'SRH’s best phase was the Kishan-Klaasen alliance (97 off 53), where they attacked both spin and seam through straight and leg-side pockets.',
       'Despite taking 3 wickets, Shepherd’s 54 in 4 overs and Abhinandan’s expensive spell inflated SRH’s final total to a defendable 201.',
@@ -765,6 +756,34 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
       'Padikkal’s 61 off 26 was the innings accelerator; Patidar’s 31 off 12 ensured there was no slowdown after the first wicket.',
       'SRH leaked 18 extras and failed to apply scoreboard pressure with disciplined lengths, especially in overs 7-13.',
       'The finishing margin (15.4 overs) indicates RCB won both tactical phases: wicket-taking with the new ball and tempo control while chasing.'
+    ],
+    improvements: {
+      team1: [
+        'SRH need a safer powerplay template: losing 3 wickets inside 5 overs forced mid-innings recovery pressure.',
+        'Death-over bowling plans must tighten. Conceding 203 in 15.4 overs shows missed yorker execution and inconsistent hard-length discipline.',
+        'Fielding support to bowlers can improve: boundary prevention at deep square and long-off was not consistent during RCB’s surge.'
+      ],
+      team2: [
+        'RCB should reduce leak in middle/death overs with better fifth-bowler matchups; 54 off Shepherd’s 4 overs hurt control.',
+        'RCB still need wicket-protection buffers when two wickets fall quickly (12.2 and 12.3) to avoid collapse risk in tighter chases.',
+        'Bowling unit can improve economy on pace-off miss lengths, especially against power hitters like Aniket Verma.'
+      ],
+      players: [
+        'Harshal Patel (SRH): improve wide yorker consistency under pressure; too many hittable lengths in overs 13-16.',
+        'Eshan Malinga (SRH): adapt variation sequence earlier when batters line up back-of-length pace.',
+        'Romario Shepherd (RCB): maintain wicket-taking threat while lowering economy with better change-up pace at the death.',
+        'Abhinandan Singh (RCB): improve first-two-over control with tighter channel to avoid boundary release balls.',
+        'Jitesh Sharma (RCB): better game-awareness at dismissal moments to avoid low-impact wicket phases.'
+      ]
+    },
+    uiUxPlan: [
+      'Use a two-mode page layout: “Match Summary” (high-level) and “Deep Analysis” (advanced cards) with a sticky mode switch.',
+      'Add a compact score ribbon on top (SRH 201/9, RCB 203/4 in 15.4) that remains visible while scrolling.',
+      'Group analytics into tabs: Key Moments, Tactical Read, Improvements, and Team Comparison for easier scanning.',
+      'Color-code team insights consistently (team gradient accents) so users instantly understand which side each insight belongs to.',
+      'Provide collapsible advanced sections (partnerships, bowling spells, phase breakdown) to reduce cognitive load on mobile.',
+      'Add “Fantasy Takeaways” chips beside player rows to connect scorecard performance with fantasy decision-making.',
+      'Add export/share actions (image card + text summary) so users can share post-match insights quickly.'
     ],
     innings: [
       {
