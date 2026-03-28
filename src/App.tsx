@@ -139,7 +139,8 @@ export default function App() {
   const [isLogoTransitioning, setIsLogoTransitioning] = useState(false);
   const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
   const [showInitialSplash, setShowInitialSplash] = useState(true);
-  const [completedInsightTab, setCompletedInsightTab] = useState<'improvements' | 'uiux'>('improvements');
+  const [completedInsightTab, setCompletedInsightTab] = useState<'key_moments' | 'tactical' | 'improvements' | 'team_compare'>('key_moments');
+  const [completedViewMode, setCompletedViewMode] = useState<'summary' | 'analysis'>('summary');
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -183,7 +184,8 @@ export default function App() {
   }, [currentScreen]);
 
   useEffect(() => {
-    setCompletedInsightTab('improvements');
+    setCompletedInsightTab('key_moments');
+    setCompletedViewMode('summary');
   }, [selectedMatch?.id]);
 
   const builderSummary = useMemo(() => {
@@ -950,8 +952,30 @@ export default function App() {
                                   <div className={`rounded-2xl border p-4 text-sm ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-300' : 'border-black/20 bg-slate-100 text-slate-700'}`}><span className="font-bold">Toss:</span> {completedDetails.toss}</div>
                                   <div className={`rounded-2xl border p-4 text-sm ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-300' : 'border-black/20 bg-slate-100 text-slate-700'}`}><span className="font-bold">Player of the Match:</span> {completedDetails.playerOfTheMatch}</div>
                                 </div>
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                  <button
+                                      onClick={() => {
+                                        const text = `${team1.shortName} ${completedDetails.innings[0].total}/${completedDetails.innings[0].wickets} (${completedDetails.innings[0].overs}) • ${team2.shortName} ${completedDetails.innings[1].total}/${completedDetails.innings[1].wickets} (${completedDetails.innings[1].overs}) — ${completedDetails.result}`;
+                                        if (navigator?.clipboard?.writeText) navigator.clipboard.writeText(text);
+                                      }}
+                                      className={`px-4 py-2 rounded-full text-xs font-bold border ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-200' : 'border-black/20 bg-slate-100 text-slate-700'}`}
+                                  >
+                                    Copy Match Summary
+                                  </button>
+                                </div>
                               </div>
 
+                              <div className={`sticky top-2 z-20 rounded-2xl border px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${isDark ? 'border-white/20 bg-[#0B0F19]/95 text-slate-200' : 'border-black/20 bg-white/95 text-slate-800'}`}>
+                                <div className="font-black text-sm sm:text-base">
+                                  {team1.shortName} {completedDetails.innings[0].total}/{completedDetails.innings[0].wickets} ({completedDetails.innings[0].overs}) • {team2.shortName} {completedDetails.innings[1].total}/{completedDetails.innings[1].wickets} ({completedDetails.innings[1].overs})
+                                </div>
+                                <div className="flex gap-2">
+                                  <button onClick={() => setCompletedViewMode('summary')} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${completedViewMode === 'summary' ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-[#151A27] border-white/20 text-slate-300' : 'bg-slate-100 border-black/20 text-slate-700')}`}>Match Summary</button>
+                                  <button onClick={() => setCompletedViewMode('analysis')} className={`px-3 py-1.5 rounded-full text-xs font-bold border ${completedViewMode === 'analysis' ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-[#151A27] border-white/20 text-slate-300' : 'bg-slate-100 border-black/20 text-slate-700')}`}>Deep Analysis</button>
+                                </div>
+                              </div>
+
+                              {completedViewMode === 'summary' && (
                               <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                                 {completedDetails.innings.map((innings) => {
                                   const inningsTeam = teams.find((team) => team.id === innings.teamId);
@@ -974,7 +998,7 @@ export default function App() {
                                             <tbody>
                                             {innings.batters.map((batter) => (
                                                 <tr key={`${innings.teamId}-${batter.name}`} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
-                                                  <td className="py-2"><div className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{batter.name}</div><div className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{batter.howOut}</div></td>
+                                                  <td className="py-2"><div className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{batter.name}</div><div className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{batter.howOut}</div><div className="mt-1 flex gap-1 flex-wrap">{batter.runs >= 50 && <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Fantasy: Batting Bonus</span>}{batter.sixes >= 3 && <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">Fantasy: Sixes Impact</span>}</div></td>
                                                   <td className="py-2 font-semibold">{batter.runs}</td><td className="py-2">{batter.balls}</td><td className="py-2">{batter.fours}</td><td className="py-2">{batter.sixes}</td><td className="py-2">{batter.strikeRate}</td>
                                                 </tr>
                                             ))}
@@ -987,8 +1011,8 @@ export default function App() {
                                           <p><span className="font-bold">Did Not Bat:</span> {innings.didNotBat.join(', ')}</p>
                                           <p><span className="font-bold">Fall of Wickets:</span> {innings.fallOfWickets.join(' · ')}</p>
                                         </div>
-                                        <div className="mt-4">
-                                          <h5 className={`font-bold text-sm mb-2 ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Partnerships</h5>
+                                        <details className="mt-4" open>
+                                          <summary className={`font-bold text-sm mb-2 cursor-pointer ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Partnerships</summary>
                                           <div className="grid gap-2">
                                             {innings.partnerships.map((partnership) => (
                                                 <div key={`${innings.teamId}-${partnership}`} className={`rounded-xl border px-3 py-2 text-xs sm:text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>
@@ -996,9 +1020,9 @@ export default function App() {
                                                 </div>
                                             ))}
                                           </div>
-                                        </div>
-                                        <div className="mt-4">
-                                          <h5 className={`font-bold text-sm mb-2 ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Bowling</h5>
+                                        </details>
+                                        <details className="mt-4">
+                                          <summary className={`font-bold text-sm mb-2 cursor-pointer ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Bowling Spells</summary>
                                           <div className="space-y-2">
                                             {innings.bowlers.map((bowler) => (
                                                 <div key={`${innings.teamId}-${bowler.name}`} className={`rounded-xl border px-3 py-2 text-xs sm:text-sm flex justify-between ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>
@@ -1007,81 +1031,51 @@ export default function App() {
                                                 </div>
                                             ))}
                                           </div>
-                                        </div>
+                                        </details>
+                                        <details className="mt-4">
+                                          <summary className={`font-bold text-sm mb-2 cursor-pointer ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Phase Breakdown</summary>
+                                          <div className={`rounded-xl border px-3 py-2 text-xs sm:text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>
+                                            Powerplay: {innings.powerplayRuns} • Overall RR: {(innings.total / Number(innings.overs)).toFixed(2)}
+                                          </div>
+                                        </details>
                                       </div>
                                   );
                                 })}
                               </div>
+                              )}
 
-                              <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
-                                <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
-                                  <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Key Moments</h4>
-                                  <ul className="space-y-2">
-                                    {completedDetails.keyMoments.map((moment) => <li key={moment} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {moment}</li>)}
-                                  </ul>
-                                </div>
-                                <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'} lg:col-span-2`}>
-                                  <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Detailed Tactical Analysis</h4>
-                                  <div className="grid sm:grid-cols-2 gap-3">
-                                    {completedDetails.tacticalAnalysis.map((line) => <div key={line} className={`rounded-xl border p-3 text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>{line}</div>)}
+                              {completedViewMode === 'analysis' && (
+                                  <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                      <button onClick={() => setCompletedInsightTab('key_moments')} className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'key_moments' ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}>Key Moments</button>
+                                      <button onClick={() => setCompletedInsightTab('tactical')} className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'tactical' ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}>Tactical Read</button>
+                                      <button onClick={() => setCompletedInsightTab('improvements')} className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'improvements' ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}>Improvements</button>
+                                      <button onClick={() => setCompletedInsightTab('team_compare')} className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'team_compare' ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}>Team Comparison</button>
+                                    </div>
+                                    {completedInsightTab === 'key_moments' && (
+                                        <ul className="space-y-2">{completedDetails.keyMoments.map((moment) => <li key={moment} className={`text-sm rounded-xl border p-3 ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-200' : 'border-black/15 bg-slate-100 text-slate-700'}`}>• {moment}</li>)}</ul>
+                                    )}
+                                    {completedInsightTab === 'tactical' && (
+                                        <div className="grid sm:grid-cols-2 gap-3">{completedDetails.tacticalAnalysis.map((line) => <div key={line} className={`rounded-xl border p-3 text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-200' : 'border-black/15 bg-slate-100 text-slate-700'}`}>{line}</div>)}</div>
+                                    )}
+                                    {completedInsightTab === 'improvements' && (
+                                        <div className="grid gap-4">
+                                          <div className={`rounded-2xl border p-4 ${isDark ? 'border-rose-400/30 bg-rose-900/10' : 'border-rose-300 bg-rose-50'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-rose-200' : 'text-rose-700'}`}>SRH (Lacking Areas)</h5><ul className="space-y-2">{completedDetails.improvements.team1.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
+                                          <div className={`rounded-2xl border p-4 ${isDark ? 'border-emerald-400/30 bg-emerald-900/10' : 'border-emerald-300 bg-emerald-50'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>RCB (Can Improve Despite Win)</h5><ul className="space-y-2">{completedDetails.improvements.team2.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
+                                          <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Player Improvement Notes</h5><ul className="space-y-2">{completedDetails.improvements.players.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
+                                          <div className={`rounded-2xl border p-4 ${isDark ? 'border-indigo-400/30 bg-indigo-900/10' : 'border-indigo-300 bg-indigo-50'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-indigo-200' : 'text-indigo-700'}`}>UI/UX Management Plan</h5><ul className="space-y-2">{completedDetails.uiUxPlan.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
+                                        </div>
+                                    )}
+                                    {completedInsightTab === 'team_compare' && (
+                                        <div className="grid sm:grid-cols-2 gap-3">
+                                          <div className={`rounded-xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-200' : 'border-black/20 bg-slate-100 text-slate-700'}`}>Powerplay: {team1.shortName} {completedDetails.innings[0].powerplayRuns} vs {team2.shortName} {completedDetails.innings[1].powerplayRuns}</div>
+                                          <div className={`rounded-xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-200' : 'border-black/20 bg-slate-100 text-slate-700'}`}>Run Rate: {team1.shortName} {(completedDetails.innings[0].total / Number(completedDetails.innings[0].overs)).toFixed(2)} vs {team2.shortName} {(completedDetails.innings[1].total / Number(completedDetails.innings[1].overs)).toFixed(2)}</div>
+                                          <div className={`rounded-xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-200' : 'border-black/20 bg-slate-100 text-slate-700'}`}>Extras: {team1.shortName} {completedDetails.innings[0].extras} vs {team2.shortName} {completedDetails.innings[1].extras}</div>
+                                          <div className={`rounded-xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-200' : 'border-black/20 bg-slate-100 text-slate-700'}`}>Wickets Lost: {team1.shortName} {completedDetails.innings[0].wickets} vs {team2.shortName} {completedDetails.innings[1].wickets}</div>
+                                        </div>
+                                    )}
                                   </div>
-                                </div>
-                              </div>
-
-                              <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                  <button
-                                      onClick={() => setCompletedInsightTab('improvements')}
-                                      className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'improvements'
-                                          ? (isDark ? 'bg-blue-600 text-white border-blue-400/40' : 'bg-blue-600 text-white border-blue-600')
-                                          : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}
-                                  >
-                                    Improvements Tab
-                                  </button>
-                                  <button
-                                      onClick={() => setCompletedInsightTab('uiux')}
-                                      className={`px-4 py-2 rounded-full text-sm font-bold border ${completedInsightTab === 'uiux'
-                                          ? (isDark ? 'bg-blue-600 text-white border-blue-400/40' : 'bg-blue-600 text-white border-blue-600')
-                                          : (isDark ? 'bg-[#0B0F19] text-slate-300 border-white/20' : 'bg-slate-100 text-slate-700 border-black/20')}`}
-                                  >
-                                    UI/UX Plan
-                                  </button>
-                                </div>
-
-                                <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                  {completedInsightTab === 'improvements' ? 'Team & Player Improvements' : 'Detailed UI/UX Management Plan'}
-                                </h4>
-                                <div className="grid gap-4">
-                                  {completedInsightTab === 'improvements' ? (
-                                      <>
-                                        <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
-                                          <h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>SRH (Lacking Areas)</h5>
-                                          <ul className="space-y-2">
-                                            {completedDetails.improvements.team1.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
-                                          </ul>
-                                        </div>
-                                        <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
-                                          <h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>RCB (Can Improve Despite Win)</h5>
-                                          <ul className="space-y-2">
-                                            {completedDetails.improvements.team2.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
-                                          </ul>
-                                        </div>
-                                        <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
-                                          <h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Player Improvement Notes</h5>
-                                          <ul className="space-y-2">
-                                            {completedDetails.improvements.players.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
-                                          </ul>
-                                        </div>
-                                      </>
-                                  ) : (
-                                      <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}>
-                                        <ul className="space-y-2">
-                                          {completedDetails.uiUxPlan.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}
-                                        </ul>
-                                      </div>
-                                  )}
-                                </div>
-                              </div>
+                              )}
                             </section>
                         )}
 
