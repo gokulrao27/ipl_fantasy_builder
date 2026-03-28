@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home } from 'lucide-react';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Sparkles, Timer, TrendingUp } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
 import iplHero from '../ipl.jpeg';
@@ -139,6 +139,7 @@ export default function App() {
   const [isLogoTransitioning, setIsLogoTransitioning] = useState(false);
   const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
   const [showInitialSplash, setShowInitialSplash] = useState(true);
+  const primaryScreens: Screen[] = ['schedule', 'schedule_list', 'points_table', 'teams'];
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -191,6 +192,22 @@ export default function App() {
 
     return nextAction;
   }, [impactPlayer, playing11.length]);
+
+  const quickInsights = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const upcomingMatches = schedule.filter((match) => match.date >= today).length;
+    const totalPlayers = teams.reduce((count, team) => count + team.players.length, 0);
+    const savedTeams = Object.keys(savedXIs).length;
+    const tableLeader = [...pointsTable].sort((a, b) => b.points - a.points || b.nrr - a.nrr)[0];
+    const leaderTeam = teams.find((team) => team.id === tableLeader?.teamId);
+
+    return {
+      upcomingMatches,
+      totalPlayers,
+      savedTeams,
+      leaderCode: leaderTeam?.shortName ?? '--'
+    };
+  }, [savedXIs]);
 
   const handleTeamSelect = (team: Team, nextScreen: Screen = 'squad', returnScreen: Screen | null = null) => {
     setSelectedTeam(team);
@@ -291,6 +308,48 @@ export default function App() {
             onLogoClick={triggerLogoHomeAnimation}
             isMobileHeaderVisible={isMobileHeaderVisible}
         />
+        {primaryScreens.includes(currentScreen) && (
+            <section className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 mb-4 sm:mb-6">
+              <div className={`rounded-2xl sm:rounded-3xl border p-3 sm:p-4 backdrop-blur-xl shadow-lg ${isDark ? 'bg-slate-900/70 border-white/15' : 'bg-white/85 border-slate-200'}`}>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <button
+                      onClick={() => setCurrentScreen('schedule')}
+                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 ${isDark ? 'bg-blue-500/15 text-blue-200 hover:bg-blue-500/25' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5" /> Home
+                  </button>
+                  <button
+                      onClick={() => setCurrentScreen('schedule_list')}
+                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 ${isDark ? 'bg-violet-500/15 text-violet-200 hover:bg-violet-500/25' : 'bg-violet-100 text-violet-700 hover:bg-violet-200'}`}
+                  >
+                    <Timer className="w-3.5 h-3.5" /> Fixtures
+                  </button>
+                  <button
+                      onClick={() => setCurrentScreen('points_table')}
+                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 ${isDark ? 'bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}
+                  >
+                    <TrendingUp className="w-3.5 h-3.5" /> Standings
+                  </button>
+                </div>
+                <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                  {[
+                    { label: 'Upcoming Matches', value: quickInsights.upcomingMatches },
+                    { label: 'Player Database', value: quickInsights.totalPlayers },
+                    { label: 'Saved Team XIs', value: quickInsights.savedTeams },
+                    { label: 'Table Leader', value: quickInsights.leaderCode },
+                  ].map((item) => (
+                      <article
+                          key={item.label}
+                          className={`rounded-xl px-3 py-2 border ${isDark ? 'bg-black/30 border-white/10 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-700'}`}
+                      >
+                        <p className={`text-[11px] uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{item.label}</p>
+                        <p className={`text-base sm:text-lg font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.value}</p>
+                      </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+        )}
         {isLogoTransitioning && (
             <div className={`fixed inset-0 z-[70] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
               <motion.img
