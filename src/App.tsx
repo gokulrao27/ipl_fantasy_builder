@@ -968,15 +968,15 @@ export default function App() {
                               <h3 className={`text-2xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Quick read</h3>
                               <div className={`space-y-4 text-sm ${isDark ? 'text-white/70' : 'text-slate-700'}`}>
                                 <div className={`rounded-2xl border p-4 ${isDark ? 'bg-slate-950/60 border-white/25' : 'bg-slate-100 border-black/20'}`}>
-                                  <div className="text-xs uppercase tracking-[0.25em] text-black font-black mb-2">Venue trend</div>
+                                  <div className="text-xs uppercase tracking-[0.25em] ${isDark ? 'text-white font-black mb-2' : 'text-black font-black mb-2'}">Venue trend</div>
                                   Teams chasing have won {selectedMatch.venueStats.chasingWins} of {selectedMatch.venueStats.totalMatches} IPL matches here.
                                 </div>
                                 <div className={`rounded-2xl border p-4 ${isDark ? 'bg-slate-950/60 border-white/25' : 'bg-slate-100 border-black/20'}`}>
-                                  <div className="text-xs uppercase tracking-[0.25em] text-black font-black mb-2">Boundary profile</div>
+                                  <div className="text-xs uppercase tracking-[0.25em] ${isDark ? 'text-white font-black mb-2' : 'text-black font-black mb-2'}">Boundary profile</div>
                                   About {selectedMatch.venueStats.boundaryPercentage}% of scoring shots here come from boundaries, so defensive lengths matter.
                                 </div>
                                 <div className={`rounded-2xl border p-4 ${isDark ? 'bg-slate-950/60 border-white/25' : 'bg-slate-100 border-black/20'}`}>
-                                  <div className="text-xs uppercase tracking-[0.25em] text-black font-black mb-2">Rivalry form</div>
+                                  <div className="text-xs uppercase tracking-[0.25em] ${isDark ? 'text-white font-black mb-2' : 'text-black font-black mb-2'}">Rivalry form</div>
                                   {selectedMatch.headToHead.last5}
                                 </div>
                               </div>
