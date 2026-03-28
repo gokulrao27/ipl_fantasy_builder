@@ -36,7 +36,7 @@ export const teams: Team[] = [
       { id: 'csk5', name: 'Ayush Mhatre', role: 'Batsman', imageUrl: 'https://gallery.chennaisuperkings.com/PROD/TEAM/Team45playerImgNoBg_1773208902161.png' },
       { id: 'csk6', name: 'Kartik Sharma', role: 'Wicket-keeper', imageUrl: 'https://gallery.chennaisuperkings.com/PROD/TEAM/Team53playerImgNoBg_1773206702889.png' },
       { id: 'csk7', name: 'Sarfaraz Khan', role: 'Batsman', imageUrl: 'https://gallery.chennaisuperkings.com/PROD/TEAM/Team58playerImgNoBg_1773379183176.png' },
-      { id: 'csk25', name: 'Shivam Dube', role: 'All-rounder', imageUrl: 'https://gallery.chennaisuperkings.com/PROD/TEAM/Team9playerImgNoBg_1773208333913.png' },
+      { id: 'csk25', name: 'Shivam Dube', role: 'All-rounder', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2025/211.png' },
       { id: 'csk8', name: 'Anshul Kamboj', role: 'All-rounder', imageUrl: 'https://gallery.chennaisuperkings.com/PROD/TEAM/Team43playerImgNoBg_1773209148564.png' },
       { id: 'csk9', name: 'Jamie Overton', role: 'Bowler', imageUrl: 'https://gallery.chennaisuperkings.com/PROD/TEAM/Team25playerImgNoBg_1773208844367.png' },
       { id: 'csk10', name: 'Ramakrishna Ghosh', role: 'All-rounder', imageUrl: 'https://gallery.chennaisuperkings.com/PROD/TEAM/Team41playerImgNoBg_1773209044035.png' },
