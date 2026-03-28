@@ -977,7 +977,26 @@ export default function App() {
                                                                     </div>
                                                                     <span className={`text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{innings.total}/{innings.wickets} ({innings.overs})</span>
                                                                 </div>
-                                                                <div className="overflow-x-auto">
+                                                                <div className="sm:hidden space-y-2">
+                                                                    {innings.batters.map((batter) => (
+                                                                        <div key={`${innings.teamId}-${batter.name}-mobile`} className={`rounded-xl border p-3 ${isDark ? 'border-white/15 bg-[#0B0F19]' : 'border-black/15 bg-slate-100'}`}>
+                                                                            <div className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{batter.name}</div>
+                                                                            <div className={`text-[11px] mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{batter.howOut}</div>
+                                                                            <div className="grid grid-cols-5 gap-1 text-[11px]">
+                                                                                <div><span className="font-bold">R</span><div>{batter.runs}</div></div>
+                                                                                <div><span className="font-bold">B</span><div>{batter.balls}</div></div>
+                                                                                <div><span className="font-bold">4s</span><div>{batter.fours}</div></div>
+                                                                                <div><span className="font-bold">6s</span><div>{batter.sixes}</div></div>
+                                                                                <div><span className="font-bold">SR</span><div>{batter.strikeRate}</div></div>
+                                                                            </div>
+                                                                            <div className="mt-2 flex gap-1 flex-wrap">
+                                                                                {batter.runs >= 50 && <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Fantasy: Batting Bonus</span>}
+                                                                                {batter.sixes >= 3 && <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">Fantasy: Sixes Impact</span>}
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                                <div className="hidden sm:block overflow-x-auto">
                                                                     <table className="w-full text-xs sm:text-sm">
                                                                         <thead>
                                                                         <tr className={isDark ? 'text-slate-400' : 'text-slate-500'}>
