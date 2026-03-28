@@ -582,8 +582,14 @@ export default function App() {
               >
                 {(() => {
                   const today = new Date().toISOString().slice(0, 10);
-                  const upcomingMatches = schedule.filter((match) => match.date >= today).slice(0, 3);
+                  const completedMatches = schedule
+                      .filter((match) => match.status === 'completed' || match.date < today)
+                      .sort((a, b) => b.date.localeCompare(a.date));
+                  const upcomingMatches = schedule
+                      .filter((match) => match.status !== 'completed' && match.date >= today)
+                      .slice(0, 3);
                   const featuredMatches = upcomingMatches.length > 0 ? upcomingMatches : schedule.slice(0, 3);
+                  const recentMatches = completedMatches.slice(0, 3);
 
                   return (
                       <div className="space-y-8 pb-12">
@@ -593,7 +599,7 @@ export default function App() {
 
                         <section>
                           <div className="flex items-center justify-between mb-4">
-                            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Current Matches</h2>
+                            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Upcoming Matches</h2>
                           </div>
                           <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory custom-scrollbar">
                             {featuredMatches.map((match) => {
@@ -634,6 +640,58 @@ export default function App() {
                               );
                             })}
                           </div>
+                        </section>
+
+                        <section>
+                          <div className="flex items-center justify-between mb-4">
+                            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Recent Matches</h2>
+                          </div>
+                          {recentMatches.length > 0 ? (
+                              <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory custom-scrollbar">
+                                {recentMatches.map((match) => {
+                                  const team1 = teams.find(t => t.id === match.team1);
+                                  const team2 = teams.find(t => t.id === match.team2);
+                                  if (!team1 || !team2) return null;
+
+                                  return (
+                                      <article
+                                          key={`${match.id}-recent`}
+                                          onClick={() => {
+                                            setSelectedMatch(match);
+                                            setCurrentScreen('match_details');
+                                          }}
+                                          className={`cursor-pointer min-w-[300px] sm:min-w-[390px] snap-start rounded-2xl border p-4 sm:p-5 shadow-lg transition-transform hover:-translate-y-0.5 relative overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'}`}
+                                      >
+                                        <div className="absolute top-0 left-0 right-0 h-1 flex">
+                                          <div className={`flex-1 bg-gradient-to-r ${team1.gradient}`} />
+                                          <div className={`flex-1 bg-gradient-to-l ${team2.gradient}`} />
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs font-semibold mb-3">
+                                          <span className={isDark ? 'text-emerald-300' : 'text-emerald-700'}>Completed</span>
+                                          <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{match.dateLabel}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between mt-1">
+                                          <div className="flex flex-col items-center gap-2">
+                                            <img src={team1.logoUrl} alt={team1.shortName} className="w-12 h-12 object-contain" />
+                                            <span className={`font-black text-lg ${isDark ? 'text-white' : 'text-black'}`}>{team1.shortName}</span>
+                                          </div>
+                                          <span className={`text-lg font-black ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>VS</span>
+                                          <div className="flex flex-col items-center gap-2">
+                                            <img src={team2.logoUrl} alt={team2.shortName} className="w-12 h-12 object-contain" />
+                                            <span className={`font-black text-lg ${isDark ? 'text-white' : 'text-black'}`}>{team2.shortName}</span>
+                                          </div>
+                                        </div>
+                                        <p className={`mt-4 text-xs sm:text-sm font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{match.completedDetails?.result || 'Match completed'}</p>
+                                        <p className={`mt-2 text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{match.stadium}, {match.venueCity}</p>
+                                      </article>
+                                  );
+                                })}
+                              </div>
+                          ) : (
+                              <div className={`rounded-2xl border p-4 text-sm ${isDark ? 'border-white/20 bg-[#111827] text-slate-400' : 'border-black/20 bg-white text-slate-600'}`}>
+                                No completed matches yet.
+                              </div>
+                          )}
                         </section>
 
                         <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
@@ -772,6 +830,8 @@ export default function App() {
                   const winShare1 = Math.round((selectedMatch.headToHead.team1Wins / (selectedMatch.headToHead.team1Wins + selectedMatch.headToHead.team2Wins || 1)) * 100);
                   const winShare2 = 100 - winShare1;
                   const chaseRate = Math.round((selectedMatch.venueStats.chasingWins / selectedMatch.venueStats.totalMatches) * 100);
+                  const isCompleted = selectedMatch.status === 'completed' && Boolean(selectedMatch.completedDetails);
+                  const completedDetails = selectedMatch.completedDetails;
 
                   return (
                       <div className="space-y-6">
@@ -811,6 +871,7 @@ export default function App() {
                           }`}>
                             <span>Match {selectedMatch.matchNumber} • {selectedMatch.stadium}, {selectedMatch.venueCity}</span>
                             <span className={`font-bold ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>{selectedMatch.dateLabel} • {selectedMatch.day}</span>
+                            {isCompleted && <span className={`px-3 py-1 rounded-full text-[10px] font-black ${isDark ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-400/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-300'}`}>COMPLETED</span>}
                           </div>
 
                           {/* Teams VS Section */}
@@ -871,11 +932,108 @@ export default function App() {
 
                           {/* Bottom Headline */}
                           <div className={`px-4 sm:px-8 py-4 border-t text-center ${isDark ? 'bg-[#0B0F19]/50 border-white/20' : 'bg-white border-black/20'}`}>
-                            <p className={`text-sm sm:text-base font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{selectedMatch.headline}</p>
+                            <p className={`text-sm sm:text-base font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{isCompleted ? (completedDetails?.result || selectedMatch.headline) : selectedMatch.headline}</p>
                           </div>
                         </section>
 
+                        {isCompleted && completedDetails && (
+                            <section className="grid gap-4 sm:gap-6">
+                              <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                <h3 className={`text-xl sm:text-2xl font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Match Result & Awards</h3>
+                                <p className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{completedDetails.result}</p>
+                                <div className="mt-4 grid sm:grid-cols-2 gap-3">
+                                  <div className={`rounded-2xl border p-4 text-sm ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-300' : 'border-black/20 bg-slate-100 text-slate-700'}`}><span className="font-bold">Toss:</span> {completedDetails.toss}</div>
+                                  <div className={`rounded-2xl border p-4 text-sm ${isDark ? 'border-white/20 bg-[#0B0F19] text-slate-300' : 'border-black/20 bg-slate-100 text-slate-700'}`}><span className="font-bold">Player of the Match:</span> {completedDetails.playerOfTheMatch}</div>
+                                </div>
+                              </div>
+
+                              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                                {completedDetails.innings.map((innings) => {
+                                  const inningsTeam = teams.find((team) => team.id === innings.teamId);
+                                  return (
+                                      <div key={innings.teamId} className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                        <div className="flex items-center justify-between gap-3 mb-4">
+                                          <div className="flex items-center gap-3">
+                                            {inningsTeam && <img src={inningsTeam.logoUrl} alt={inningsTeam.shortName} className="w-10 h-10 object-contain" />}
+                                            <h4 className={`text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{inningsTeam?.shortName || innings.teamId.toUpperCase()} Innings</h4>
+                                          </div>
+                                          <span className={`text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{innings.total}/{innings.wickets} ({innings.overs})</span>
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                          <table className="w-full text-xs sm:text-sm">
+                                            <thead>
+                                            <tr className={isDark ? 'text-slate-400' : 'text-slate-500'}>
+                                              <th className="text-left py-2">Batter</th><th className="text-left py-2">R</th><th className="text-left py-2">B</th><th className="text-left py-2">4s</th><th className="text-left py-2">6s</th><th className="text-left py-2">SR</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {innings.batters.map((batter) => (
+                                                <tr key={`${innings.teamId}-${batter.name}`} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                                                  <td className="py-2"><div className={`font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>{batter.name}</div><div className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{batter.howOut}</div></td>
+                                                  <td className="py-2 font-semibold">{batter.runs}</td><td className="py-2">{batter.balls}</td><td className="py-2">{batter.fours}</td><td className="py-2">{batter.sixes}</td><td className="py-2">{batter.strikeRate}</td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                        <div className={`mt-4 text-xs space-y-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                          <p><span className="font-bold">Extras:</span> {innings.extras}</p>
+                                          <p><span className="font-bold">Powerplay:</span> {innings.powerplayRuns}</p>
+                                          <p><span className="font-bold">Did Not Bat:</span> {innings.didNotBat.join(', ')}</p>
+                                          <p><span className="font-bold">Fall of Wickets:</span> {innings.fallOfWickets.join(' · ')}</p>
+                                        </div>
+                                        <div className="mt-4">
+                                          <h5 className={`font-bold text-sm mb-2 ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Partnerships</h5>
+                                          <div className="grid gap-2">
+                                            {innings.partnerships.map((partnership) => (
+                                                <div key={`${innings.teamId}-${partnership}`} className={`rounded-xl border px-3 py-2 text-xs sm:text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>
+                                                  {partnership}
+                                                </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                        <div className="mt-4">
+                                          <h5 className={`font-bold text-sm mb-2 ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Bowling</h5>
+                                          <div className="space-y-2">
+                                            {innings.bowlers.map((bowler) => (
+                                                <div key={`${innings.teamId}-${bowler.name}`} className={`rounded-xl border px-3 py-2 text-xs sm:text-sm flex justify-between ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>
+                                                  <span className="font-semibold">{bowler.name}</span>
+                                                  <span>{bowler.overs}-{bowler.maidens}-{bowler.runs}-{bowler.wickets} (Econ {bowler.economy})</span>
+                                                </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </div>
+                                  );
+                                })}
+                              </div>
+
+                              <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+                                <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                  <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Key Moments</h4>
+                                  <ul className="space-y-2">
+                                    {completedDetails.keyMoments.map((moment) => <li key={moment} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {moment}</li>)}
+                                  </ul>
+                                </div>
+                                <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'} lg:col-span-2`}>
+                                  <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Over-by-over Micro Analysis</h4>
+                                  <div className="grid sm:grid-cols-2 gap-2">
+                                    {completedDetails.overByOver.map((entry) => <div key={entry} className={`rounded-xl border p-3 text-xs sm:text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>{entry}</div>)}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                <h4 className={`text-lg font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Detailed Tactical Analysis</h4>
+                                <div className="grid sm:grid-cols-2 gap-3">
+                                  {completedDetails.analysis.map((line) => <div key={line} className={`rounded-xl border p-3 text-sm ${isDark ? 'border-white/15 bg-[#0B0F19] text-slate-300' : 'border-black/15 bg-slate-100 text-slate-700'}`}>{line}</div>)}
+                                </div>
+                              </div>
+                            </section>
+                        )}
+
                         {/* Stats Grid */}
+                        {!isCompleted && (
                         <section className="grid gap-4 sm:gap-6 lg:grid-cols-[1.2fr_0.8fr]">
                           <div className="grid gap-4 sm:gap-6">
                             {/* Win Predictor & Pitch Report */}
@@ -983,6 +1141,7 @@ export default function App() {
                             </div>
                           </div>
                         </section>
+                        )}
                       </div>
                   );
                 })()}

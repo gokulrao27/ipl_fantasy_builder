@@ -405,6 +405,49 @@ export const pointsTable: PointsTableEntry[] = [
   { teamId: 'mi', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'W', 'L', 'L'] },
 ];
 
+export interface ScorecardBatter {
+  name: string;
+  howOut: string;
+  runs: number;
+  balls: number;
+  fours: number;
+  sixes: number;
+  strikeRate: number;
+}
+
+export interface ScorecardBowler {
+  name: string;
+  overs: string;
+  maidens: number;
+  runs: number;
+  wickets: number;
+  economy: number;
+}
+
+export interface InningScorecard {
+  teamId: string;
+  total: number;
+  wickets: number;
+  overs: string;
+  batters: ScorecardBatter[];
+  extras: string;
+  didNotBat: string[];
+  bowlers: ScorecardBowler[];
+  fallOfWickets: string[];
+  powerplayRuns: string;
+  partnerships: string[];
+}
+
+export interface CompletedMatchDetails {
+  toss: string;
+  result: string;
+  playerOfTheMatch: string;
+  keyMoments: string[];
+  overByOver: string[];
+  analysis: string[];
+  innings: [InningScorecard, InningScorecard];
+}
+
 export interface Match {
   id: string;
   matchNumber: number;
@@ -417,6 +460,7 @@ export interface Match {
   stadium: string;
   captain1: string;
   captain2: string;
+  status: 'upcoming' | 'completed';
   headline: string;
   venueStats: {
     avgFirstInningsScore: number;
@@ -434,6 +478,7 @@ export interface Match {
   playerBattles: PlayerBattle[];
   interestingStats: string[];
   pitchReport: string;
+  completedDetails?: CompletedMatchDetails;
 }
 
 type MatchSeed = {
@@ -445,6 +490,7 @@ type MatchSeed = {
   team2: string;
   venueCity: string;
   stadium: string;
+  status?: 'upcoming' | 'completed';
 };
 
 const captainByTeam: Record<string, string> = {
@@ -664,7 +710,7 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
 };
 
 const matchSeeds: MatchSeed[] = [
-  { matchNumber: 1, date: '2026-03-28', dateLabel: '28 Mar', day: 'Saturday', team1: 'rcb', team2: 'srh', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
+  { matchNumber: 1, date: '2026-03-28', dateLabel: '28 Mar', day: 'Saturday', team1: 'rcb', team2: 'srh', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium', status: 'completed' },
   { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
   { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
   { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'Mullanpur', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
@@ -685,6 +731,104 @@ const matchSeeds: MatchSeed[] = [
   { matchNumber: 19, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'lsg', team2: 'gt', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
   { matchNumber: 20, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'mi', team2: 'rcb', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
 ];
+
+const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
+  m1: {
+    toss: 'RCB won the toss and elected to bowl.',
+    result: 'Royal Challengers Bengaluru won by 6 wickets.',
+    playerOfTheMatch: 'Ishan Kishan (80 off 38)',
+    keyMoments: [
+      'Jacob Duffy struck three times in the first five overs to reduce SRH to 29/3.',
+      'Ishan Kishan and Heinrich Klaasen rebuilt with a 97-run stand, dragging SRH back into a 200+ trajectory.',
+      'Romario Shepherd removed Klaasen, Aniket Verma, and Harsh Dubey but still leaked boundaries at the death.',
+      'RCB counterattacked in the chase: 76/1 in the powerplay and 203/4 in just 15.4 overs.'
+    ],
+    overByOver: [
+      '2.1 ov: Abhishek Sharma fell at 18/1; SRH lost early left-hand momentum.',
+      '2.6 ov: Travis Head gone at 23/2; Duffy won both opening matchups in one over.',
+      '4.2 ov: Nitish Reddy out at 29/3; SRH were in early rescue mode.',
+      '4-10 ov phase: Kishan changed gears with clean lofted hitting against pace-off options.',
+      '13.1 ov: Klaasen fell at 126/4 after a vital 31 (22) in a 97-run stand.',
+      '15.6 ov: Kishan dismissed for 80 (38), but SRH were already at 155/6 with momentum.',
+      '18.6 ov: Aniket Verma fell for 43 (18), ending SRH at 201/9 after an explosive cameo.',
+      '1.1 ov chase: Phil Salt out at 9/1, early wicket but no slowdown.',
+      'Powerplay chase: RCB stormed to 76/1, immediately getting ahead of required rate.',
+      '8.4 ov: Padikkal out for 61 (26), after setting the chase tempo with Kohli.',
+      '12.2-12.3 ov: Patidar and Jitesh dismissed in back-to-back balls at 163/4.',
+      '15.4 ov: RCB reached 203/4, finishing the chase with 26 balls to spare.'
+    ],
+    analysis: [
+      'RCB’s new-ball bowling created the platform: 29/3 in 4.2 overs changed SRH from attack mode to recovery mode.',
+      'SRH’s best phase was the Kishan-Klaasen alliance (97 off 53), where they attacked both spin and seam through straight and leg-side pockets.',
+      'Despite taking 3 wickets, Shepherd’s 54 in 4 overs and Abhinandan’s expensive spell inflated SRH’s final total to a defendable 201.',
+      'RCB’s chase plan was ruthless: attack hard in powerplay, keep one anchor (Kohli) unbeaten, and avoid middle-overs dot-ball pressure.',
+      'Padikkal’s 61 off 26 was the innings accelerator; Patidar’s 31 off 12 ensured there was no slowdown after the first wicket.',
+      'SRH leaked 18 extras and failed to apply scoreboard pressure with disciplined lengths, especially in overs 7-13.',
+      'The finishing margin (15.4 overs) indicates RCB won both tactical phases: wicket-taking with the new ball and tempo control while chasing.'
+    ],
+    innings: [
+      {
+        teamId: 'srh',
+        total: 201,
+        wickets: 9,
+        overs: '20.0',
+        batters: [
+          { name: 'Travis Head', howOut: 'c Phil Salt b Jacob Duffy', runs: 11, balls: 9, fours: 2, sixes: 0, strikeRate: 122.22 },
+          { name: 'Abhishek Sharma', howOut: 'c Jitesh Sharma b Jacob Duffy', runs: 7, balls: 8, fours: 0, sixes: 1, strikeRate: 87.5 },
+          { name: 'Ishan Kishan', howOut: 'c Phil Salt b Abhinandan Singh', runs: 80, balls: 38, fours: 8, sixes: 5, strikeRate: 210.53 },
+          { name: 'Nitish Kumar Reddy', howOut: 'c Abhinandan Singh b Jacob Duffy', runs: 1, balls: 6, fours: 0, sixes: 0, strikeRate: 16.67 },
+          { name: 'Heinrich Klaasen', howOut: 'c Phil Salt b Romario Shepherd', runs: 31, balls: 22, fours: 2, sixes: 1, strikeRate: 140.91 },
+          { name: 'Salil Arora', howOut: 'c Devdutt Padikkal b Suyash Sharma', runs: 9, balls: 6, fours: 0, sixes: 1, strikeRate: 150.0 },
+          { name: 'Aniket Verma', howOut: 'c Virat Kohli b Romario Shepherd', runs: 43, balls: 18, fours: 3, sixes: 4, strikeRate: 238.89 },
+          { name: 'Harsh Dubey', howOut: 'c Devdutt Padikkal b Romario Shepherd', runs: 3, balls: 3, fours: 0, sixes: 0, strikeRate: 100.0 },
+          { name: 'Harshal Patel', howOut: 'c Devdutt Padikkal b Bhuvneshwar Kumar', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
+          { name: 'David Payne', howOut: 'not out', runs: 6, balls: 5, fours: 0, sixes: 0, strikeRate: 120.0 },
+          { name: 'Jaydev Unadkat', howOut: 'not out', runs: 4, balls: 3, fours: 0, sixes: 0, strikeRate: 133.33 },
+        ],
+        extras: '6 (b 0, lb 2, w 4, nb 0)',
+        didNotBat: ['Eshan Malinga'],
+        bowlers: [
+          { name: 'Jacob Duffy', overs: '4', maidens: 0, runs: 22, wickets: 3, economy: 5.5 },
+          { name: 'Bhuvneshwar Kumar', overs: '4', maidens: 0, runs: 31, wickets: 1, economy: 7.8 },
+          { name: 'Abhinandan Singh', overs: '3', maidens: 0, runs: 38, wickets: 1, economy: 12.7 },
+          { name: 'Romario Shepherd', overs: '4', maidens: 0, runs: 54, wickets: 3, economy: 13.5 },
+          { name: 'Suyash Sharma', overs: '3', maidens: 0, runs: 28, wickets: 1, economy: 9.3 },
+          { name: 'Krunal Pandya', overs: '2', maidens: 0, runs: 26, wickets: 0, economy: 13.0 },
+        ],
+        fallOfWickets: ['18/1 (Abhishek Sharma, 2.1 ov)', '23/2 (Travis Head, 2.6 ov)', '29/3 (Nitish Kumar Reddy, 4.2 ov)', '126/4 (Heinrich Klaasen, 13.1 ov)', '137/5 (Salil Arora, 14.3 ov)', '155/6 (Ishan Kishan, 15.6 ov)', '167/7 (Harsh Dubey, 16.6 ov)', '174/8 (Harshal Patel, 17.5 ov)', '192/9 (Aniket Verma, 18.6 ov)'],
+        powerplayRuns: '49/3 (0.1-6 ov)',
+        partnerships: ['18 (Head-Abhishek)', '5 (Head-Ishan)', '6 (Ishan-Nitish)', '97 (Ishan-Klaasen)', '11 (Ishan-Salil)', '18 (Ishan-Aniket)', '12 (Aniket-Harsh)', '7 (Aniket-Harshal)', '18 (Aniket-Payne)', '9 (Payne-Unadkat)']
+      },
+      {
+        teamId: 'rcb',
+        total: 203,
+        wickets: 4,
+        overs: '15.4',
+        batters: [
+          { name: 'Philip Salt', howOut: 'c Heinrich Klaasen b Jaydev Unadkat', runs: 8, balls: 7, fours: 2, sixes: 0, strikeRate: 114.29 },
+          { name: 'Virat Kohli', howOut: 'not out', runs: 69, balls: 38, fours: 5, sixes: 5, strikeRate: 181.58 },
+          { name: 'Devdutt Padikkal', howOut: 'c Heinrich Klaasen b Harsh Dubey', runs: 61, balls: 26, fours: 7, sixes: 4, strikeRate: 234.62 },
+          { name: 'Rajat Patidar', howOut: 'c Harsh Dubey b David Payne', runs: 31, balls: 12, fours: 2, sixes: 3, strikeRate: 258.33 },
+          { name: 'Jitesh Sharma', howOut: 'c Jaydev Unadkat b David Payne', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+          { name: 'Tim David', howOut: 'not out', runs: 16, balls: 10, fours: 1, sixes: 1, strikeRate: 160.0 },
+        ],
+        extras: '18 (b 9, lb 2, w 7, nb 0)',
+        didNotBat: ['Romario Shepherd', 'Krunal Pandya', 'Bhuvneshwar Kumar', 'Abhinandan Singh', 'Jacob Duffy', 'Suyash Sharma'],
+        bowlers: [
+          { name: 'Nitish Kumar Reddy', overs: '2', maidens: 0, runs: 19, wickets: 0, economy: 9.5 },
+          { name: 'Jaydev Unadkat', overs: '3', maidens: 0, runs: 29, wickets: 1, economy: 9.7 },
+          { name: 'David Payne', overs: '3', maidens: 0, runs: 35, wickets: 2, economy: 11.7 },
+          { name: 'Harsh Dubey', overs: '3', maidens: 0, runs: 35, wickets: 1, economy: 11.7 },
+          { name: 'Eshan Malinga', overs: '2', maidens: 0, runs: 35, wickets: 0, economy: 17.5 },
+          { name: 'Harshal Patel', overs: '2.4', maidens: 0, runs: 39, wickets: 0, economy: 14.6 },
+        ],
+        fallOfWickets: ['9/1 (Philip Salt, 1.1 ov)', '110/2 (Devdutt Padikkal, 8.4 ov)', '163/3 (Rajat Patidar, 12.2 ov)', '163/4 (Jitesh Sharma, 12.3 ov)'],
+        powerplayRuns: '76/1 (0.1-6 ov)',
+        partnerships: ['9 (Salt-Kohli)', '101 (Padikkal-Kohli)', '53 (Patidar-Kohli)', '0 (Jitesh-Kohli)', '40 (Tim David-Kohli)']
+      }
+    ]
+  }
+};
 
 const pitchReportsByVenue: Record<string, string> = {
   'Bengaluru': 'Historically a batting paradise with short boundaries. Expect high scores, though spinners can get some grip in the first innings.',
@@ -708,7 +852,9 @@ export const schedule: Match[] = matchSeeds.map((seed) => {
     ...seed,
     captain1: captainByTeam[seed.team1],
     captain2: captainByTeam[seed.team2],
+    status: seed.status || 'upcoming',
     ...insight,
     pitchReport: pitchReportsByVenue[seed.venueCity] || 'A balanced surface expected to provide an even contest between bat and ball.',
+    completedDetails: completedMatchDetailsById[`m${seed.matchNumber}`],
   };
 });
