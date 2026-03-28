@@ -785,7 +785,12 @@ export default function App() {
                           </div>
                           <div className={`flex justify-between items-center text-xs sm:text-sm font-medium uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                             <span>Match {match.matchNumber} • {match.stadium}, {match.venueCity}</span>
-                            <span className={`${isDark ? 'text-slate-300' : 'text-slate-800'} font-bold`}>{match.dateLabel}</span>
+                            <div className="flex items-center gap-2">
+                              {match.status === 'completed' && (
+                                  <span className={`px-2 py-1 rounded-full text-[10px] font-black ${isDark ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-400/30' : 'bg-emerald-100 text-emerald-700 border border-emerald-300'}`}>COMPLETED</span>
+                              )}
+                              <span className={`${isDark ? 'text-slate-300' : 'text-slate-800'} font-bold`}>{match.dateLabel}</span>
+                            </div>
                           </div>
                           <div className="flex items-center justify-between py-2 sm:py-4">
                             <div className="flex items-center gap-3 sm:gap-4 flex-1">
@@ -808,7 +813,9 @@ export default function App() {
                           </div>
                           <div className={`pt-4 border-t flex items-start gap-2 ${isDark ? 'border-white/20' : 'border-black/25'}`}>
                             <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                            <div className={`text-sm leading-relaxed font-medium ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'} transition-colors`}>{match.headline}</div>
+                            <div className={`text-sm leading-relaxed font-medium ${isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'} transition-colors`}>
+                              {match.status === 'completed' ? (match.completedDetails?.result || 'Match completed') : match.headline}
+                            </div>
                           </div>
                         </motion.button>
                     );
