@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home } from 'lucide-react';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Share2, PlusSquare } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
 import iplHero from '../ipl.jpeg';
@@ -11,6 +11,12 @@ type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
 const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
+const MOBILE_A2HS_DISMISSED_KEY = 'ipl-builder-mobile-a2hs-dismissed';
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+};
 
 const safeReadStorage = <T,>(key: string, fallback: T): T => {
   if (typeof window === 'undefined') return fallback;
@@ -139,6 +145,10 @@ export default function App() {
   const [isLogoTransitioning, setIsLogoTransitioning] = useState(false);
   const [isMobileHeaderVisible, setIsMobileHeaderVisible] = useState(true);
   const [showInitialSplash, setShowInitialSplash] = useState(true);
+  const [showMobileA2HSModal, setShowMobileA2HSModal] = useState(false);
+  const [showMobileInstructions, setShowMobileInstructions] = useState(false);
+  const [a2hsPlatform, setA2hsPlatform] = useState<'ios' | 'android'>('android');
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -157,6 +167,38 @@ export default function App() {
   useEffect(() => {
     const timer = window.setTimeout(() => setShowInitialSplash(false), 2000);
     return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isAndroid = /android/.test(userAgent);
+    const isMobile = isIOS || isAndroid;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
+    const isDismissed = safeReadStorage(MOBILE_A2HS_DISMISSED_KEY, false);
+
+    if (!isMobile || isStandalone || isDismissed) return;
+
+    setA2hsPlatform(isIOS ? 'ios' : 'android');
+
+    if (isIOS) {
+      setShowMobileA2HSModal(true);
+      return;
+    }
+
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setDeferredInstallPrompt(event as BeforeInstallPromptEvent);
+      setShowMobileA2HSModal(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    const fallbackTimer = window.setTimeout(() => setShowMobileA2HSModal(true), 1200);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.clearTimeout(fallbackTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -271,6 +313,62 @@ export default function App() {
 
   return (
       <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+        {showMobileA2HSModal && (
+            <div className="fixed inset-0 z-[90] flex items-center justify-center px-4">
+              <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+              <div className={`relative w-full max-w-md rounded-3xl border p-6 shadow-2xl ${isDark ? 'bg-[#101010] border-white/20 text-white' : 'bg-white border-black/10 text-black'}`}>
+                <h2 className="text-2xl font-black tracking-tight">Install on Home Screen</h2>
+                <p className={`mt-2 text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                  Add this app to your home screen for full-screen access like a native app on your {a2hsPlatform === 'ios' ? 'iPhone/iPad' : 'Android phone'}.
+                </p>
+
+                {showMobileInstructions && (
+                    <div className={`mt-4 rounded-2xl border p-4 text-sm space-y-2 ${isDark ? 'bg-white/5 border-white/15 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
+                      <p className="font-semibold">Quick steps:</p>
+                      {a2hsPlatform === 'ios' ? (
+                          <>
+                            <p className="flex items-center gap-2"><Share2 className="w-4 h-4" /> Tap the Share button in Safari.</p>
+                            <p className="flex items-center gap-2"><PlusSquare className="w-4 h-4" /> Select <span className="font-semibold">Add to Home Screen</span>.</p>
+                          </>
+                      ) : (
+                          <>
+                            <p className="flex items-center gap-2"><Share2 className="w-4 h-4" /> Tap the browser menu (⋮) in Chrome.</p>
+                            <p className="flex items-center gap-2"><PlusSquare className="w-4 h-4" /> Select <span className="font-semibold">Install app</span> or <span className="font-semibold">Add to Home screen</span>.</p>
+                          </>
+                      )}
+                    </div>
+                )}
+
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <button
+                      onClick={async () => {
+                        if (a2hsPlatform === 'android' && deferredInstallPrompt) {
+                          await deferredInstallPrompt.prompt();
+                          await deferredInstallPrompt.userChoice;
+                          setDeferredInstallPrompt(null);
+                          setShowMobileA2HSModal(false);
+                          window.localStorage.setItem(MOBILE_A2HS_DISMISSED_KEY, JSON.stringify(true));
+                          return;
+                        }
+                        setShowMobileInstructions(true);
+                      }}
+                      className={`rounded-full px-4 py-2.5 text-sm font-bold transition-colors ${isDark ? 'bg-white text-black hover:bg-slate-200' : 'bg-black text-white hover:bg-slate-800'}`}
+                  >
+                    OK
+                  </button>
+                  <button
+                      onClick={() => {
+                        window.localStorage.setItem(MOBILE_A2HS_DISMISSED_KEY, JSON.stringify(true));
+                        setShowMobileA2HSModal(false);
+                      }}
+                      className={`rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${isDark ? 'border-white/25 hover:bg-white/10' : 'border-black/15 hover:bg-black/5'}`}
+                  >
+                    Later
+                  </button>
+                </div>
+              </div>
+            </div>
+        )}
         {showInitialSplash && (
             <div className={`fixed inset-0 z-[80] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
               <motion.img
