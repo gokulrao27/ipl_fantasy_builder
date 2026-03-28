@@ -288,6 +288,16 @@ export const teams: Team[] = [
       { id: 'srh12', name: 'Jaydev Unadkat', role: 'Bowler', imageUrl: 'https://www.sunrisershyderabad.in/uploads/image/SRH-67e272f98c68f3.63349484)6p71kcg.png' },
       { id: 'srh13', name: 'Eshan Malinga', role: 'Bowler', imageUrl: 'https://www.sunrisershyderabad.in/uploads/image/SRH-67e2729406a908.248406980u87x9eh.png' },
       { id: 'srh14', name: 'Zeeshan Ansari', role: 'Bowler', imageUrl: 'https://www.sunrisershyderabad.in/uploads/image/SRH-67fe03297300c7.02410136h$vo(j5z.png' },
+        { id: 'srh15', name: 'Salil Arora', role: 'Wicket-keeper', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/4556.png' },
+        { id: 'srh16', name: 'Brydon Carse', role: 'All-rounder', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/1221.png' },
+        { id: 'srh17', name: 'Shivang Kumar', role: 'All-rounder', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/4561.png' },
+        { id: 'srh18', name: 'Krains Fuletra', role: 'All-rounder', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/4557.png' },
+        { id: 'srh19', name: 'Liam Livingstone', role: 'All-rounder', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/183.png' },
+        { id: 'srh20', name: 'David Payne', role: 'All-rounder', imageUrl: 'https://documents.iplt20.com/ipl/assets/images/Default-Men.png' },
+        { id: 'srh21', name: 'Sakib Hussain', role: 'Bowler', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/3104.png' },
+        { id: 'srh22', name: 'Onkar Tarmale', role: 'Bowler', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/4560.png' },
+        { id: 'srh23', name: 'Amit Kumar', role: 'Bowler', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/4559.png' },
+        { id: 'srh24', name: 'Praful Hinge', role: 'Bowler', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/4558.png' }
     ]
   },
   {
