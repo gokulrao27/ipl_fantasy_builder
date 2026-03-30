@@ -394,14 +394,14 @@ export interface PointsTableEntry {
 
 export const pointsTable: PointsTableEntry[] = [
     { teamId: 'rcb', played: 1, won: 1, lost: 0, tied: 0, nrr: +2.907, points: 2, form: ['W', 'W', 'W', 'W', 'W'] },
+    { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'csk', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'W', 'L', 'W', 'L'] },
-    { teamId: 'kkr', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'W', 'W', 'W'] },
     { teamId: 'rr', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'dc', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'L', 'L', 'W'] },
-    { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
     { teamId: 'gt', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
+    { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
+    { teamId: 'dc', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'L', 'L', 'W'] },
     { teamId: 'pbks', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'L', 'W'] },
-    { teamId: 'mi', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'W', 'L', 'L'] },
+    { teamId: 'kkr', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.687, points: 0, form: ['L', 'W', 'W', 'W', 'L'] },
     { teamId: 'srh', played: 1, won: 0, lost: 1, tied: 0, nrr: -2.907, points: 0, form: ['L', 'L', 'L', 'W', 'W'] },
 ];
 
