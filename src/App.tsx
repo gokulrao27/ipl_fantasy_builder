@@ -141,6 +141,7 @@ export default function App() {
     const [showInitialSplash, setShowInitialSplash] = useState(true);
     const [completedInsightTab, setCompletedInsightTab] = useState<'key_moments' | 'tactical' | 'improvements' | 'team_compare'>('key_moments');
     const [completedViewMode, setCompletedViewMode] = useState<'summary' | 'analysis'>('summary');
+    const [mobileScorecardInningsIndex, setMobileScorecardInningsIndex] = useState<0 | 1>(0);
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -186,6 +187,7 @@ export default function App() {
     useEffect(() => {
         setCompletedInsightTab('key_moments');
         setCompletedViewMode('summary');
+        setMobileScorecardInningsIndex(0);
     }, [selectedMatch?.id]);
 
     const builderSummary = useMemo(() => {
@@ -972,11 +974,34 @@ export default function App() {
                                             </div>
 
                                             {completedViewMode === 'summary' && (
-                                                <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
-                                                    {completedDetails.innings.map((innings) => {
+                                                <div className="grid gap-4 sm:gap-6">
+                                                    <div className="sm:hidden">
+                                                        <div className={`rounded-2xl border p-2 flex items-center gap-2 ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                                            {completedDetails.innings.map((innings, idx) => {
+                                                                const inningsTeam = teams.find((team) => team.id === innings.teamId);
+                                                                const isActive = mobileScorecardInningsIndex === idx;
+                                                                return (
+                                                                    <button
+                                                                        key={`scorecard-mobile-toggle-${innings.teamId}`}
+                                                                        onClick={() => setMobileScorecardInningsIndex(idx as 0 | 1)}
+                                                                        className={`flex-1 flex items-center justify-center gap-2 rounded-xl px-3 py-2 border transition ${
+                                                                            isActive
+                                                                                ? 'bg-blue-600 border-blue-600 text-white'
+                                                                                : (isDark ? 'bg-[#0B0F19] border-white/15 text-slate-300' : 'bg-slate-100 border-black/15 text-slate-700')
+                                                                        }`}
+                                                                    >
+                                                                        {inningsTeam && <img src={inningsTeam.logoUrl} alt={inningsTeam.shortName} className="w-6 h-6 object-contain" />}
+                                                                        <span className="text-xs font-black">{inningsTeam?.shortName || innings.teamId.toUpperCase()}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                    <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                                                    {completedDetails.innings.map((innings, idx) => {
                                                         const inningsTeam = teams.find((team) => team.id === innings.teamId);
                                                         return (
-                                                            <div key={innings.teamId} className={`rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
+                                                            <div key={innings.teamId} className={`${idx === mobileScorecardInningsIndex ? 'block' : 'hidden'} sm:block rounded-3xl border p-5 sm:p-6 shadow-lg ${isDark ? 'border-white/20 bg-[#151A27]' : 'border-black/20 bg-white'}`}>
                                                                 <div className="flex items-center justify-between gap-3 mb-4">
                                                                     <div className="flex items-center gap-3">
                                                                         {inningsTeam && <img src={inningsTeam.logoUrl} alt={inningsTeam.shortName} className="w-10 h-10 object-contain" />}
@@ -1056,6 +1081,7 @@ export default function App() {
                                                             </div>
                                                         );
                                                     })}
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -1075,8 +1101,8 @@ export default function App() {
                                                     )}
                                                     {completedInsightTab === 'improvements' && (
                                                         <div className="grid gap-4">
-                                                            <div className={`rounded-2xl border p-4 ${isDark ? 'border-rose-400/30 bg-rose-900/10' : 'border-rose-300 bg-rose-50'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-rose-200' : 'text-rose-700'}`}>SRH (Lacking Areas)</h5><ul className="space-y-2">{completedDetails.improvements.team1.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
-                                                            <div className={`rounded-2xl border p-4 ${isDark ? 'border-emerald-400/30 bg-emerald-900/10' : 'border-emerald-300 bg-emerald-50'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>RCB (Can Improve Despite Win)</h5><ul className="space-y-2">{completedDetails.improvements.team2.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
+                                                            <div className={`rounded-2xl border p-4 ${isDark ? 'border-rose-400/30 bg-rose-900/10' : 'border-rose-300 bg-rose-50'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-rose-200' : 'text-rose-700'}`}>{team1.shortName} (Improvement Areas)</h5><ul className="space-y-2">{completedDetails.improvements.team1.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
+                                                            <div className={`rounded-2xl border p-4 ${isDark ? 'border-emerald-400/30 bg-emerald-900/10' : 'border-emerald-300 bg-emerald-50'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>{team2.shortName} (Improvement Areas)</h5><ul className="space-y-2">{completedDetails.improvements.team2.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
                                                             <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-[#0B0F19]' : 'border-black/20 bg-slate-100'}`}><h5 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Player Improvement Notes</h5><ul className="space-y-2">{completedDetails.improvements.players.map((item) => <li key={item} className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {item}</li>)}</ul></div>
                                                         </div>
                                                     )}
