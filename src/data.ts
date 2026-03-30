@@ -716,7 +716,7 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
 
 const matchSeeds: MatchSeed[] = [
     { matchNumber: 1, date: '2026-03-28', dateLabel: '28 Mar', day: 'Saturday', team1: 'rcb', team2: 'srh', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium', status: 'completed' },
-    { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+    { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium', status: 'completed' },
     { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
     { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'Mullanpur', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
     { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
@@ -836,6 +836,104 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['9/1 (Philip Salt, 1.1 ov)', '110/2 (Devdutt Padikkal, 8.4 ov)', '163/3 (Rajat Patidar, 12.2 ov)', '163/4 (Jitesh Sharma, 12.3 ov)'],
                 powerplayRuns: '76/1 (0.1-6 ov)',
                 partnerships: ['9 (Salt-Kohli)', '101 (Padikkal-Kohli)', '53 (Patidar-Kohli)', '0 (Jitesh-Kohli)', '40 (Tim David-Kohli)']
+            }
+        ]
+    },
+    m2: {
+        toss: 'Mumbai Indians won the toss and elected to bowl.',
+        result: 'Mumbai Indians won by 6 wickets.',
+        playerOfTheMatch: 'Shardul Thakur - 3/39 (4)',
+        keyMoments: [
+            'KKR exploded to 78 in the powerplay, powered by Finn Allen\'s 37 off 17 and Ajinkya Rahane\'s control against pace.',
+            'Shardul Thakur broke the game open by removing Allen, Cameron Green, and Rahane, pulling KKR back from a 230+ launchpad to 220/4.',
+            'MI answered with an even stronger powerplay of 80 and then built a 148-run opening stand in just 11.5 overs through Rohit Sharma and Ryan Rickelton.',
+            'Despite a mini-collapse from 179/1 to 184/3, Hardik Pandya and Tilak Varma absorbed pressure before Hardik-Naman Dhir finished the chase in 19.1 overs.',
+            'The Wankhede curse is broken: MI finally chased down a massive 220-plus total against KKR in a high-pressure night game.'
+        ],
+        tacticalAnalysis: [
+            'KKR batted at 11.00 per over, but MI\'s wicket distribution was the separator: Shardul took out KKR\'s three most fluent top-order batters.',
+            'Raghuvanshi-Rinku stitched momentum late, yet KKR\'s finish lacked a final-over surge because MI denied boundary options to square-leg and long-on pockets.',
+            'MI\'s chase blueprint was ultra-clear: maximize field restrictions with two aggressive right-left options and keep intent above 11 an over till the 12th.',
+            'The 148-run opening partnership was match-winning because it removed scoreboard panic and forced KKR to spread fields early, reducing wicket-taking threat.',
+            'KKR\'s spinners could not control middle overs on this surface: Narine was tidy by comparison, but Varun and pace support leaked too many release balls.',
+            'Hardik\'s finishing phase showed game-awareness: he attacked only matchups in his zone and let required rate pressure collapse on KKR.',
+            'MI won both key windows: wickets in the first innings and boundary pressure in the powerplay of the chase.',
+            'Player of the Match Shardul Thakur combined strike-bowling impact with timing: each wicket arrived when KKR were trying to accelerate toward 230.'
+        ],
+        improvements: {
+            team1: [
+                'KKR need a stronger death-over batting finish after over 16; 220 was excellent, but 10-15 more runs were available with wickets in hand.',
+                'Bowling plans in a 220 defense must be tighter in overs 1-6. Conceding 80 in the powerplay gave MI immediate control.',
+                'KKR should hold one over of Narine/Varun for post-12 overs when set batters are targeting pace across shorter square boundaries.'
+            ],
+            team2: [
+                'MI can improve new-ball economy on hard lengths; 78 conceded in the powerplay is high even in Wankhede conditions.',
+                'Middle-over bowling against set right-handers still needs better pace-off sequencing to avoid four-ball streaks.',
+                'MI should avoid mini collapses in steep chases by preserving one batter with anchor intent between overs 12-16.'
+            ],
+            players: [
+                'Ajinkya Rahane (KKR): convert fluent starts deeper; a set 67 could have been stretched into a match-defining 85+.',
+                'Rinku Singh (KKR): look to access straighter pockets earlier when partners are set, rather than waiting for the last two overs.',
+                'Vaibhav Arora (KKR): improve powerplay yorker percentage; over-pitched and slot deliveries fueled MI\'s launch.',
+                'Rohit Sharma (MI): continue high-intent starts but minimize aerial risk immediately after powerplay when boundary riders go back.',
+                'Hardik Pandya (MI): maintain finishing clarity while improving defensive bowling lengths when batting side is pre-loading leg side.',
+                'Shardul Thakur (MI): build on impact spells by pairing wicket-taking lengths with one lower-risk over for economy control.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'kkr',
+                total: 220,
+                wickets: 4,
+                overs: '20.0',
+                batters: [
+                    { name: 'Ajinkya Rahane', howOut: 'c Hardik Pandya b Shardul Thakur', runs: 67, balls: 40, fours: 3, sixes: 5, strikeRate: 167.5 },
+                    { name: 'Finn Allen', howOut: 'c Tilak Varma b Shardul Thakur', runs: 37, balls: 17, fours: 6, sixes: 2, strikeRate: 217.65 },
+                    { name: 'Cameron Green', howOut: 'c Sherfane Rutherford b Shardul Thakur', runs: 18, balls: 10, fours: 1, sixes: 1, strikeRate: 180.0 },
+                    { name: 'Angkrish Raghuvanshi', howOut: 'c Tilak Varma b Hardik Pandya', runs: 51, balls: 29, fours: 6, sixes: 2, strikeRate: 175.86 },
+                    { name: 'Rinku Singh', howOut: 'not out', runs: 33, balls: 21, fours: 4, sixes: 0, strikeRate: 157.14 },
+                    { name: 'Ramandeep Singh', howOut: 'not out', runs: 4, balls: 4, fours: 0, sixes: 0, strikeRate: 100.0 },
+                ],
+                extras: '10 (b 0, lb 2, w 7, nb 1)',
+                didNotBat: ['Anukul Roy', 'Sunil Narine', 'Varun Chakaravarthy', 'Vaibhav Arora', 'Blessing Muzarabani'],
+                bowlers: [
+                    { name: 'Trent Boult', overs: '4', maidens: 0, runs: 38, wickets: 0, economy: 9.5 },
+                    { name: 'Hardik Pandya', overs: '3', maidens: 0, runs: 39, wickets: 1, economy: 13.0 },
+                    { name: 'AM Ghazanfar', overs: '4', maidens: 0, runs: 51, wickets: 0, economy: 12.8 },
+                    { name: 'Jasprit Bumrah', overs: '4', maidens: 0, runs: 35, wickets: 0, economy: 8.8 },
+                    { name: 'Shardul Thakur', overs: '4', maidens: 0, runs: 39, wickets: 3, economy: 9.8 },
+                    { name: 'Mayank Markande', overs: '1', maidens: 0, runs: 16, wickets: 0, economy: 16.0 },
+                ],
+                fallOfWickets: ['69/1 (Finn Allen, 5.2 ov)', '109/2 (Cameron Green, 8.5 ov)', '145/3 (Ajinkya Rahane, 13.3 ov)', '205/4 (Angkrish Raghuvanshi, 18.3 ov)'],
+                powerplayRuns: '78/1 (0.1-6 ov)',
+                partnerships: ['69 (Rahane-Allen)', '40 (Rahane-Green)', '36 (Rahane-Raghuvanshi)', '60 (Raghuvanshi-Rinku)', '15* (Rinku-Ramandeep)']
+            },
+            {
+                teamId: 'mi',
+                total: 224,
+                wickets: 4,
+                overs: '19.1',
+                batters: [
+                    { name: 'Ryan Rickelton', howOut: 'run out (Anukul Roy)', runs: 81, balls: 43, fours: 4, sixes: 8, strikeRate: 188.37 },
+                    { name: 'Rohit Sharma', howOut: 'c Anukul Roy b Vaibhav Arora', runs: 78, balls: 38, fours: 6, sixes: 6, strikeRate: 205.26 },
+                    { name: 'Suryakumar Yadav', howOut: 'c Rinku Singh b Kartik Tyagi', runs: 16, balls: 8, fours: 3, sixes: 0, strikeRate: 200.0 },
+                    { name: 'Tilak Varma', howOut: 'c (sub) Manish Pandey b Sunil Narine', runs: 20, balls: 14, fours: 4, sixes: 0, strikeRate: 142.86 },
+                    { name: 'Hardik Pandya', howOut: 'not out', runs: 18, balls: 11, fours: 3, sixes: 0, strikeRate: 163.64 },
+                    { name: 'Naman Dhir', howOut: 'not out', runs: 5, balls: 2, fours: 1, sixes: 0, strikeRate: 250.0 },
+                ],
+                extras: '6 (b 0, lb 2, w 3, nb 1)',
+                didNotBat: ['Sherfane Rutherford', 'Shardul Thakur', 'Mayank Markande', 'AM Ghazanfar', 'Trent Boult', 'Jasprit Bumrah'],
+                bowlers: [
+                    { name: 'Vaibhav Arora', overs: '4', maidens: 0, runs: 52, wickets: 1, economy: 13.0 },
+                    { name: 'Blessing Muzarabani', overs: '3', maidens: 0, runs: 34, wickets: 0, economy: 11.3 },
+                    { name: 'Varun Chakaravarthy', overs: '4', maidens: 0, runs: 48, wickets: 0, economy: 12.0 },
+                    { name: 'Kartik Tyagi', overs: '4', maidens: 0, runs: 43, wickets: 1, economy: 10.8 },
+                    { name: 'Sunil Narine', overs: '3', maidens: 0, runs: 30, wickets: 1, economy: 10.0 },
+                    { name: 'Anukul Roy', overs: '1.1', maidens: 0, runs: 15, wickets: 0, economy: 12.9 },
+                ],
+                fallOfWickets: ['148/1 (Rohit Sharma, 11.5 ov)', '179/2 (Suryakumar Yadav, 14.2 ov)', '184/3 (Ryan Rickelton, 15.2 ov)', '215/4 (Tilak Varma, 18.4 ov)'],
+                powerplayRuns: '80/0 (0.1-6 ov)',
+                partnerships: ['148 (Rickelton-Rohit)', '31 (Rickelton-Suryakumar)', '5 (Rickelton-Tilak)', '31 (Tilak-Hardik)', '9* (Hardik-Naman)']
             }
         ]
     }
