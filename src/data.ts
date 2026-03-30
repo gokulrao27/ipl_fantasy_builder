@@ -395,14 +395,14 @@ export interface PointsTableEntry {
 export const pointsTable: PointsTableEntry[] = [
     { teamId: 'rcb', played: 1, won: 1, lost: 0, tied: 0, nrr: +2.907, points: 2, form: ['W', 'W', 'W', 'W', 'W'] },
     { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'csk', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'W', 'L', 'W', 'L'] },
-    { teamId: 'rr', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'gt', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
-    { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
+    { teamId: 'rr', played: 1, won: 1, lost: 0, tied: 0, nrr: +4.171, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'dc', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'L', 'L', 'W'] },
     { teamId: 'pbks', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'L', 'W'] },
+    { teamId: 'gt', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
+    { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
     { teamId: 'kkr', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.687, points: 0, form: ['L', 'W', 'W', 'W', 'L'] },
     { teamId: 'srh', played: 1, won: 0, lost: 1, tied: 0, nrr: -2.907, points: 0, form: ['L', 'L', 'L', 'W', 'W'] },
+    { teamId: 'csk', played: 1, won: 0, lost: 1, tied: 0, nrr: -4.171, points: 0, form: ['L', 'W', 'L', 'W', 'L'] },
 ];
 
 export interface ScorecardBatter {
@@ -717,7 +717,7 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
 const matchSeeds: MatchSeed[] = [
     { matchNumber: 1, date: '2026-03-28', dateLabel: '28 Mar', day: 'Saturday', team1: 'rcb', team2: 'srh', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium', status: 'completed' },
     { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium', status: 'completed' },
-    { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
+    { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium', status: 'completed' },
     { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'Mullanpur', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
     { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
     { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
@@ -936,7 +936,104 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 partnerships: ['148 (Rickelton-Rohit)', '31 (Rickelton-Suryakumar)', '5 (Rickelton-Tilak)', '31 (Tilak-Hardik)', '9* (Hardik-Naman)']
             }
         ]
-    }
+    },
+    m3: {
+        toss: 'Rajasthan Royals won the toss and elected to bowl.',
+        result: 'Rajasthan Royals won by 8 wickets (with 47 balls remaining).',
+        playerOfTheMatch: 'Nandre Burger - 2/26 (4)',
+        keyMoments: [
+            'RR destroyed CSK’s top order to 19/3 inside 3.1 overs, immediately forcing a rebuilding innings.',
+            'Nandre Burger and Jofra Archer struck in tandem up front, while wickets at 7.2 and 7.6 overs stalled CSK’s momentum again.',
+            'Jamie Overton’s 43 off 36 lifted CSK from 94/9 to 127 all out, giving them at least a defendable total.',
+            'RR’s chase was dominated by Vaibhav Sooryavanshi’s 52 off 17 and ended in just 12.1 overs.'
+        ],
+        tacticalAnalysis: [
+            'RR’s new-ball attack used hard lengths and straight lines to force early mistakes; 19/3 in 3.1 overs set the whole game.',
+            'CSK lost control in the middle phase too, with wickets falling regularly from overs 5 to 13 and very few boundary options.',
+            'RR’s chase blueprint was extreme intent in the powerplay, reaching 75/1 by 6.2 overs and eliminating scoreboard pressure.',
+            'CSK’s wicket-taking came only through Anshul Kamboj, but RR already had the asking rate under complete control.',
+            'Burger’s opening spell and pressure-building lengths created the game’s biggest separation phase.',
+            'RR won all major phases: powerplay bowling, middle-over strike rate, and chase tempo.'
+        ],
+        improvements: {
+            team1: [
+                'RR can tighten death-over execution despite control overall; CSK still added useful lower-order runs.',
+                'RR should keep one over of a strike bowler in reserve when the opposition is 8 down to prevent late momentum.',
+                'Fielding remained good, but direct-hit opportunities in the ring can still improve.'
+            ],
+            team2: [
+                'CSK need a safer top-order template; 19/3 inside four overs created an immediate deficit.',
+                'Middle-order batters must rotate better against spin and hit fewer low-percentage release shots.',
+                'Defending 127 required early wickets, but CSK leaked boundary options and pace-off control in the powerplay.'
+            ],
+            players: [
+                'Ruturaj Gaikwad (CSK): improve powerplay shot selection against high pace and hard lengths.',
+                'Jamie Overton (CSK): convert rescue innings into a faster strike rate once tail support arrives.',
+                'Nandre Burger (RR): continue attacking the stumps early; this spell showed high-impact control.',
+                'Vaibhav Sooryavanshi (RR): maintain controlled aggression while preserving shape against short-ball plans.',
+                'Anshul Kamboj (CSK): build around this impact spell by pairing breakthroughs with lower-risk overs.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'csk',
+                total: 127,
+                wickets: 10,
+                overs: '19.4',
+                batters: [
+                    { name: 'Sanju Samson', howOut: 'b Nandre Burger', runs: 6, balls: 7, fours: 1, sixes: 0, strikeRate: 85.71 },
+                    { name: 'Ruturaj Gaikwad', howOut: 'b Jofra Archer', runs: 6, balls: 11, fours: 1, sixes: 0, strikeRate: 54.54 },
+                    { name: 'Ayush Mhatre', howOut: 'c Dhruv Jurel b Nandre Burger', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Matthew Short', howOut: 'c Yashasvi Jaiswal b Sandeep Sharma', runs: 2, balls: 7, fours: 0, sixes: 0, strikeRate: 28.57 },
+                    { name: 'Sarfaraz Khan', howOut: 'lbw b Ravindra Jadeja', runs: 17, balls: 12, fours: 2, sixes: 1, strikeRate: 141.67 },
+                    { name: 'Kartik Sharma', howOut: 'lbw b Brijesh Sharma', runs: 18, balls: 15, fours: 0, sixes: 1, strikeRate: 120.0 },
+                    { name: 'Shivam Dube', howOut: 'c Ravi Bishnoi b Ravindra Jadeja', runs: 6, balls: 4, fours: 0, sixes: 1, strikeRate: 150.0 },
+                    { name: 'Jamie Overton', howOut: 'run out (Shimron Hetmyer/Dhruv Jurel)', runs: 43, balls: 36, fours: 2, sixes: 2, strikeRate: 119.44 },
+                    { name: 'Noor Ahmad', howOut: 'c Dhruv Jurel b Jofra Archer', runs: 1, balls: 9, fours: 0, sixes: 0, strikeRate: 11.11 },
+                    { name: 'Matt Henry', howOut: 'c & b Ravi Bishnoi', runs: 5, balls: 7, fours: 1, sixes: 0, strikeRate: 71.43 },
+                    { name: 'Anshul Kamboj', howOut: 'not out', runs: 7, balls: 10, fours: 1, sixes: 0, strikeRate: 70.0 },
+                ],
+                extras: '16 (b 0, lb 9, w 6, nb 1)',
+                didNotBat: ['Khaleel Ahmed'],
+                bowlers: [
+                    { name: 'Jofra Archer', overs: '4', maidens: 0, runs: 19, wickets: 2, economy: 4.75 },
+                    { name: 'Nandre Burger', overs: '4', maidens: 0, runs: 26, wickets: 2, economy: 6.5 },
+                    { name: 'Brijesh Sharma', overs: '3', maidens: 0, runs: 17, wickets: 1, economy: 5.67 },
+                    { name: 'Sandeep Sharma', overs: '2.4', maidens: 0, runs: 22, wickets: 1, economy: 8.25 },
+                    { name: 'Ravi Bishnoi', overs: '3', maidens: 0, runs: 16, wickets: 1, economy: 5.33 },
+                    { name: 'Ravindra Jadeja', overs: '3', maidens: 0, runs: 18, wickets: 2, economy: 6.0 },
+                ],
+                fallOfWickets: ['14/1 (Sanju Samson, 1.6 ov)', '19/2 (Ruturaj Gaikwad, 2.6 ov)', '19/3 (Ayush Mhatre, 3.1 ov)', '38/4 (Matthew Short, 5.3 ov)', '51/5 (Sarfaraz Khan, 7.2 ov)', '57/6 (Shivam Dube, 7.6 ov)', '74/7 (Kartik Sharma, 10.3 ov)', '82/8 (Noor Ahmad, 12.5 ov)', '94/9 (Matt Henry, 15.3 ov)', '127/10 (Jamie Overton, 19.4 ov)'],
+                powerplayRuns: '40/4 (0.1-6 ov)',
+                partnerships: ['14 (Samson-Gaikwad)', '5 (Gaikwad-Mhatre)', '0 (Mhatre-Short)', '19 (Short-Sarfaraz)', '13 (Sarfaraz-Kartik)', '6 (Kartik-Dube)', '17 (Kartik-Overton)', '8 (Overton-Noor)', '12 (Overton-Henry)', '33 (Overton-Kamboj)']
+            },
+            {
+                teamId: 'rr',
+                total: 128,
+                wickets: 2,
+                overs: '12.1',
+                batters: [
+                    { name: 'Yashasvi Jaiswal', howOut: 'not out', runs: 38, balls: 36, fours: 3, sixes: 1, strikeRate: 105.56 },
+                    { name: 'Vaibhav Sooryavanshi', howOut: 'c Sarfaraz Khan b Anshul Kamboj', runs: 52, balls: 17, fours: 4, sixes: 5, strikeRate: 305.88 },
+                    { name: 'Dhruv Jurel', howOut: 'b Anshul Kamboj', runs: 18, balls: 9, fours: 4, sixes: 0, strikeRate: 200.0 },
+                    { name: 'Riyan Parag', howOut: 'not out', runs: 14, balls: 11, fours: 1, sixes: 1, strikeRate: 127.27 },
+                ],
+                extras: '6 (b 4, lb 1, w 1, nb 0)',
+                didNotBat: ['Shimron Hetmyer', 'Ravindra Jadeja', 'Jofra Archer', 'Nandre Burger', 'Sandeep Sharma', 'Ravi Bishnoi', 'Brijesh Sharma'],
+                bowlers: [
+                    { name: 'Matt Henry', overs: '3', maidens: 0, runs: 40, wickets: 0, economy: 13.33 },
+                    { name: 'Khaleel Ahmed', overs: '3', maidens: 0, runs: 17, wickets: 0, economy: 5.67 },
+                    { name: 'Anshul Kamboj', overs: '3', maidens: 0, runs: 27, wickets: 2, economy: 9.0 },
+                    { name: 'Noor Ahmad', overs: '2', maidens: 0, runs: 24, wickets: 0, economy: 12.0 },
+                    { name: 'Jamie Overton', overs: '1', maidens: 0, runs: 14, wickets: 0, economy: 14.0 },
+                    { name: 'Matthew Short', overs: '0.1', maidens: 0, runs: 1, wickets: 0, economy: 6.0 },
+                ],
+                fallOfWickets: ['75/1 (Vaibhav Sooryavanshi, 6.2 ov)', '99/2 (Dhruv Jurel, 8.3 ov)'],
+                powerplayRuns: '74/0 (0.1-6 ov)',
+                partnerships: ['75 (Jaiswal-Sooryavanshi)', '24 (Jaiswal-Jurel)', '29* (Jaiswal-Parag)']
+            }
+        ]
+    },
 };
 
 const pitchReportsByVenue: Record<string, string> = {
