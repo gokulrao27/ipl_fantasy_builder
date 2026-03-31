@@ -12,6 +12,48 @@ type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
 const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
 
+const createDefaultSavedXIs = (): Record<string, SavedXI> => {
+    const latestCompletedByTeam = new Map<string, Match>();
+    const completedMatches = schedule
+        .filter((match) => match.status === 'completed' && match.completedDetails)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    completedMatches.forEach((match) => {
+        if (!latestCompletedByTeam.has(match.team1)) latestCompletedByTeam.set(match.team1, match);
+        if (!latestCompletedByTeam.has(match.team2)) latestCompletedByTeam.set(match.team2, match);
+    });
+
+    const defaults: Record<string, SavedXI> = {};
+
+    teams.forEach((team) => {
+        const match = latestCompletedByTeam.get(team.id);
+        if (!match?.completedDetails) {
+            defaults[team.id] = { playing11: [], impactPlayer: null };
+            return;
+        }
+
+        const innings = match.completedDetails.innings.find((inning) => inning.teamId === team.id);
+        if (!innings) {
+            defaults[team.id] = { playing11: [], impactPlayer: null };
+            return;
+        }
+
+        const xiNames = [...innings.batters.map((b) => b.name), ...innings.didNotBat]
+            .filter((name, index, arr) => arr.indexOf(name) === index)
+            .slice(0, 11);
+
+        const playing11 = xiNames
+            .map((name) => team.players.find((player) => player.name === name))
+            .filter((player): player is Player => Boolean(player));
+
+        const impactPlayer = team.players.find((player) => !playing11.some((p) => p.id === player.id)) || null;
+
+        defaults[team.id] = { playing11, impactPlayer };
+    });
+
+    return defaults;
+};
+
 const safeReadStorage = <T,>(key: string, fallback: T): T => {
     if (typeof window === 'undefined') return fallback;
 
@@ -142,7 +184,11 @@ export default function App() {
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [playing11, setPlaying11] = useState<Player[]>([]);
     const [impactPlayer, setImpactPlayer] = useState<Player | null>(null);
-    const [savedXIs, setSavedXIs] = useState<Record<string, SavedXI>>(() => safeReadStorage(SAVED_XI_KEY, {}));
+    const [savedXIs, setSavedXIs] = useState<Record<string, SavedXI>>(() => {
+        const defaults = createDefaultSavedXIs();
+        const stored = safeReadStorage<Record<string, SavedXI>>(SAVED_XI_KEY, {});
+        return { ...defaults, ...stored };
+    });
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [fantasyXI, setFantasyXI] = useState<Record<string, Player[]>>(() => safeReadStorage(FANTASY_XI_KEY, {}));
     const [showBuilderRoster, setShowBuilderRoster] = useState(false);
@@ -369,7 +415,7 @@ export default function App() {
                                     whileHover={{ scale: 1.03, y: -5 }}
                                     whileTap={{ scale: 0.98 }}
                                     key={team.id}
-                                    onClick={() => handleTeamSelect(team)}
+                                    onClick={() => handleTeamSelect(team, 'builder')}
                                     className={`relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-left transition-all duration-300 group border border-white/25 shadow-2xl bg-gradient-to-br ${team.gradient}`}
                                 >
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
@@ -658,7 +704,7 @@ export default function App() {
                                                         <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Teams</h4>
                                                         <div className="space-y-2">
                                                             {searchResults.teams.map((team) => (
-                                                                <button key={`search-team-${team.id}`} onClick={() => handleTeamSelect(team, 'squad', 'schedule')} className={`w-full text-left rounded-xl border px-3 py-2 flex items-center gap-3 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}>
+                                                                <button key={`search-team-${team.id}`} onClick={() => handleTeamSelect(team, 'builder', 'schedule')} className={`w-full text-left rounded-xl border px-3 py-2 flex items-center gap-3 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}>
                                                                     <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
                                                                     <span className="font-bold">{team.name}</span>
                                                                 </button>
@@ -701,6 +747,7 @@ export default function App() {
 
                                     <section className="flex flex-wrap gap-2 sm:gap-3">
                                         {[
+                                            { label: 'Build Playing XI', action: () => setCurrentScreen('teams') },
                                             { label: 'Explore Stats', action: () => setCurrentScreen('stats') },
                                             { label: 'View Matches', action: () => setCurrentScreen('schedule_list') },
                                             { label: 'Browse Teams', action: () => setCurrentScreen('teams') },
