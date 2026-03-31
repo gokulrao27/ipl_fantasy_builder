@@ -230,7 +230,12 @@ export default function App() {
     }, [isDark]);
 
     useEffect(() => {
-        const timer = window.setTimeout(() => setShowInitialSplash(false), 2000);
+        const preloadLight = new Image();
+        const preloadDark = new Image();
+        preloadLight.src = logoLight;
+        preloadDark.src = logoDark;
+
+        const timer = window.setTimeout(() => setShowInitialSplash(false), 700);
         return () => window.clearTimeout(timer);
     }, []);
 
@@ -380,6 +385,8 @@ export default function App() {
                     <motion.img
                         src={isDark ? logoLight : logoDark}
                         alt="Cricto loading"
+                        loading="eager"
+                        decoding="sync"
                         initial={{ scale: 0.65, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.6, ease: 'easeOut' }}
