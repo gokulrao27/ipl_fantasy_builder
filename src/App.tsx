@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { teams, Team, Player, schedule, Match, pointsTable } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home } from 'lucide-react';
+import { teams, Team, Player, schedule, Match, pointsTable, homeHeaderStats, battingTable, bowlingTable, playerDetails } from './data';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
 import iplHero from '../ipl.jpeg';
 
-type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table';
+type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details';
 type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
@@ -142,6 +142,8 @@ export default function App() {
     const [completedInsightTab, setCompletedInsightTab] = useState<'key_moments' | 'tactical' | 'improvements' | 'team_compare'>('key_moments');
     const [completedViewMode, setCompletedViewMode] = useState<'summary' | 'analysis'>('summary');
     const [mobileScorecardInningsIndex, setMobileScorecardInningsIndex] = useState<0 | 1>(0);
+    const [globalSearch, setGlobalSearch] = useState('');
+    const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -200,6 +202,16 @@ export default function App() {
 
         return nextAction;
     }, [impactPlayer, playing11.length]);
+
+    const searchResults = useMemo(() => {
+        const query = globalSearch.trim().toLowerCase();
+        if (query.length < 3) return { teams: [] as Team[], players: [] as typeof playerDetails };
+
+        return {
+            teams: teams.filter((team) => team.name.toLowerCase().includes(query) || team.shortName.toLowerCase().includes(query)).slice(0, 6),
+            players: playerDetails.filter((player) => player.name.toLowerCase().includes(query)).slice(0, 12),
+        };
+    }, [globalSearch]);
 
     const handleTeamSelect = (team: Team, nextScreen: Screen = 'squad', returnScreen: Screen | null = null) => {
         setSelectedTeam(team);
@@ -277,6 +289,8 @@ export default function App() {
             setIsLogoTransitioning(false);
         }, 700);
     };
+
+    const selectedPlayerDetails = playerDetails.find((player) => player.id === selectedPlayerId) || null;
 
     return (
         <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
@@ -606,6 +620,110 @@ export default function App() {
                                         <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%]" />
                                     </section>
 
+                                    <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl space-y-4`}>
+                                        <div className="flex items-center gap-3">
+                                            <Search className={`w-5 h-5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />
+                                            <input
+                                                value={globalSearch}
+                                                onChange={(e) => setGlobalSearch(e.target.value)}
+                                                placeholder="Search teams or players (min 3 letters)"
+                                                className={`w-full rounded-xl border px-4 py-2 text-sm font-medium outline-none ${isDark ? 'bg-black/30 border-white/20 text-white placeholder:text-slate-400' : 'bg-slate-100 border-black/20 text-slate-900 placeholder:text-slate-500'}`}
+                                            />
+                                        </div>
+                                        {globalSearch.trim().length >= 3 && (
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Teams</h4>
+                                                    <div className="space-y-2">
+                                                        {searchResults.teams.map((team) => (
+                                                            <button key={`search-team-${team.id}`} onClick={() => handleTeamSelect(team, 'squad', 'schedule')} className={`w-full text-left rounded-xl border px-3 py-2 flex items-center gap-3 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}>
+                                                                <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
+                                                                <span className="font-bold">{team.name}</span>
+                                                            </button>
+                                                        ))}
+                                                        {searchResults.teams.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No teams found.</p>}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Players</h4>
+                                                    <div className="space-y-2 max-h-60 overflow-auto custom-scrollbar pr-1">
+                                                        {searchResults.players.map((player) => (
+                                                            <button
+                                                                key={`search-player-${player.id}`}
+                                                                onClick={() => {
+                                                                    setSelectedPlayerId(player.id);
+                                                                    setCurrentScreen('player_details');
+                                                                }}
+                                                                className={`w-full text-left rounded-xl border px-3 py-2 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}
+                                                            >
+                                                                <p className="font-bold">{player.name}</p>
+                                                                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{player.teamShortName} • Completed Matches: {player.completedMatches}</p>
+                                                            </button>
+                                                        ))}
+                                                        {searchResults.players.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No players found.</p>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </section>
+
+                                    <section className="grid lg:grid-cols-2 gap-4">
+                                        <div className={`rounded-3xl border p-4 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'}`}>
+                                            <h3 className={`text-xl font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Batting Stats</h3>
+                                            <div className="space-y-1 text-sm">
+                                                {Object.entries(homeHeaderStats.batting).map(([label, value]) => (
+                                                    <div key={label} className="flex justify-between gap-2"><span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{label}</span><span className="font-bold">{value}</span></div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className={`rounded-3xl border p-4 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'}`}>
+                                            <h3 className={`text-xl font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Bowling Stats</h3>
+                                            <div className="space-y-1 text-sm">
+                                                {Object.entries(homeHeaderStats.bowling).map(([label, value]) => (
+                                                    <div key={label} className="flex justify-between gap-2"><span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{label}</span><span className="font-bold">{value}</span></div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
+                                        <div className={`px-4 py-3 font-black ${isDark ? 'text-white border-b border-white/20' : 'text-slate-900 border-b border-black/20'}`}>Batting Table</div>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-xs sm:text-sm">
+                                                <thead className={isDark ? 'bg-black/30 text-slate-300' : 'bg-slate-100 text-slate-700'}>
+                                                <tr><th className="p-2 text-left">PLAYER</th><th className="p-2">MATCHES</th><th className="p-2">INNS</th><th className="p-2">RUNS</th><th className="p-2">AVG</th><th className="p-2">SR</th><th className="p-2">4s</th><th className="p-2">6s</th></tr>
+                                                </thead>
+                                                <tbody>
+                                                {battingTable.slice(0, 20).map((row) => (
+                                                    <tr key={row.playerId} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                                                        <td className="p-2 font-semibold">{row.player} <span className="opacity-60">({row.teamShortName})</span></td>
+                                                        <td className="p-2 text-center">{row.matches}</td><td className="p-2 text-center">{row.inns}</td><td className="p-2 text-center">{row.runs}</td><td className="p-2 text-center">{row.avg}</td><td className="p-2 text-center">{row.sr}</td><td className="p-2 text-center">{row.fours}</td><td className="p-2 text-center">{row.sixes}</td>
+                                                    </tr>
+                                                ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
+                                    <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
+                                        <div className={`px-4 py-3 font-black ${isDark ? 'text-white border-b border-white/20' : 'text-slate-900 border-b border-black/20'}`}>Bowling Table</div>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-xs sm:text-sm">
+                                                <thead className={isDark ? 'bg-black/30 text-slate-300' : 'bg-slate-100 text-slate-700'}>
+                                                <tr><th className="p-2 text-left">PLAYER</th><th className="p-2">MATCHES</th><th className="p-2">OVERS</th><th className="p-2">BALLS</th><th className="p-2">WKTS</th><th className="p-2">Avg</th><th className="p-2">RUNS</th><th className="p-2">4-FERS</th><th className="p-2">5-FERS</th></tr>
+                                                </thead>
+                                                <tbody>
+                                                {bowlingTable.slice(0, 20).map((row) => (
+                                                    <tr key={row.playerId} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                                                        <td className="p-2 font-semibold">{row.player} <span className="opacity-60">({row.teamShortName})</span></td>
+                                                        <td className="p-2 text-center">{row.matches}</td><td className="p-2 text-center">{row.overs}</td><td className="p-2 text-center">{row.balls}</td><td className="p-2 text-center">{row.wickets}</td><td className="p-2 text-center">{row.avg}</td><td className="p-2 text-center">{row.runs}</td><td className="p-2 text-center">{row.fourWickets}</td><td className="p-2 text-center">{row.fiveWickets}</td>
+                                                    </tr>
+                                                ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+
                                     <section>
                                         <div className="flex items-center justify-between mb-4">
                                             <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Upcoming Matches</h2>
@@ -746,6 +864,51 @@ export default function App() {
                                 </div>
                             );
                         })()}
+                    </motion.div>
+                )}
+                {currentScreen === 'player_details' && selectedPlayerDetails && (
+                    <motion.div key="player_details" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
+                        <button onClick={() => setCurrentScreen('schedule')} className={`mb-4 px-4 py-2 rounded-full font-bold border ${isDark ? 'bg-slate-800 text-slate-100 border-white/20' : 'bg-white text-slate-900 border-black/20'}`}>← Back to Home</button>
+                        <section className={`rounded-3xl border p-5 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                            <div className="flex items-center gap-4">
+                                <img src={selectedPlayerDetails.imageUrl} alt={selectedPlayerDetails.name} className={getPlayerImageClass(selectedPlayerDetails.id, 'w-20 h-24 object-contain object-bottom')} />
+                                <div>
+                                    <h2 className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedPlayerDetails.name}</h2>
+                                    <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>{selectedPlayerDetails.teamName} • {selectedPlayerDetails.role}</p>
+                                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Completed matches: {selectedPlayerDetails.completedMatches}</p>
+                                </div>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4 mt-5">
+                                <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <h3 className="font-black mb-2">Batting</h3>
+                                    <p className="text-sm">Runs: {selectedPlayerDetails.batting?.runs ?? 0}</p>
+                                    <p className="text-sm">Average: {selectedPlayerDetails.batting?.avg ?? 0}</p>
+                                    <p className="text-sm">Strike Rate: {selectedPlayerDetails.batting?.sr ?? 0}</p>
+                                </div>
+                                <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <h3 className="font-black mb-2">Bowling</h3>
+                                    <p className="text-sm">Wickets: {selectedPlayerDetails.bowling?.wickets ?? 0}</p>
+                                    <p className="text-sm">Average: {selectedPlayerDetails.bowling?.avg ?? 0}</p>
+                                    <p className="text-sm">Economy: {selectedPlayerDetails.bowling?.economy ?? 0}</p>
+                                </div>
+                            </div>
+                            <div className="mt-5">
+                                <h3 className="font-black mb-3">Match Tags</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {selectedPlayerDetails.tags.map((tag) => (
+                                        <button key={`${tag.matchId}-${tag.teamId}`} onClick={() => {
+                                            const match = schedule.find((m) => m.id === tag.matchId);
+                                            if (match) {
+                                                setSelectedMatch(match);
+                                                setCurrentScreen('match_details');
+                                            }
+                                        }} className={`px-3 py-1 rounded-full text-xs font-bold border ${tag.played ? 'bg-emerald-500/20 border-emerald-500/40' : 'bg-slate-500/20 border-slate-500/40'}`}>
+                                            M{tag.matchNumber} {tag.teamShortName} vs {tag.opponentShortName} • {tag.played ? 'Played' : 'Squad'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
                     </motion.div>
                 )}
                 {currentScreen === 'schedule_list' && (
