@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3 } from 'lucide-react';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3, Plane, Crown } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
 import iplHero from '../ipl.jpeg';
@@ -11,7 +11,20 @@ type SavedXI = { playing11: (Player | null)[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
 const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
+const MATCH_POLL_KEY = 'ipl-builder-match-polls';
 const EMPTY_PLAYING_XI: (Player | null)[] = Array.from({ length: 11 }, () => null);
+const OVERSEAS_PLAYER_NAMES = new Set([
+    'Quinton de Kock', 'Ryan Rickelton', 'Sherfane Rutherford', 'Corbin Bosch', 'Mitchell Santner', 'Will Jacks', 'AM Ghazanfar', 'Trent Boult',
+    'Jordan Cox', 'Phil Salt', 'Tim David', 'Jacob Bethell', 'Romario Shepherd', 'Josh Hazlewood', 'Nuwan Thushara', 'Jacob Duffy',
+    'Finn Allen', 'Tim Seifert', 'Cameron Green', 'Rachin Ravindra', 'Rovman Powell', 'Sunil Narine', 'Blessing Muzarabani', 'Matheesha Pathirana',
+    'Ben Duckett', 'David Miller', 'Pathum Nissanka', 'Tristan Stubbs', 'Dushmantha Chameera', 'Kyle Jamieson', 'Lungi Ngidi', 'Mitchell Starc',
+    'Marcus Stoinis', 'Marco Jansen', 'Azmatullah Omarzai', 'Cooper Connolly', 'Mitchell Owen', 'Xavier Bartlett', 'Lockie Ferguson', 'Ben Dwarshuis',
+    'Donovan Ferreira', 'Lhuan-dre Pretorius', 'Shimron Hetmyer', 'Dasun Shanaka', 'Adam Milne', 'Jofra Archer', 'Kwena Maphaka', 'Nandre Burger',
+    'Kusal Mendis', 'Jos Buttler', 'Shahrukh Ahmed', 'Sherfane Rutherford', 'Rashid Khan', 'Karim Janat', 'Gerald Coetzee', 'Kagiso Rabada', 'Nishant Sindhu',
+    'Kamindu Mendis', 'Travis Head', 'Wiaan Mulder', 'Harshal Pind', 'Pat Cummins', 'Adam Zampa', 'Eshan Malinga', 'Rahul Chahar',
+    'Dewald Brevis', 'Jamie Overton', 'Matthew Short', 'Zak Foulkes', 'Noor Ahmad', 'Nathan Ellis', 'Akeal Hosein', 'Matt Henry',
+    'Aiden Markram', 'Mitchell Marsh', 'Nicholas Pooran', 'David Miller', 'Abdul Samad', 'Ayush Badoni', 'Shamar Joseph', 'Anrich Nortje'
+]);
 
 const normalizePlayingXI = (players: (Player | null)[] | Player[]): (Player | null)[] => {
     const normalized = players.map((player) => player ?? null).slice(0, 11);
@@ -214,6 +227,7 @@ export default function App() {
     const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
     const [showHomeSearch, setShowHomeSearch] = useState(false);
     const [selectedStatMetricId, setSelectedStatMetricId] = useState(statsMetricLeaders[0]?.id ?? '');
+    const [matchPollVotes, setMatchPollVotes] = useState<Record<string, string>>(() => safeReadStorage<Record<string, string>>(MATCH_POLL_KEY, {}));
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -222,6 +236,10 @@ export default function App() {
     useEffect(() => {
         window.localStorage.setItem(FANTASY_XI_KEY, JSON.stringify(fantasyXI));
     }, [fantasyXI]);
+
+    useEffect(() => {
+        window.localStorage.setItem(MATCH_POLL_KEY, JSON.stringify(matchPollVotes));
+    }, [matchPollVotes]);
 
     useEffect(() => {
         window.localStorage.setItem('cricto-theme-dark', JSON.stringify(isDark));
@@ -372,6 +390,63 @@ export default function App() {
 
     const selectedPlayerDetails = playerDetails.find((player) => player.id === selectedPlayerId) || null;
     const selectedStatMetric = statsMetricLeaders.find((metric) => metric.id === selectedStatMetricId) || statsMetricLeaders[0];
+    const allPlayers = useMemo(() => teams.flatMap((team) => team.players), []);
+    const playerByName = useMemo(
+        () => new Map(allPlayers.map((player) => [player.name.toLowerCase(), player])),
+        [allPlayers]
+    );
+    const tournamentCapLeaders = useMemo(() => {
+        const batting = new Map<string, number>();
+        const wickets = new Map<string, number>();
+
+        schedule
+            .filter((match) => match.completedDetails)
+            .forEach((match) => {
+                match.completedDetails?.innings.forEach((innings) => {
+                    innings.batters.forEach((batter) => {
+                        batting.set(batter.name, (batting.get(batter.name) || 0) + batter.runs);
+                    });
+                    innings.bowlers.forEach((bowler) => {
+                        wickets.set(bowler.name, (wickets.get(bowler.name) || 0) + bowler.wickets);
+                    });
+                });
+            });
+
+        const topRunsEntry = [...batting.entries()].sort((a, b) => b[1] - a[1])[0];
+        const topWicketsEntry = [...wickets.entries()].sort((a, b) => b[1] - a[1])[0];
+        const orangeCapPlayer = topRunsEntry ? playerByName.get(topRunsEntry[0].toLowerCase()) ?? null : null;
+        const purpleCapPlayer = topWicketsEntry ? playerByName.get(topWicketsEntry[0].toLowerCase()) ?? null : null;
+
+        return {
+            orangeCapPlayer,
+            purpleCapPlayer,
+            topRuns: topRunsEntry?.[1] ?? 0,
+            topWickets: topWicketsEntry?.[1] ?? 0,
+        };
+    }, [playerByName]);
+    const isOverseasPlayer = (player: Player) => OVERSEAS_PLAYER_NAMES.has(player.name);
+    const getCapType = (player: Player) => {
+        if (tournamentCapLeaders.orangeCapPlayer?.id === player.id) return 'orange';
+        if (tournamentCapLeaders.purpleCapPlayer?.id === player.id) return 'purple';
+        return null;
+    };
+    const renderPlayerBadges = (player: Player) => {
+        const capType = getCapType(player);
+        return (
+            <>
+                {isOverseasPlayer(player) && (
+                    <span className="absolute -right-1 top-1 w-5 h-5 rounded-full bg-sky-500 text-white flex items-center justify-center border border-white/80 z-20 shadow-lg">
+                        <Plane className="w-3 h-3" />
+                    </span>
+                )}
+                {capType && (
+                    <span className={`absolute -left-1 top-1 w-5 h-5 rounded-full text-white flex items-center justify-center border border-white/80 z-20 shadow-lg ${capType === 'orange' ? 'bg-orange-500' : 'bg-purple-600'}`}>
+                        <Crown className="w-3 h-3" />
+                    </span>
+                )}
+            </>
+        );
+    };
 
     return (
         <div className={`relative min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors overflow-x-clip ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
@@ -488,6 +563,7 @@ export default function App() {
                                                     <div className="w-full h-full rounded-full bg-black/40" />
                                                 </div>
                                                 <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-24 h-28 sm:w-28 sm:h-32 object-contain object-bottom relative z-10")} />
+                                                {renderPlayerBadges(player)}
                                             </div>
                                             <h3 className="text-base sm:text-lg font-black text-white leading-tight mb-1">{player.name}</h3>
                                             <span className="text-xs font-bold uppercase tracking-wider text-white/60">{player.role}</span>
@@ -547,6 +623,7 @@ export default function App() {
                                                             <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                                                 <div className="absolute inset-0 bg-black/40 border-2 border-white/20 rounded-full shadow-md" />
                                                                 <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
+                                                                {renderPlayerBadges(player)}
                                                             </div>
                                                             <div className="flex-1">
                                                                 <div className="flex justify-between items-start mb-1 gap-2">
@@ -575,6 +652,7 @@ export default function App() {
                                                 <div className="relative w-12 h-12 flex items-end justify-center shrink-0">
                                                     <div className="absolute inset-0 bg-black/40 border-2 border-yellow-400/50 rounded-full shadow-md" />
                                                     <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className={getPlayerImageClass(impactPlayer.id, "w-12 h-14 object-contain object-bottom relative z-10")} />
+                                                    {renderPlayerBadges(impactPlayer)}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="font-bold text-white">{impactPlayer.name}</div>
@@ -608,6 +686,7 @@ export default function App() {
                                                 <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
                                                     <div className="absolute inset-0 bg-black/40 border border-white/20 rounded-full" />
                                                     <img src={player.imageUrl} alt={player.name} className={getPlayerImageClass(player.id, "w-10 h-12 object-contain object-bottom relative z-10")} />
+                                                    {renderPlayerBadges(player)}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className={`font-bold ${isSelected ? 'text-white' : 'text-blue-100'}`}>{player.name}</div>
@@ -652,10 +731,10 @@ export default function App() {
                                     <div className="absolute left-1/2 top-[25%] bottom-[25%] w-16 sm:w-20 -ml-8 sm:-ml-10 border-[3px] border-white/30 bg-white/5" />
 
                                     <div className="relative z-10 w-full h-full flex flex-col justify-between py-8 gap-8">
-                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(0, 2).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(2, 5).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(5, 8).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(8, 11).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(0, 2).map((p) => <div key={p.id}><PlayerNode player={p} isOverseas={isOverseasPlayer(p)} capType={getCapType(p)} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(2, 5).map((p) => <div key={p.id}><PlayerNode player={p} isOverseas={isOverseasPlayer(p)} capType={getCapType(p)} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(5, 8).map((p) => <div key={p.id}><PlayerNode player={p} isOverseas={isOverseasPlayer(p)} capType={getCapType(p)} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(8, 11).map((p) => <div key={p.id}><PlayerNode player={p} isOverseas={isOverseasPlayer(p)} capType={getCapType(p)} /></div>)}</div>
                                     </div>
                                 </div>
 
@@ -668,6 +747,7 @@ export default function App() {
                                                 <div className="relative w-24 h-24 mx-auto mb-4 flex items-end justify-center">
                                                     <div className="absolute inset-0 bg-black/40 border-4 border-yellow-400 rounded-full shadow-xl" />
                                                     <img src={impactPlayer.imageUrl} alt={impactPlayer.name} className={getPlayerImageClass(impactPlayer.id, "w-24 h-28 object-contain object-bottom relative z-10")} />
+                                                    {renderPlayerBadges(impactPlayer)}
                                                 </div>
                                                 <h4 className="text-2xl font-black text-white mb-1 relative z-10">{impactPlayer.name}</h4>
                                                 <span className="text-xs font-bold uppercase tracking-wider text-yellow-300 relative z-10">{impactPlayer.role}</span>
@@ -710,9 +790,53 @@ export default function App() {
                                 .slice(0, 3);
                             const featuredMatches = upcomingMatches.length > 0 ? upcomingMatches : schedule.slice(0, 3);
                             const recentMatches = completedMatches.slice(0, 3);
+                            const todayMatches = schedule.filter((match) => match.date === today && match.status !== 'completed');
+                            const { orangeCapPlayer, purpleCapPlayer, topRuns, topWickets } = tournamentCapLeaders;
 
                             return (
                                 <div className="space-y-8 pb-12">
+                                    {(orangeCapPlayer || purpleCapPlayer) && (
+                                        <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                                            <h3 className={`text-lg sm:text-xl font-black mb-4 ${isDark ? 'text-white' : 'text-black'}`}>Live Cap Holders</h3>
+                                            <div className="grid sm:grid-cols-2 gap-4">
+                                                {orangeCapPlayer && (
+                                                    <div className={`rounded-2xl border p-4 ${isDark ? 'border-orange-400/40 bg-orange-500/10' : 'border-orange-300 bg-orange-50'}`}>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="relative">
+                                                                <img src={orangeCapPlayer.imageUrl} alt={orangeCapPlayer.name} className={getPlayerImageClass(orangeCapPlayer.id, "w-16 h-20 object-contain object-bottom")} />
+                                                                <span className="absolute -left-2 top-1 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center border-2 border-white">
+                                                                    <Crown className="w-3.5 h-3.5" />
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <p className={`text-xs uppercase tracking-wider font-black ${isDark ? 'text-orange-200' : 'text-orange-700'}`}>Orange Cap</p>
+                                                                <p className={`font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{orangeCapPlayer.name}</p>
+                                                                <p className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{topRuns} runs</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {purpleCapPlayer && (
+                                                    <div className={`rounded-2xl border p-4 ${isDark ? 'border-purple-400/40 bg-purple-500/10' : 'border-purple-300 bg-purple-50'}`}>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="relative">
+                                                                <img src={purpleCapPlayer.imageUrl} alt={purpleCapPlayer.name} className={getPlayerImageClass(purpleCapPlayer.id, "w-16 h-20 object-contain object-bottom")} />
+                                                                <span className="absolute -left-2 top-1 w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center border-2 border-white">
+                                                                    <Crown className="w-3.5 h-3.5" />
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <p className={`text-xs uppercase tracking-wider font-black ${isDark ? 'text-purple-200' : 'text-purple-700'}`}>Purple Cap</p>
+                                                                <p className={`font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{purpleCapPlayer.name}</p>
+                                                                <p className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{topWickets} wickets</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </section>
+                                    )}
+
                                     {showHomeSearch && (
                                         <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl space-y-4`}>
                                             <div className="flex items-center gap-3">
@@ -832,6 +956,38 @@ export default function App() {
                                             })}
                                         </div>
                                     </section>
+                                    {todayMatches.length > 0 && (
+                                        <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                                            <h2 className={`text-xl sm:text-2xl font-black mb-4 ${isDark ? 'text-white' : 'text-black'}`}>Matchday Poll</h2>
+                                            <div className="space-y-4">
+                                                {todayMatches.map((match) => {
+                                                    const team1 = teams.find((team) => team.id === match.team1);
+                                                    const team2 = teams.find((team) => team.id === match.team2);
+                                                    if (!team1 || !team2) return null;
+                                                    const votedTeam = matchPollVotes[match.id];
+                                                    return (
+                                                        <div key={`poll-${match.id}`} className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                                            <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Who will win • {match.dateLabel}</p>
+                                                            <div className="grid sm:grid-cols-2 gap-3">
+                                                                {[team1, team2].map((team) => (
+                                                                    <button
+                                                                        key={`vote-${match.id}-${team.id}`}
+                                                                        onClick={() => setMatchPollVotes((prev) => ({ ...prev, [match.id]: team.id }))}
+                                                                        className={`rounded-xl border px-4 py-3 flex items-center gap-3 transition-all ${votedTeam === team.id
+                                                                            ? isDark ? 'border-emerald-300 bg-emerald-400/15' : 'border-emerald-500 bg-emerald-50'
+                                                                            : isDark ? 'border-white/20 hover:border-white/40' : 'border-black/20 hover:border-black/40'}`}
+                                                                    >
+                                                                        <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
+                                                                        <span className={`font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{team.name}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </section>
+                                    )}
 
                                     <section>
                                         <div className="flex items-center justify-between mb-4">
@@ -935,7 +1091,10 @@ export default function App() {
                         <button onClick={() => setCurrentScreen('schedule')} className={`mb-4 px-4 py-2 rounded-full font-bold border ${isDark ? 'bg-slate-800 text-slate-100 border-white/20' : 'bg-white text-slate-900 border-black/20'}`}>← Back to Home</button>
                         <section className={`rounded-3xl border p-5 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
                             <div className="flex items-center gap-4">
-                                <img src={selectedPlayerDetails.imageUrl} alt={selectedPlayerDetails.name} className={getPlayerImageClass(selectedPlayerDetails.id, 'w-20 h-24 object-contain object-bottom')} />
+                                <div className="relative w-20 h-20 flex items-end justify-center">
+                                    <img src={selectedPlayerDetails.imageUrl} alt={selectedPlayerDetails.name} className={getPlayerImageClass(selectedPlayerDetails.id, 'w-20 h-24 object-contain object-bottom')} />
+                                    {renderPlayerBadges(selectedPlayerDetails)}
+                                </div>
                                 <div>
                                     <h2 className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedPlayerDetails.name}</h2>
                                     <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>{selectedPlayerDetails.teamName} • {selectedPlayerDetails.role}</p>
@@ -2001,7 +2160,7 @@ export default function App() {
     );
 }
 
-function PlayerNode({ player }: { player: Player }) {
+function PlayerNode({ player, isOverseas, capType }: { player: Player; isOverseas: boolean; capType: 'orange' | 'purple' | null }) {
     return (
         <div className="flex flex-col items-center group cursor-pointer">
             <div className="relative w-16 h-16 flex items-end justify-center">
@@ -2012,6 +2171,16 @@ function PlayerNode({ player }: { player: Player }) {
                     alt={player.name}
                     className={getPlayerImageClass(player.id, "w-16 h-20 object-contain object-bottom relative z-10 group-hover:scale-110 transition-transform duration-300")}
                 />
+                {isOverseas && (
+                    <span className="absolute -right-1 top-1 w-5 h-5 rounded-full bg-sky-500 text-white flex items-center justify-center border border-white/80 z-20 shadow-lg">
+                        <Plane className="w-3 h-3" />
+                    </span>
+                )}
+                {capType && (
+                    <span className={`absolute -left-1 top-1 w-5 h-5 rounded-full text-white flex items-center justify-center border border-white/80 z-20 shadow-lg ${capType === 'orange' ? 'bg-orange-500' : 'bg-purple-600'}`}>
+                        <Crown className="w-3 h-3" />
+                    </span>
+                )}
             </div>
             <div className="bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-lg border border-white/20 text-center mt-3 shadow-xl">
                 <div className="text-sm font-black text-white whitespace-nowrap">{player.name}</div>
