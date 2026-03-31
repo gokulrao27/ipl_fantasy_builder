@@ -1017,7 +1017,14 @@ export default function App() {
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm">
                                             <thead className={isDark ? 'bg-black/30 text-slate-300' : 'bg-slate-100 text-slate-700'}>
-                                            <tr><th className="p-3 text-left">#</th><th className="p-3 text-left">Player</th><th className="p-3 text-left">Team</th><th className="p-3 text-right">Value</th></tr>
+                                            <tr>
+                                                <th className="p-3 text-left">#</th>
+                                                <th className="p-3 text-left">Player</th>
+                                                <th className="p-3 text-left">Team</th>
+                                                {selectedStatMetric?.columns.map((column) => (
+                                                    <th key={`${selectedStatMetric.id}-${column.key}`} className={`p-3 ${column.align === 'left' ? 'text-left' : 'text-right'}`}>{column.label}</th>
+                                                ))}
+                                            </tr>
                                             </thead>
                                             <tbody>
                                             {selectedStatMetric?.items.map((item, index) => (
@@ -1025,7 +1032,9 @@ export default function App() {
                                                     <td className="p-3 font-bold">{index + 1}</td>
                                                     <td className="p-3">{item.player}</td>
                                                     <td className="p-3">{item.teamShortName}</td>
-                                                    <td className="p-3 text-right font-bold">{item.value}</td>
+                                                    {item.cells.map((cell, cellIndex) => (
+                                                        <td key={`${selectedStatMetric.id}-${item.playerId}-cell-${cellIndex}`} className={`p-3 ${selectedStatMetric?.columns?.[cellIndex]?.align === 'left' ? 'text-left' : 'text-right'} font-bold`}>{cell}</td>
+                                                    ))}
                                                 </tr>
                                             ))}
                                             </tbody>
