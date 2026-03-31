@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders } from './data';
 import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3 } from 'lucide-react';
-const logoLight = '/logo_light_mode.png';
-const logoDark = '/logo_dark_mode.png';
-const iplHero = '/ipl.jpeg';
+import logoLight from '../logo_light_mode.png';
+import logoDark from '../logo_dark_mode.png';
+import iplHero from '../ipl.jpeg';
 
 type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details' | 'stats';
 type SavedXI = { playing11: (Player | null)[]; impactPlayer: Player | null };
