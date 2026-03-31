@@ -7,10 +7,17 @@ const logoDark = '/logo_dark_mode.png';
 const iplHero = '/ipl.jpeg';
 
 type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details' | 'stats';
-type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
+type SavedXI = { playing11: (Player | null)[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
 const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
+const EMPTY_PLAYING_XI: (Player | null)[] = Array.from({ length: 11 }, () => null);
+
+const normalizePlayingXI = (players: (Player | null)[] | Player[]): (Player | null)[] => {
+    const normalized = players.map((player) => player ?? null).slice(0, 11);
+    while (normalized.length < 11) normalized.push(null);
+    return normalized;
+};
 
 const createDefaultSavedXIs = (): Record<string, SavedXI> => {
     const latestCompletedByTeam = new Map<string, Match>();
@@ -28,13 +35,13 @@ const createDefaultSavedXIs = (): Record<string, SavedXI> => {
     teams.forEach((team) => {
         const match = latestCompletedByTeam.get(team.id);
         if (!match?.completedDetails) {
-            defaults[team.id] = { playing11: [], impactPlayer: null };
+            defaults[team.id] = { playing11: [...EMPTY_PLAYING_XI], impactPlayer: null };
             return;
         }
 
         const innings = match.completedDetails.innings.find((inning) => inning.teamId === team.id);
         if (!innings) {
-            defaults[team.id] = { playing11: [], impactPlayer: null };
+            defaults[team.id] = { playing11: [...EMPTY_PLAYING_XI], impactPlayer: null };
             return;
         }
 
@@ -48,7 +55,7 @@ const createDefaultSavedXIs = (): Record<string, SavedXI> => {
 
         const impactPlayer = team.players.find((player) => !playing11.some((p) => p.id === player.id)) || null;
 
-        defaults[team.id] = { playing11, impactPlayer };
+        defaults[team.id] = { playing11: normalizePlayingXI(playing11), impactPlayer };
     });
 
     return defaults;
@@ -182,7 +189,7 @@ const Navigation = ({
 export default function App() {
     const [currentScreen, setCurrentScreen] = useState<Screen>('schedule');
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-    const [playing11, setPlaying11] = useState<Player[]>([]);
+    const [playing11, setPlaying11] = useState<(Player | null)[]>([...EMPTY_PLAYING_XI]);
     const [impactPlayer, setImpactPlayer] = useState<Player | null>(null);
     const [savedXIs, setSavedXIs] = useState<Record<string, SavedXI>>(() => {
         const defaults = createDefaultSavedXIs();
@@ -256,16 +263,18 @@ export default function App() {
         setMobileScorecardInningsIndex(0);
     }, [selectedMatch?.id]);
 
+    const selectedPlaying11 = useMemo(() => playing11.filter((player): player is Player => Boolean(player)), [playing11]);
+
     const builderSummary = useMemo(() => {
-        const canAddMore = playing11.length < 11;
+        const canAddMore = selectedPlaying11.length < 11;
         const nextAction = canAddMore
-            ? `Select ${11 - playing11.length} more player${playing11.length === 10 ? '' : 's'} for your XI.`
+            ? `Select ${11 - selectedPlaying11.length} more player${selectedPlaying11.length === 10 ? '' : 's'} for your XI.`
             : impactPlayer
                 ? 'Squad complete. Review the balance or open the dashboard.'
                 : 'Choose one impact player to finish the squad.';
 
         return nextAction;
-    }, [impactPlayer, playing11.length]);
+    }, [impactPlayer, selectedPlaying11.length]);
 
     const searchResults = useMemo(() => {
         const query = globalSearch.trim().toLowerCase();
@@ -280,39 +289,41 @@ export default function App() {
     const handleTeamSelect = (team: Team, nextScreen: Screen = 'squad', returnScreen: Screen | null = null) => {
         setSelectedTeam(team);
         if (savedXIs[team.id]) {
-            setPlaying11(savedXIs[team.id].playing11);
+            setPlaying11(normalizePlayingXI(savedXIs[team.id].playing11));
             setImpactPlayer(savedXIs[team.id].impactPlayer);
         } else {
-            setPlaying11([]);
+            setPlaying11([...EMPTY_PLAYING_XI]);
             setImpactPlayer(null);
         }
         setBuilderReturnScreen(returnScreen);
         setCurrentScreen(nextScreen);
     };
 
-    const saveCurrentXI = (newPlaying11: Player[], newImpactPlayer: Player | null) => {
+    const saveCurrentXI = (newPlaying11: (Player | null)[], newImpactPlayer: Player | null) => {
         if (selectedTeam) {
             setSavedXIs(prev => ({
                 ...prev,
-                [selectedTeam.id]: { playing11: newPlaying11, impactPlayer: newImpactPlayer }
+                [selectedTeam.id]: { playing11: normalizePlayingXI(newPlaying11), impactPlayer: newImpactPlayer }
             }));
         }
     };
 
     const handlePlayerToggle = (player: Player) => {
-        const isPlaying11 = playing11.some(p => p.id === player.id);
+        const slotIndex = playing11.findIndex((p) => p?.id === player.id);
+        const isPlaying11 = slotIndex >= 0;
         const isImpact = impactPlayer?.id === player.id;
 
         let newPlaying11 = [...playing11];
         let newImpactPlayer = impactPlayer;
 
         if (isPlaying11) {
-            newPlaying11 = playing11.filter(p => p.id !== player.id);
+            newPlaying11[slotIndex] = null;
         } else if (isImpact) {
             newImpactPlayer = null;
         } else {
-            if (playing11.length < 11) {
-                newPlaying11 = [...playing11, player];
+            const firstEmptyIndex = newPlaying11.findIndex((p) => p === null);
+            if (firstEmptyIndex >= 0) {
+                newPlaying11[firstEmptyIndex] = player;
             } else if (!impactPlayer) {
                 newImpactPlayer = player;
             }
@@ -324,7 +335,7 @@ export default function App() {
     };
 
     const getPlayerStatus = (player: Player) => {
-        if (playing11.some(p => p.id === player.id)) return 'Playing 11';
+        if (playing11.some(p => p?.id === player.id)) return 'Playing 11';
         if (impactPlayer?.id === player.id) return 'Impact Player';
         return null;
     };
@@ -401,6 +412,14 @@ export default function App() {
                 {currentScreen === 'teams' && (
                     <motion.div key="teams" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-4 sm:p-8">
                         <div className="text-center mb-8 sm:mb-16 mt-4 sm:mt-12">
+                            <div className="mb-5 flex justify-center">
+                                <button
+                                    onClick={() => setCurrentScreen('schedule')}
+                                    className={`px-4 py-2 rounded-full font-bold border ${isDark ? 'bg-white/10 text-white border-white/20 hover:bg-white/20' : 'bg-white text-slate-900 border-black/20 hover:bg-slate-100'}`}
+                                >
+                                    ← Back to Home
+                                </button>
+                            </div>
                             <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-3 sm:mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
                                 IPL SQUAD BUILDER
                             </h1>
@@ -482,7 +501,7 @@ export default function App() {
                                 </button>
                                 <div>
                                     <h2 className="text-xl sm:text-2xl font-black flex items-center gap-2 text-white drop-shadow-sm">{selectedTeam.name}</h2>
-                                    <p className="text-sm font-medium text-white/80">{playing11.length}/11 Selected • {impactPlayer ? '1' : '0'}/1 Impact Player</p>
+                                    <p className="text-sm font-medium text-white/80">{selectedPlaying11.length}/11 Selected • {impactPlayer ? '1' : '0'}/1 Impact Player</p>
                                 </div>
                             </div>
 
@@ -490,7 +509,7 @@ export default function App() {
                                 <button onClick={() => setShowBuilderRoster(prev => !prev)} className="lg:hidden px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold inline-flex items-center gap-2">
                                     <LayoutList className="w-4 h-4" /> {showBuilderRoster ? 'Hide roster' : 'Show roster'}
                                 </button>
-                                <button disabled={playing11.length < 11} onClick={() => setCurrentScreen(builderReturnScreen === 'compare_xi' ? 'compare_xi' : 'dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${playing11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
+                                <button disabled={selectedPlaying11.length < 11} onClick={() => setCurrentScreen(builderReturnScreen === 'compare_xi' ? 'compare_xi' : 'dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${selectedPlaying11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
                                     {builderReturnScreen === 'compare_xi' ? 'Save & Compare' : 'View Dashboard'} <Trophy className="w-5 h-5" />
                                 </button>
                             </div>
@@ -575,7 +594,7 @@ export default function App() {
                                     {selectedTeam.players.map((player) => {
                                         const status = getPlayerStatus(player);
                                         const isSelected = !!status;
-                                        const isDisabled = !isSelected && playing11.length === 11 && impactPlayer !== null;
+                                        const isDisabled = !isSelected && selectedPlaying11.length === 11 && impactPlayer !== null;
 
                                         return (
                                             <button key={player.id} disabled={isDisabled} onClick={() => handlePlayerToggle(player)} className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isSelected ? status === 'Playing 11' ? 'bg-white/20 border-white/200 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : isDisabled ? 'bg-black/20 border-white/20 opacity-40 cursor-not-allowed' : 'bg-white/5 border-white/25 hover:border-white/30 hover:bg-white/10'}`}>
@@ -626,10 +645,10 @@ export default function App() {
                                     <div className="absolute left-1/2 top-[25%] bottom-[25%] w-16 sm:w-20 -ml-8 sm:-ml-10 border-[3px] border-white/30 bg-white/5" />
 
                                     <div className="relative z-10 w-full h-full flex flex-col justify-between py-8 gap-8">
-                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(0, 2).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(2, 5).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(5, 8).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(8, 11).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(0, 2).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(2, 5).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(5, 8).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(8, 11).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
                                     </div>
                                 </div>
 
@@ -654,10 +673,10 @@ export default function App() {
                                     <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl">
                                         <h3 className="text-2xl font-black mb-6 text-white uppercase tracking-wider">Team Balance</h3>
                                         <div className="space-y-5">
-                                            <BalanceBar label="Batsmen" count={playing11.filter(p => p.role === 'Batsman').length} color="bg-blue-400" />
-                                            <BalanceBar label="Bowlers" count={playing11.filter(p => p.role === 'Bowler').length} color="bg-red-400" />
-                                            <BalanceBar label="All-rounders" count={playing11.filter(p => p.role === 'All-rounder').length} color="bg-purple-400" />
-                                            <BalanceBar label="Wicket-keepers" count={playing11.filter(p => p.role === 'Wicket-keeper').length} color="bg-yellow-400" />
+                                            <BalanceBar label="Batsmen" count={selectedPlaying11.filter(p => p.role === 'Batsman').length} color="bg-blue-400" />
+                                            <BalanceBar label="Bowlers" count={selectedPlaying11.filter(p => p.role === 'Bowler').length} color="bg-red-400" />
+                                            <BalanceBar label="All-rounders" count={selectedPlaying11.filter(p => p.role === 'All-rounder').length} color="bg-purple-400" />
+                                            <BalanceBar label="Wicket-keepers" count={selectedPlaying11.filter(p => p.role === 'Wicket-keeper').length} color="bg-yellow-400" />
                                         </div>
                                     </div>
                                 </div>
@@ -952,6 +971,12 @@ export default function App() {
                 {currentScreen === 'stats' && (
                     <motion.div key="stats" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
                         <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                            <button
+                                onClick={() => setCurrentScreen('schedule')}
+                                className={`mb-4 px-4 py-2 rounded-full font-bold border ${isDark ? 'bg-black/30 text-slate-100 border-white/20 hover:bg-black/40' : 'bg-slate-100 text-slate-900 border-black/20 hover:bg-slate-200'}`}
+                            >
+                                ← Back to Home
+                            </button>
                             <h2 className={`text-2xl sm:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Tournament Stats (Top 10)</h2>
                             <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Auto-generated from available completed match scorecards. As soon as scorecard entries are updated in data, these rankings update automatically.</p>
                             <div className="md:hidden mb-4">
@@ -1540,14 +1565,14 @@ export default function App() {
                                                     <h3 className="text-3xl font-black text-white drop-shadow-md uppercase">{team1.name}</h3>
                                                 </div>
 
-                                                {team1XI && team1XI.playing11.length === 11 ? (
+                                                {team1XI && team1XI.playing11.filter((player): player is Player => Boolean(player)).length === 11 ? (
                                                     <div className="space-y-4">
                                                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl">
                                                             <h4 className="text-emerald-400 font-black uppercase tracking-wider mb-4 flex items-center gap-2">
                                                                 <Shield className="w-5 h-5" /> Playing 11
                                                             </h4>
                                                             <div className="space-y-2">
-                                                                {team1XI.playing11.map((player, idx) => (
+                                                                {team1XI.playing11.filter((player): player is Player => Boolean(player)).map((player, idx) => (
                                                                     <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/20">
                                                                         <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                                                         <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
@@ -1608,14 +1633,14 @@ export default function App() {
                                                     <img src={team2.logoUrl} alt={team2.shortName} className="w-16 h-16 object-contain drop-shadow-xl" />
                                                 </div>
 
-                                                {team2XI && team2XI.playing11.length === 11 ? (
+                                                {team2XI && team2XI.playing11.filter((player): player is Player => Boolean(player)).length === 11 ? (
                                                     <div className="space-y-4">
                                                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl">
                                                             <h4 className="text-emerald-400 font-black uppercase tracking-wider mb-4 flex items-center gap-2 justify-end">
                                                                 Playing 11 <Shield className="w-5 h-5" />
                                                             </h4>
                                                             <div className="space-y-2">
-                                                                {team2XI.playing11.map((player, idx) => (
+                                                                {team2XI.playing11.filter((player): player is Player => Boolean(player)).map((player, idx) => (
                                                                     <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/20 flex-row-reverse text-right">
                                                                         <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                                                         <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
