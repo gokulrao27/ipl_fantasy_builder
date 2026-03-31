@@ -312,7 +312,12 @@ export default function App() {
     const selectedStatMetric = statsMetricLeaders.find((metric) => metric.id === selectedStatMetricId) || statsMetricLeaders[0];
 
     return (
-        <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+        <div className={`relative min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors overflow-x-clip ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+            <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+                <div className={`absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl ${isDark ? 'bg-blue-500/20' : 'bg-cyan-400/30'}`} />
+                <div className={`absolute top-1/3 -right-24 h-72 w-72 rounded-full blur-3xl ${isDark ? 'bg-fuchsia-500/15' : 'bg-violet-400/25'}`} />
+                <div className={`absolute -bottom-24 left-1/3 h-72 w-72 rounded-full blur-3xl ${isDark ? 'bg-emerald-500/10' : 'bg-emerald-300/25'}`} />
+            </div>
             {showInitialSplash && (
                 <div className={`fixed inset-0 z-[80] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
                     <motion.img
@@ -686,7 +691,28 @@ export default function App() {
                                     )}
 
                                     <section className={`w-full aspect-[16/9] md:aspect-[20/10] rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl relative`}>
-                                        <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%]" />
+                                        <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%] scale-[1.02]" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-8">
+                                            <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white/80 font-bold">IPL Fantasy Intelligence</p>
+                                            <h2 className="text-xl sm:text-4xl font-black text-white mt-2">Build smarter squads with connected match, team & player insights.</h2>
+                                        </div>
+                                    </section>
+
+                                    <section className="flex flex-wrap gap-2 sm:gap-3">
+                                        {[
+                                            { label: 'Explore Stats', action: () => setCurrentScreen('stats') },
+                                            { label: 'View Matches', action: () => setCurrentScreen('schedule_list') },
+                                            { label: 'Browse Teams', action: () => setCurrentScreen('teams') },
+                                        ].map((item) => (
+                                            <button
+                                                key={item.label}
+                                                onClick={item.action}
+                                                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold border backdrop-blur-xl ${isDark ? 'bg-white/5 border-white/20 text-white hover:bg-white/10' : 'bg-white/80 border-black/20 text-slate-900 hover:bg-white'}`}
+                                            >
+                                                {item.label}
+                                            </button>
+                                        ))}
                                     </section>
 
                                     <section>
@@ -880,6 +906,7 @@ export default function App() {
                     <motion.div key="stats" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
                         <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
                             <h2 className={`text-2xl sm:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Tournament Stats (Top 10)</h2>
+                            <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Auto-generated from available completed match scorecards. As soon as scorecard entries are updated in data, these rankings update automatically.</p>
                             <div className="md:hidden mb-4">
                                 <select
                                     value={selectedStatMetric?.id}
