@@ -59,13 +59,21 @@ export interface StatLeaderItem {
   playerId: string;
   player: string;
   teamShortName: string;
-  value: number | string;
+  value?: number | string;
+  cells: Array<number | string>;
+}
+
+export interface StatMetricColumn {
+  key: string;
+  label: string;
+  align?: 'left' | 'right';
 }
 
 export interface StatMetricLeaders {
   id: string;
   label: string;
   category: 'batting' | 'bowling';
+  columns: StatMetricColumn[];
   items: StatLeaderItem[];
 }
 
@@ -292,19 +300,109 @@ const topN = <T,>(rows: T[], by: (row: T) => number, n = 10, minFilter?: (row: T
     .slice(0, n);
 
 export const statsMetricLeaders: StatMetricLeaders[] = [
-  { id: 'most-runs', label: 'Most Runs', category: 'batting', items: topN(battingTable, (p) => p.runs).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.runs })) },
-  { id: 'highest-score', label: 'Highest Scores', category: 'batting', items: topN(battingTable, (p) => p.highestScore).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.highestScore })) },
-  { id: 'best-batting-average', label: 'Best Batting Average', category: 'batting', items: topN(battingTable, (p) => p.avg, 10, (p) => p.inns >= 1).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.avg })) },
-  { id: 'best-batting-strike-rate', label: 'Best Batting Strike Rate', category: 'batting', items: topN(battingTable, (p) => p.sr, 10, (p) => p.balls >= 10).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.sr })) },
-  { id: 'most-hundreds', label: 'Most Hundreds', category: 'batting', items: topN(battingTable, (p) => p.hundreds).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.hundreds })) },
-  { id: 'most-fifties', label: 'Most Fifties', category: 'batting', items: topN(battingTable, (p) => p.fifties).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fifties })) },
-  { id: 'most-fours', label: 'Most Fours', category: 'batting', items: topN(battingTable, (p) => p.fours).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fours })) },
-  { id: 'most-sixes', label: 'Most Sixes', category: 'batting', items: topN(battingTable, (p) => p.sixes).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.sixes })) },
-  { id: 'most-nineties', label: 'Most Nineties', category: 'batting', items: topN(battingTable, (p) => p.nineties).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.nineties })) },
-  { id: 'most-wickets', label: 'Most Wickets', category: 'bowling', items: topN(bowlingTable, (p) => p.wickets).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.wickets })) },
-  { id: 'best-bowling-average', label: 'Best Bowling Average', category: 'bowling', items: topN(bowlingTable, (p) => -p.avg, 10, (p) => p.wickets > 0).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.avg })) },
-  { id: 'best-bowling', label: 'Best Bowling', category: 'bowling', items: topN(bowlingTable, (p) => Number(p.bestFigure.split('/')[0]) * 100 - Number(p.bestFigure.split('/')[1])).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.bestFigure })) },
-  { id: 'most-5w', label: 'Most 5 Wickets Haul', category: 'bowling', items: topN(bowlingTable, (p) => p.fiveWickets).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fiveWickets })) },
-  { id: 'best-economy', label: 'Best Economy', category: 'bowling', items: topN(bowlingTable, (p) => -p.economy, 10, (p) => p.balls >= 12).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.economy })) },
-  { id: 'best-bowling-sr', label: 'Best Bowling Strike Rate', category: 'bowling', items: topN(bowlingTable, (p) => -p.strikeRate, 10, (p) => p.wickets > 0).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.strikeRate })) },
+  {
+    id: 'most-runs',
+    label: 'Most Runs',
+    category: 'batting',
+    columns: [{ key: 'runs', label: 'Runs', align: 'right' }, { key: 'inns', label: 'Inns', align: 'right' }, { key: 'avg', label: 'Avg', align: 'right' }, { key: 'sr', label: 'SR', align: 'right' }],
+    items: topN(battingTable, (p) => p.runs).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.runs, cells: [p.runs, p.inns, p.avg, p.sr] })),
+  },
+  {
+    id: 'highest-score',
+    label: 'Highest Scores',
+    category: 'batting',
+    columns: [{ key: 'hs', label: 'HS', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'fours', label: '4s', align: 'right' }, { key: 'sixes', label: '6s', align: 'right' }],
+    items: topN(battingTable, (p) => p.highestScore).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.highestScore, cells: [p.highestScore, p.runs, p.fours, p.sixes] })),
+  },
+  {
+    id: 'best-batting-average',
+    label: 'Best Batting Average',
+    category: 'batting',
+    columns: [{ key: 'avg', label: 'Avg', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'outs', label: 'Inns', align: 'right' }, { key: 'hs', label: 'HS', align: 'right' }],
+    items: topN(battingTable, (p) => p.avg, 10, (p) => p.inns >= 1).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.avg, cells: [p.avg, p.runs, p.inns, p.highestScore] })),
+  },
+  {
+    id: 'best-batting-strike-rate',
+    label: 'Best Batting Strike Rate',
+    category: 'batting',
+    columns: [{ key: 'sr', label: 'SR', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'balls', label: 'Balls', align: 'right' }, { key: 'fours_sixes', label: '4s/6s', align: 'right' }],
+    items: topN(battingTable, (p) => p.sr, 10, (p) => p.balls >= 10).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.sr, cells: [p.sr, p.runs, p.balls, `${p.fours}/${p.sixes}`] })),
+  },
+  {
+    id: 'most-hundreds',
+    label: 'Most Hundreds',
+    category: 'batting',
+    columns: [{ key: '100s', label: '100s', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'hs', label: 'HS', align: 'right' }, { key: 'sr', label: 'SR', align: 'right' }],
+    items: topN(battingTable, (p) => p.hundreds).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.hundreds, cells: [p.hundreds, p.runs, p.highestScore, p.sr] })),
+  },
+  {
+    id: 'most-fifties',
+    label: 'Most Fifties',
+    category: 'batting',
+    columns: [{ key: '50s', label: '50s', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'avg', label: 'Avg', align: 'right' }, { key: 'hs', label: 'HS', align: 'right' }],
+    items: topN(battingTable, (p) => p.fifties).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fifties, cells: [p.fifties, p.runs, p.avg, p.highestScore] })),
+  },
+  {
+    id: 'most-fours',
+    label: 'Most Fours',
+    category: 'batting',
+    columns: [{ key: '4s', label: '4s', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'balls', label: 'Balls', align: 'right' }, { key: 'sr', label: 'SR', align: 'right' }],
+    items: topN(battingTable, (p) => p.fours).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fours, cells: [p.fours, p.runs, p.balls, p.sr] })),
+  },
+  {
+    id: 'most-sixes',
+    label: 'Most Sixes',
+    category: 'batting',
+    columns: [{ key: '6s', label: '6s', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'balls', label: 'Balls', align: 'right' }, { key: 'sr', label: 'SR', align: 'right' }],
+    items: topN(battingTable, (p) => p.sixes).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.sixes, cells: [p.sixes, p.runs, p.balls, p.sr] })),
+  },
+  {
+    id: 'most-nineties',
+    label: 'Most Nineties',
+    category: 'batting',
+    columns: [{ key: '90s', label: '90s', align: 'right' }, { key: 'hs', label: 'HS', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'inns', label: 'Inns', align: 'right' }],
+    items: topN(battingTable, (p) => p.nineties).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.nineties, cells: [p.nineties, p.highestScore, p.runs, p.inns] })),
+  },
+  {
+    id: 'most-wickets',
+    label: 'Most Wickets',
+    category: 'bowling',
+    columns: [{ key: 'wkts', label: 'Wkts', align: 'right' }, { key: 'overs', label: 'Overs', align: 'right' }, { key: 'eco', label: 'Econ', align: 'right' }, { key: 'avg', label: 'Avg', align: 'right' }],
+    items: topN(bowlingTable, (p) => p.wickets).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.wickets, cells: [p.wickets, p.overs, p.economy, p.avg] })),
+  },
+  {
+    id: 'best-bowling-average',
+    label: 'Best Bowling Average',
+    category: 'bowling',
+    columns: [{ key: 'avg', label: 'Avg', align: 'right' }, { key: 'wkts', label: 'Wkts', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }, { key: 'sr', label: 'SR', align: 'right' }],
+    items: topN(bowlingTable, (p) => -p.avg, 10, (p) => p.wickets > 0).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.avg, cells: [p.avg, p.wickets, p.runs, p.strikeRate] })),
+  },
+  {
+    id: 'best-bowling',
+    label: 'Best Bowling',
+    category: 'bowling',
+    columns: [{ key: 'best', label: 'Best', align: 'right' }, { key: 'wkts', label: 'Wkts', align: 'right' }, { key: 'eco', label: 'Econ', align: 'right' }, { key: 'overs', label: 'Overs', align: 'right' }],
+    items: topN(bowlingTable, (p) => Number(p.bestFigure.split('/')[0]) * 100 - Number(p.bestFigure.split('/')[1])).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.bestFigure, cells: [p.bestFigure, p.wickets, p.economy, p.overs] })),
+  },
+  {
+    id: 'most-5w',
+    label: 'Most 5 Wickets Haul',
+    category: 'bowling',
+    columns: [{ key: '5w', label: '5W', align: 'right' }, { key: '4w', label: '4W', align: 'right' }, { key: 'wkts', label: 'Wkts', align: 'right' }, { key: 'best', label: 'Best', align: 'right' }],
+    items: topN(bowlingTable, (p) => p.fiveWickets).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fiveWickets, cells: [p.fiveWickets, p.fourWickets, p.wickets, p.bestFigure] })),
+  },
+  {
+    id: 'best-economy',
+    label: 'Best Economy',
+    category: 'bowling',
+    columns: [{ key: 'eco', label: 'Econ', align: 'right' }, { key: 'overs', label: 'Overs', align: 'right' }, { key: 'wkts', label: 'Wkts', align: 'right' }, { key: 'runs', label: 'Runs', align: 'right' }],
+    items: topN(bowlingTable, (p) => -p.economy, 10, (p) => p.balls >= 12).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.economy, cells: [p.economy, p.overs, p.wickets, p.runs] })),
+  },
+  {
+    id: 'best-bowling-sr',
+    label: 'Best Bowling Strike Rate',
+    category: 'bowling',
+    columns: [{ key: 'sr', label: 'SR', align: 'right' }, { key: 'wkts', label: 'Wkts', align: 'right' }, { key: 'balls', label: 'Balls', align: 'right' }, { key: 'eco', label: 'Econ', align: 'right' }],
+    items: topN(bowlingTable, (p) => -p.strikeRate, 10, (p) => p.wickets > 0).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.strikeRate, cells: [p.strikeRate, p.wickets, p.balls, p.economy] })),
+  },
 ];
