@@ -312,7 +312,7 @@ export const teams: Team[] = [
             { id: 'gt2', name: 'Jos Buttler', role: 'Wicket-keeper', imageUrl: 'https://www.gujarattitansipl.com/static-assets/images/players/9782.png?v=6.19' },
             { id: 'gt3', name: 'Kumar Kushagra', role: 'Wicket-keeper', imageUrl: 'https://www.gujarattitansipl.com/static-assets/images/players/74097.png?v=6.19' },
             { id: 'gt4', name: 'Tom Banton', role: 'Wicket-keeper', imageUrl: 'https://www.gujarattitansipl.com/static-assets/images/players/66923.png?v=6.19' },
-            { id: 'gt5', name: 'Sai Sudharsan', role: 'Batsman', imageUrl: 'https://www.gujarattitansipl.com/static-assets/images/players/66435.png?v=6.19' },
+            { id: 'gt5', name: 'Sai Sudharsan', role: 'Batsman', imageUrl: 'https://documents.iplt20.com/ipl/IPLHeadshot2026/976.png' },
             { id: 'gt6', name: 'Shahrukh Khan', role: 'Batsman', imageUrl: 'https://www.gujarattitansipl.com/static-assets/images/players/64721.png?v=6.19' },
             { id: 'gt7', name: 'Shubman Gill', role: 'Batsman', imageUrl: 'https://www.gujarattitansipl.com/static-assets/images/players/66818.png?v=6.19' },
             { id: 'gt8', name: 'Glenn Phillips', role: 'All-rounder', imageUrl: 'https://www.gujarattitansipl.com/static-assets/images/players/65295.png?v=6.19' },
