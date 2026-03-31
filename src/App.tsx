@@ -1,16 +1,65 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { teams, Team, Player, schedule, Match, pointsTable } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home } from 'lucide-react';
-import logoLight from '../logo_light_mode.png';
-import logoDark from '../logo_dark_mode.png';
-import iplHero from '../ipl.jpeg';
+import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders } from './data';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3 } from 'lucide-react';
+const logoLight = '/logo_light_mode.png';
+const logoDark = '/logo_dark_mode.png';
+const iplHero = '/ipl.jpeg';
 
-type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table';
-type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
+type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details' | 'stats';
+type SavedXI = { playing11: (Player | null)[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
 const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
+const EMPTY_PLAYING_XI: (Player | null)[] = Array.from({ length: 11 }, () => null);
+
+const normalizePlayingXI = (players: (Player | null)[] | Player[]): (Player | null)[] => {
+    const normalized = players.map((player) => player ?? null).slice(0, 11);
+    while (normalized.length < 11) normalized.push(null);
+    return normalized;
+};
+
+const createDefaultSavedXIs = (): Record<string, SavedXI> => {
+    const latestCompletedByTeam = new Map<string, Match>();
+    const completedMatches = schedule
+        .filter((match) => match.status === 'completed' && match.completedDetails)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    completedMatches.forEach((match) => {
+        if (!latestCompletedByTeam.has(match.team1)) latestCompletedByTeam.set(match.team1, match);
+        if (!latestCompletedByTeam.has(match.team2)) latestCompletedByTeam.set(match.team2, match);
+    });
+
+    const defaults: Record<string, SavedXI> = {};
+
+    teams.forEach((team) => {
+        const match = latestCompletedByTeam.get(team.id);
+        if (!match?.completedDetails) {
+            defaults[team.id] = { playing11: [...EMPTY_PLAYING_XI], impactPlayer: null };
+            return;
+        }
+
+        const innings = match.completedDetails.innings.find((inning) => inning.teamId === team.id);
+        if (!innings) {
+            defaults[team.id] = { playing11: [...EMPTY_PLAYING_XI], impactPlayer: null };
+            return;
+        }
+
+        const xiNames = [...innings.batters.map((b) => b.name), ...innings.didNotBat]
+            .filter((name, index, arr) => arr.indexOf(name) === index)
+            .slice(0, 11);
+
+        const playing11 = xiNames
+            .map((name) => team.players.find((player) => player.name === name))
+            .filter((player): player is Player => Boolean(player));
+
+        const impactPlayer = team.players.find((player) => !playing11.some((p) => p.id === player.id)) || null;
+
+        defaults[team.id] = { playing11: normalizePlayingXI(playing11), impactPlayer };
+    });
+
+    return defaults;
+};
 
 const safeReadStorage = <T,>(key: string, fallback: T): T => {
     if (typeof window === 'undefined') return fallback;
@@ -31,17 +80,20 @@ const Navigation = ({
                         isDark,
                         onToggleTheme,
                         onLogoClick,
-                        isMobileHeaderVisible
+                        isMobileHeaderVisible,
+                        onSearchToggle
                     }: {
     currentScreen: Screen,
     setCurrentScreen: (s: Screen) => void,
     isDark: boolean,
     onToggleTheme: () => void,
     onLogoClick: () => void,
-    isMobileHeaderVisible: boolean
+    isMobileHeaderVisible: boolean,
+    onSearchToggle: () => void
 }) => {
     const navItems = [
         { id: 'schedule', label: 'Home', icon: Home },
+        { id: 'stats', label: 'Stats', icon: BarChart3 },
         { id: 'schedule_list', label: 'Matches', icon: Calendar },
         { id: 'points_table', label: 'Standings', icon: ListOrdered },
         { id: 'teams', label: 'Teams', icon: Shield },
@@ -49,7 +101,7 @@ const Navigation = ({
     const mobileNavItems = [
         ...navItems
     ];
-    const showBottomNav = ['schedule', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
+    const showBottomNav = ['schedule', 'stats', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
 
     return (
         <>
@@ -59,9 +111,16 @@ const Navigation = ({
                     <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
                         <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
                     </button>
-                    <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
-                        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {currentScreen === 'schedule' && (
+                            <button onClick={onSearchToggle} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Open search">
+                                <Search className="w-4 h-4" />
+                            </button>
+                        )}
+                        <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
+                            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -103,6 +162,11 @@ const Navigation = ({
                         <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
                     </button>
                     <div className="flex items-center gap-1">
+                        {currentScreen === 'schedule' && (
+                            <button onClick={onSearchToggle} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Open search">
+                                <Search className="w-4 h-4" />
+                            </button>
+                        )}
                         <button onClick={onToggleTheme} className={`mr-2 p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
                             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
@@ -125,9 +189,13 @@ const Navigation = ({
 export default function App() {
     const [currentScreen, setCurrentScreen] = useState<Screen>('schedule');
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-    const [playing11, setPlaying11] = useState<Player[]>([]);
+    const [playing11, setPlaying11] = useState<(Player | null)[]>([...EMPTY_PLAYING_XI]);
     const [impactPlayer, setImpactPlayer] = useState<Player | null>(null);
-    const [savedXIs, setSavedXIs] = useState<Record<string, SavedXI>>(() => safeReadStorage(SAVED_XI_KEY, {}));
+    const [savedXIs, setSavedXIs] = useState<Record<string, SavedXI>>(() => {
+        const defaults = createDefaultSavedXIs();
+        const stored = safeReadStorage<Record<string, SavedXI>>(SAVED_XI_KEY, {});
+        return { ...defaults, ...stored };
+    });
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [fantasyXI, setFantasyXI] = useState<Record<string, Player[]>>(() => safeReadStorage(FANTASY_XI_KEY, {}));
     const [showBuilderRoster, setShowBuilderRoster] = useState(false);
@@ -142,6 +210,10 @@ export default function App() {
     const [completedInsightTab, setCompletedInsightTab] = useState<'key_moments' | 'tactical' | 'improvements' | 'team_compare'>('key_moments');
     const [completedViewMode, setCompletedViewMode] = useState<'summary' | 'analysis'>('summary');
     const [mobileScorecardInningsIndex, setMobileScorecardInningsIndex] = useState<0 | 1>(0);
+    const [globalSearch, setGlobalSearch] = useState('');
+    const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+    const [showHomeSearch, setShowHomeSearch] = useState(false);
+    const [selectedStatMetricId, setSelectedStatMetricId] = useState(statsMetricLeaders[0]?.id ?? '');
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -182,6 +254,7 @@ export default function App() {
         if (currentScreen !== 'fantasy_xi') setFantasyFilter('all');
         if (currentScreen !== 'builder' && currentScreen !== 'compare_xi') setBuilderReturnScreen(null);
         if (currentScreen !== 'points_table') setExpandedTeamId(null);
+        if (currentScreen !== 'schedule') setShowHomeSearch(false);
     }, [currentScreen]);
 
     useEffect(() => {
@@ -190,53 +263,67 @@ export default function App() {
         setMobileScorecardInningsIndex(0);
     }, [selectedMatch?.id]);
 
+    const selectedPlaying11 = useMemo(() => playing11.filter((player): player is Player => Boolean(player)), [playing11]);
+
     const builderSummary = useMemo(() => {
-        const canAddMore = playing11.length < 11;
+        const canAddMore = selectedPlaying11.length < 11;
         const nextAction = canAddMore
-            ? `Select ${11 - playing11.length} more player${playing11.length === 10 ? '' : 's'} for your XI.`
+            ? `Select ${11 - selectedPlaying11.length} more player${selectedPlaying11.length === 10 ? '' : 's'} for your XI.`
             : impactPlayer
                 ? 'Squad complete. Review the balance or open the dashboard.'
                 : 'Choose one impact player to finish the squad.';
 
         return nextAction;
-    }, [impactPlayer, playing11.length]);
+    }, [impactPlayer, selectedPlaying11.length]);
+
+    const searchResults = useMemo(() => {
+        const query = globalSearch.trim().toLowerCase();
+        if (query.length < 3) return { teams: [] as Team[], players: [] as typeof playerDetails };
+
+        return {
+            teams: teams.filter((team) => team.name.toLowerCase().includes(query) || team.shortName.toLowerCase().includes(query)).slice(0, 6),
+            players: playerDetails.filter((player) => player.name.toLowerCase().includes(query)).slice(0, 12),
+        };
+    }, [globalSearch]);
 
     const handleTeamSelect = (team: Team, nextScreen: Screen = 'squad', returnScreen: Screen | null = null) => {
         setSelectedTeam(team);
         if (savedXIs[team.id]) {
-            setPlaying11(savedXIs[team.id].playing11);
+            setPlaying11(normalizePlayingXI(savedXIs[team.id].playing11));
             setImpactPlayer(savedXIs[team.id].impactPlayer);
         } else {
-            setPlaying11([]);
+            setPlaying11([...EMPTY_PLAYING_XI]);
             setImpactPlayer(null);
         }
         setBuilderReturnScreen(returnScreen);
         setCurrentScreen(nextScreen);
     };
 
-    const saveCurrentXI = (newPlaying11: Player[], newImpactPlayer: Player | null) => {
+    const saveCurrentXI = (newPlaying11: (Player | null)[], newImpactPlayer: Player | null) => {
         if (selectedTeam) {
             setSavedXIs(prev => ({
                 ...prev,
-                [selectedTeam.id]: { playing11: newPlaying11, impactPlayer: newImpactPlayer }
+                [selectedTeam.id]: { playing11: normalizePlayingXI(newPlaying11), impactPlayer: newImpactPlayer }
             }));
         }
     };
 
     const handlePlayerToggle = (player: Player) => {
-        const isPlaying11 = playing11.some(p => p.id === player.id);
+        const slotIndex = playing11.findIndex((p) => p?.id === player.id);
+        const isPlaying11 = slotIndex >= 0;
         const isImpact = impactPlayer?.id === player.id;
 
         let newPlaying11 = [...playing11];
         let newImpactPlayer = impactPlayer;
 
         if (isPlaying11) {
-            newPlaying11 = playing11.filter(p => p.id !== player.id);
+            newPlaying11[slotIndex] = null;
         } else if (isImpact) {
             newImpactPlayer = null;
         } else {
-            if (playing11.length < 11) {
-                newPlaying11 = [...playing11, player];
+            const firstEmptyIndex = newPlaying11.findIndex((p) => p === null);
+            if (firstEmptyIndex >= 0) {
+                newPlaying11[firstEmptyIndex] = player;
             } else if (!impactPlayer) {
                 newImpactPlayer = player;
             }
@@ -248,7 +335,7 @@ export default function App() {
     };
 
     const getPlayerStatus = (player: Player) => {
-        if (playing11.some(p => p.id === player.id)) return 'Playing 11';
+        if (playing11.some(p => p?.id === player.id)) return 'Playing 11';
         if (impactPlayer?.id === player.id) return 'Impact Player';
         return null;
     };
@@ -278,8 +365,16 @@ export default function App() {
         }, 700);
     };
 
+    const selectedPlayerDetails = playerDetails.find((player) => player.id === selectedPlayerId) || null;
+    const selectedStatMetric = statsMetricLeaders.find((metric) => metric.id === selectedStatMetricId) || statsMetricLeaders[0];
+
     return (
-        <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+        <div className={`relative min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors overflow-x-clip ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
+            <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+                <div className={`absolute -top-24 -left-24 h-72 w-72 rounded-full blur-3xl ${isDark ? 'bg-blue-500/20' : 'bg-cyan-400/30'}`} />
+                <div className={`absolute top-1/3 -right-24 h-72 w-72 rounded-full blur-3xl ${isDark ? 'bg-fuchsia-500/15' : 'bg-violet-400/25'}`} />
+                <div className={`absolute -bottom-24 left-1/3 h-72 w-72 rounded-full blur-3xl ${isDark ? 'bg-emerald-500/10' : 'bg-emerald-300/25'}`} />
+            </div>
             {showInitialSplash && (
                 <div className={`fixed inset-0 z-[80] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
                     <motion.img
@@ -299,6 +394,7 @@ export default function App() {
                 onToggleTheme={() => setIsDark(prev => !prev)}
                 onLogoClick={triggerLogoHomeAnimation}
                 isMobileHeaderVisible={isMobileHeaderVisible}
+                onSearchToggle={() => setShowHomeSearch((prev) => !prev)}
             />
             {isLogoTransitioning && (
                 <div className={`fixed inset-0 z-[70] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
@@ -316,6 +412,14 @@ export default function App() {
                 {currentScreen === 'teams' && (
                     <motion.div key="teams" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto p-4 sm:p-8">
                         <div className="text-center mb-8 sm:mb-16 mt-4 sm:mt-12">
+                            <div className="mb-5 flex justify-center">
+                                <button
+                                    onClick={() => setCurrentScreen('schedule')}
+                                    className={`px-4 py-2 rounded-full font-bold border ${isDark ? 'bg-white/10 text-white border-white/20 hover:bg-white/20' : 'bg-white text-slate-900 border-black/20 hover:bg-slate-100'}`}
+                                >
+                                    ← Back to Home
+                                </button>
+                            </div>
                             <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black tracking-tighter mb-3 sm:mb-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent drop-shadow-sm">
                                 IPL SQUAD BUILDER
                             </h1>
@@ -330,7 +434,7 @@ export default function App() {
                                     whileHover={{ scale: 1.03, y: -5 }}
                                     whileTap={{ scale: 0.98 }}
                                     key={team.id}
-                                    onClick={() => handleTeamSelect(team)}
+                                    onClick={() => handleTeamSelect(team, 'builder')}
                                     className={`relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-left transition-all duration-300 group border border-white/25 shadow-2xl bg-gradient-to-br ${team.gradient}`}
                                 >
                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
@@ -397,7 +501,7 @@ export default function App() {
                                 </button>
                                 <div>
                                     <h2 className="text-xl sm:text-2xl font-black flex items-center gap-2 text-white drop-shadow-sm">{selectedTeam.name}</h2>
-                                    <p className="text-sm font-medium text-white/80">{playing11.length}/11 Selected • {impactPlayer ? '1' : '0'}/1 Impact Player</p>
+                                    <p className="text-sm font-medium text-white/80">{selectedPlaying11.length}/11 Selected • {impactPlayer ? '1' : '0'}/1 Impact Player</p>
                                 </div>
                             </div>
 
@@ -405,7 +509,7 @@ export default function App() {
                                 <button onClick={() => setShowBuilderRoster(prev => !prev)} className="lg:hidden px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold inline-flex items-center gap-2">
                                     <LayoutList className="w-4 h-4" /> {showBuilderRoster ? 'Hide roster' : 'Show roster'}
                                 </button>
-                                <button disabled={playing11.length < 11} onClick={() => setCurrentScreen(builderReturnScreen === 'compare_xi' ? 'compare_xi' : 'dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${playing11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
+                                <button disabled={selectedPlaying11.length < 11} onClick={() => setCurrentScreen(builderReturnScreen === 'compare_xi' ? 'compare_xi' : 'dashboard')} className={`px-5 sm:px-6 py-2.5 rounded-full font-bold transition-all flex items-center gap-2 shadow-lg ${selectedPlaying11.length === 11 ? 'bg-white text-blue-900 hover:bg-blue-50 hover:scale-105' : 'bg-black/20 text-white/50 cursor-not-allowed'}`}>
                                     {builderReturnScreen === 'compare_xi' ? 'Save & Compare' : 'View Dashboard'} <Trophy className="w-5 h-5" />
                                 </button>
                             </div>
@@ -490,7 +594,7 @@ export default function App() {
                                     {selectedTeam.players.map((player) => {
                                         const status = getPlayerStatus(player);
                                         const isSelected = !!status;
-                                        const isDisabled = !isSelected && playing11.length === 11 && impactPlayer !== null;
+                                        const isDisabled = !isSelected && selectedPlaying11.length === 11 && impactPlayer !== null;
 
                                         return (
                                             <button key={player.id} disabled={isDisabled} onClick={() => handlePlayerToggle(player)} className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 group ${isSelected ? status === 'Playing 11' ? 'bg-white/20 border-white/200 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'bg-yellow-500/20 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.15)]' : isDisabled ? 'bg-black/20 border-white/20 opacity-40 cursor-not-allowed' : 'bg-white/5 border-white/25 hover:border-white/30 hover:bg-white/10'}`}>
@@ -541,10 +645,10 @@ export default function App() {
                                     <div className="absolute left-1/2 top-[25%] bottom-[25%] w-16 sm:w-20 -ml-8 sm:-ml-10 border-[3px] border-white/30 bg-white/5" />
 
                                     <div className="relative z-10 w-full h-full flex flex-col justify-between py-8 gap-8">
-                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(0, 2).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(2, 5).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{playing11.slice(5, 8).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
-                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{playing11.slice(8, 11).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(0, 2).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(2, 5).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-10 lg:gap-24 flex-wrap">{selectedPlaying11.slice(5, 8).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
+                                        <div className="flex justify-center gap-4 sm:gap-16 flex-wrap">{selectedPlaying11.slice(8, 11).map((p) => <div key={p.id}><PlayerNode player={p} /></div>)}</div>
                                     </div>
                                 </div>
 
@@ -569,10 +673,10 @@ export default function App() {
                                     <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 shadow-2xl">
                                         <h3 className="text-2xl font-black mb-6 text-white uppercase tracking-wider">Team Balance</h3>
                                         <div className="space-y-5">
-                                            <BalanceBar label="Batsmen" count={playing11.filter(p => p.role === 'Batsman').length} color="bg-blue-400" />
-                                            <BalanceBar label="Bowlers" count={playing11.filter(p => p.role === 'Bowler').length} color="bg-red-400" />
-                                            <BalanceBar label="All-rounders" count={playing11.filter(p => p.role === 'All-rounder').length} color="bg-purple-400" />
-                                            <BalanceBar label="Wicket-keepers" count={playing11.filter(p => p.role === 'Wicket-keeper').length} color="bg-yellow-400" />
+                                            <BalanceBar label="Batsmen" count={selectedPlaying11.filter(p => p.role === 'Batsman').length} color="bg-blue-400" />
+                                            <BalanceBar label="Bowlers" count={selectedPlaying11.filter(p => p.role === 'Bowler').length} color="bg-red-400" />
+                                            <BalanceBar label="All-rounders" count={selectedPlaying11.filter(p => p.role === 'All-rounder').length} color="bg-purple-400" />
+                                            <BalanceBar label="Wicket-keepers" count={selectedPlaying11.filter(p => p.role === 'Wicket-keeper').length} color="bg-yellow-400" />
                                         </div>
                                     </div>
                                 </div>
@@ -602,8 +706,79 @@ export default function App() {
 
                             return (
                                 <div className="space-y-8 pb-12">
+                                    {showHomeSearch && (
+                                        <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl space-y-4`}>
+                                            <div className="flex items-center gap-3">
+                                                <Search className={`w-5 h-5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />
+                                                <input
+                                                    value={globalSearch}
+                                                    onChange={(e) => setGlobalSearch(e.target.value)}
+                                                    placeholder="Search teams or players (min 3 letters)"
+                                                    className={`w-full rounded-xl border px-4 py-2 text-sm font-medium outline-none ${isDark ? 'bg-black/30 border-white/20 text-white placeholder:text-slate-400' : 'bg-slate-100 border-black/20 text-slate-900 placeholder:text-slate-500'}`}
+                                                />
+                                            </div>
+                                            {globalSearch.trim().length >= 3 && (
+                                                <div className="grid md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Teams</h4>
+                                                        <div className="space-y-2">
+                                                            {searchResults.teams.map((team) => (
+                                                                <button key={`search-team-${team.id}`} onClick={() => handleTeamSelect(team, 'builder', 'schedule')} className={`w-full text-left rounded-xl border px-3 py-2 flex items-center gap-3 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}>
+                                                                    <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
+                                                                    <span className="font-bold">{team.name}</span>
+                                                                </button>
+                                                            ))}
+                                                            {searchResults.teams.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No teams found.</p>}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Players</h4>
+                                                        <div className="space-y-2 max-h-60 overflow-auto custom-scrollbar pr-1">
+                                                            {searchResults.players.map((player) => (
+                                                                <button
+                                                                    key={`search-player-${player.id}`}
+                                                                    onClick={() => {
+                                                                        setSelectedPlayerId(player.id);
+                                                                        setCurrentScreen('player_details');
+                                                                    }}
+                                                                    className={`w-full text-left rounded-xl border px-3 py-2 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}
+                                                                >
+                                                                    <p className="font-bold">{player.name}</p>
+                                                                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{player.teamShortName} • Completed Matches: {player.completedMatches}</p>
+                                                                </button>
+                                                            ))}
+                                                            {searchResults.players.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No players found.</p>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </section>
+                                    )}
+
                                     <section className={`w-full aspect-[16/9] md:aspect-[20/10] rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl relative`}>
-                                        <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%]" />
+                                        <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%] scale-[1.02]" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-8">
+                                            <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white/80 font-bold">IPL Fantasy Intelligence</p>
+                                            <h2 className="text-xl sm:text-4xl font-black text-white mt-2">Build smarter squads with connected match, team & player insights.</h2>
+                                        </div>
+                                    </section>
+
+                                    <section className="flex flex-wrap gap-2 sm:gap-3">
+                                        {[
+                                            { label: 'Build Playing XI', action: () => setCurrentScreen('teams') },
+                                            { label: 'Explore Stats', action: () => setCurrentScreen('stats') },
+                                            { label: 'View Matches', action: () => setCurrentScreen('schedule_list') },
+                                            { label: 'Browse Teams', action: () => setCurrentScreen('teams') },
+                                        ].map((item) => (
+                                            <button
+                                                key={item.label}
+                                                onClick={item.action}
+                                                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold border backdrop-blur-xl ${isDark ? 'bg-white/5 border-white/20 text-white hover:bg-white/10' : 'bg-white/80 border-black/20 text-slate-900 hover:bg-white'}`}
+                                            >
+                                                {item.label}
+                                            </button>
+                                        ))}
                                     </section>
 
                                     <section>
@@ -746,6 +921,112 @@ export default function App() {
                                 </div>
                             );
                         })()}
+                    </motion.div>
+                )}
+                {currentScreen === 'player_details' && selectedPlayerDetails && (
+                    <motion.div key="player_details" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
+                        <button onClick={() => setCurrentScreen('schedule')} className={`mb-4 px-4 py-2 rounded-full font-bold border ${isDark ? 'bg-slate-800 text-slate-100 border-white/20' : 'bg-white text-slate-900 border-black/20'}`}>← Back to Home</button>
+                        <section className={`rounded-3xl border p-5 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                            <div className="flex items-center gap-4">
+                                <img src={selectedPlayerDetails.imageUrl} alt={selectedPlayerDetails.name} className={getPlayerImageClass(selectedPlayerDetails.id, 'w-20 h-24 object-contain object-bottom')} />
+                                <div>
+                                    <h2 className={`text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedPlayerDetails.name}</h2>
+                                    <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>{selectedPlayerDetails.teamName} • {selectedPlayerDetails.role}</p>
+                                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Completed matches: {selectedPlayerDetails.completedMatches}</p>
+                                </div>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4 mt-5">
+                                <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <h3 className="font-black mb-2">Batting</h3>
+                                    <p className="text-sm">Runs: {selectedPlayerDetails.batting?.runs ?? 0}</p>
+                                    <p className="text-sm">Average: {selectedPlayerDetails.batting?.avg ?? 0}</p>
+                                    <p className="text-sm">Strike Rate: {selectedPlayerDetails.batting?.sr ?? 0}</p>
+                                </div>
+                                <div className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <h3 className="font-black mb-2">Bowling</h3>
+                                    <p className="text-sm">Wickets: {selectedPlayerDetails.bowling?.wickets ?? 0}</p>
+                                    <p className="text-sm">Average: {selectedPlayerDetails.bowling?.avg ?? 0}</p>
+                                    <p className="text-sm">Economy: {selectedPlayerDetails.bowling?.economy ?? 0}</p>
+                                </div>
+                            </div>
+                            <div className="mt-5">
+                                <h3 className="font-black mb-3">Match Tags</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {selectedPlayerDetails.tags.map((tag) => (
+                                        <button key={`${tag.matchId}-${tag.teamId}`} onClick={() => {
+                                            const match = schedule.find((m) => m.id === tag.matchId);
+                                            if (match) {
+                                                setSelectedMatch(match);
+                                                setCurrentScreen('match_details');
+                                            }
+                                        }} className={`px-3 py-1 rounded-full text-xs font-bold border ${tag.played ? 'bg-emerald-500/20 border-emerald-500/40' : 'bg-slate-500/20 border-slate-500/40'}`}>
+                                            M{tag.matchNumber} {tag.teamShortName} vs {tag.opponentShortName} • {tag.played ? 'Played' : 'Squad'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+                    </motion.div>
+                )}
+                {currentScreen === 'stats' && (
+                    <motion.div key="stats" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
+                        <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                            <button
+                                onClick={() => setCurrentScreen('schedule')}
+                                className={`mb-4 px-4 py-2 rounded-full font-bold border ${isDark ? 'bg-black/30 text-slate-100 border-white/20 hover:bg-black/40' : 'bg-slate-100 text-slate-900 border-black/20 hover:bg-slate-200'}`}
+                            >
+                                ← Back to Home
+                            </button>
+                            <h2 className={`text-2xl sm:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Tournament Stats (Top 10)</h2>
+                            <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Auto-generated from available completed match scorecards. As soon as scorecard entries are updated in data, these rankings update automatically.</p>
+                            <div className="md:hidden mb-4">
+                                <select
+                                    value={selectedStatMetric?.id}
+                                    onChange={(e) => setSelectedStatMetricId(e.target.value)}
+                                    className={`w-full rounded-xl border px-3 py-2 text-sm font-semibold ${isDark ? 'bg-black/30 border-white/20 text-white' : 'bg-slate-50 border-black/20 text-slate-900'}`}
+                                >
+                                    {statsMetricLeaders.map((metric) => (
+                                        <option key={metric.id} value={metric.id}>{metric.category.toUpperCase()} • {metric.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid md:grid-cols-[280px_1fr] gap-4">
+                                <aside className={`hidden md:block rounded-2xl border p-3 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <div className="space-y-2">
+                                        {statsMetricLeaders.map((metric) => (
+                                            <button
+                                                key={metric.id}
+                                                onClick={() => setSelectedStatMetricId(metric.id)}
+                                                className={`w-full text-left px-3 py-2 rounded-xl text-sm font-bold border ${selectedStatMetric?.id === metric.id ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'border-white/15 text-slate-300 hover:bg-white/10' : 'border-black/15 text-slate-700 hover:bg-black/5')}`}
+                                            >
+                                                <div>{metric.label}</div>
+                                                <div className={`text-[10px] ${selectedStatMetric?.id === metric.id ? 'text-white/80' : 'opacity-70'}`}>{metric.category.toUpperCase()}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </aside>
+                                <div className={`rounded-2xl border overflow-hidden ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <div className={`px-4 py-3 font-black border-b ${isDark ? 'border-white/20 text-white' : 'border-black/20 text-slate-900'}`}>{selectedStatMetric?.label} — Top 10</div>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead className={isDark ? 'bg-black/30 text-slate-300' : 'bg-slate-100 text-slate-700'}>
+                                            <tr><th className="p-3 text-left">#</th><th className="p-3 text-left">Player</th><th className="p-3 text-left">Team</th><th className="p-3 text-right">Value</th></tr>
+                                            </thead>
+                                            <tbody>
+                                            {selectedStatMetric?.items.map((item, index) => (
+                                                <tr key={`${selectedStatMetric.id}-${item.playerId}-${index}`} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                                                    <td className="p-3 font-bold">{index + 1}</td>
+                                                    <td className="p-3">{item.player}</td>
+                                                    <td className="p-3">{item.teamShortName}</td>
+                                                    <td className="p-3 text-right font-bold">{item.value}</td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </motion.div>
                 )}
                 {currentScreen === 'schedule_list' && (
@@ -1284,14 +1565,14 @@ export default function App() {
                                                     <h3 className="text-3xl font-black text-white drop-shadow-md uppercase">{team1.name}</h3>
                                                 </div>
 
-                                                {team1XI && team1XI.playing11.length === 11 ? (
+                                                {team1XI && team1XI.playing11.filter((player): player is Player => Boolean(player)).length === 11 ? (
                                                     <div className="space-y-4">
                                                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl">
                                                             <h4 className="text-emerald-400 font-black uppercase tracking-wider mb-4 flex items-center gap-2">
                                                                 <Shield className="w-5 h-5" /> Playing 11
                                                             </h4>
                                                             <div className="space-y-2">
-                                                                {team1XI.playing11.map((player, idx) => (
+                                                                {team1XI.playing11.filter((player): player is Player => Boolean(player)).map((player, idx) => (
                                                                     <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/20">
                                                                         <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                                                         <div className="relative w-10 h-10 flex items-end justify-center shrink-0">
@@ -1352,14 +1633,14 @@ export default function App() {
                                                     <img src={team2.logoUrl} alt={team2.shortName} className="w-16 h-16 object-contain drop-shadow-xl" />
                                                 </div>
 
-                                                {team2XI && team2XI.playing11.length === 11 ? (
+                                                {team2XI && team2XI.playing11.filter((player): player is Player => Boolean(player)).length === 11 ? (
                                                     <div className="space-y-4">
                                                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl">
                                                             <h4 className="text-emerald-400 font-black uppercase tracking-wider mb-4 flex items-center gap-2 justify-end">
                                                                 Playing 11 <Shield className="w-5 h-5" />
                                                             </h4>
                                                             <div className="space-y-2">
-                                                                {team2XI.playing11.map((player, idx) => (
+                                                                {team2XI.playing11.filter((player): player is Player => Boolean(player)).map((player, idx) => (
                                                                     <div key={player.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/20 flex-row-reverse text-right">
                                                                         <div className="w-6 text-center text-white/40 font-bold text-sm">{idx + 1}</div>
                                                                         <div className="relative w-10 h-10 flex items-end justify-center shrink-0">

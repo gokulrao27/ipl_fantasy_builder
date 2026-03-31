@@ -449,7 +449,7 @@ export interface CompletedMatchDetails {
         team2: string[];
         players: string[];
     };
-    uiUxPlan: string[];
+    uiUxPlan?: string[];
     innings: [InningScorecard, InningScorecard];
 }
 
@@ -511,7 +511,7 @@ const captainByTeam: Record<string, string> = {
     lsg: 'Rishabh Pant',
 };
 
-const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 'dateLabel' | 'day' | 'team1' | 'team2' | 'venueCity' | 'stadium' | 'captain1' | 'captain2' | 'pitchReport'>> = {
+const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 'dateLabel' | 'day' | 'team1' | 'team2' | 'venueCity' | 'stadium' | 'captain1' | 'captain2' | 'pitchReport' | 'status'>> = {
     'rcb-srh': {
         headline: 'Powerplay fireworks meeting one of the most explosive middle orders in the league.',
         venueStats: { avgFirstInningsScore: 189, chasingWins: 52, totalMatches: 96, bestBowlingFigure: '6/12', boundaryPercentage: 61 },
