@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { teams, Team, Player, schedule, Match, pointsTable, homeHeaderStats, battingTable, bowlingTable, playerDetails } from './data';
-import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search } from 'lucide-react';
-import logoLight from '../logo_light_mode.png';
-import logoDark from '../logo_dark_mode.png';
-import iplHero from '../ipl.jpeg';
+import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders } from './data';
+import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3 } from 'lucide-react';
+const logoLight = '/logo_light_mode.png';
+const logoDark = '/logo_dark_mode.png';
+const iplHero = '/ipl.jpeg';
 
-type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details';
+type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details' | 'stats';
 type SavedXI = { playing11: Player[]; impactPlayer: Player | null };
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
@@ -31,17 +31,20 @@ const Navigation = ({
                         isDark,
                         onToggleTheme,
                         onLogoClick,
-                        isMobileHeaderVisible
+                        isMobileHeaderVisible,
+                        onSearchToggle
                     }: {
     currentScreen: Screen,
     setCurrentScreen: (s: Screen) => void,
     isDark: boolean,
     onToggleTheme: () => void,
     onLogoClick: () => void,
-    isMobileHeaderVisible: boolean
+    isMobileHeaderVisible: boolean,
+    onSearchToggle: () => void
 }) => {
     const navItems = [
         { id: 'schedule', label: 'Home', icon: Home },
+        { id: 'stats', label: 'Stats', icon: BarChart3 },
         { id: 'schedule_list', label: 'Matches', icon: Calendar },
         { id: 'points_table', label: 'Standings', icon: ListOrdered },
         { id: 'teams', label: 'Teams', icon: Shield },
@@ -49,7 +52,7 @@ const Navigation = ({
     const mobileNavItems = [
         ...navItems
     ];
-    const showBottomNav = ['schedule', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
+    const showBottomNav = ['schedule', 'stats', 'schedule_list', 'points_table', 'teams'].includes(currentScreen);
 
     return (
         <>
@@ -59,9 +62,16 @@ const Navigation = ({
                     <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
                         <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
                     </button>
-                    <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
-                        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {currentScreen === 'schedule' && (
+                            <button onClick={onSearchToggle} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Open search">
+                                <Search className="w-4 h-4" />
+                            </button>
+                        )}
+                        <button onClick={onToggleTheme} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
+                            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -103,6 +113,11 @@ const Navigation = ({
                         <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
                     </button>
                     <div className="flex items-center gap-1">
+                        {currentScreen === 'schedule' && (
+                            <button onClick={onSearchToggle} className={`p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Open search">
+                                <Search className="w-4 h-4" />
+                            </button>
+                        )}
                         <button onClick={onToggleTheme} className={`mr-2 p-2 rounded-full border transition-colors ${isDark ? 'border-white/15 text-white hover:bg-white/10' : 'border-black/25 text-black hover:bg-black/5'}`} aria-label="Toggle theme">
                             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                         </button>
@@ -144,6 +159,8 @@ export default function App() {
     const [mobileScorecardInningsIndex, setMobileScorecardInningsIndex] = useState<0 | 1>(0);
     const [globalSearch, setGlobalSearch] = useState('');
     const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+    const [showHomeSearch, setShowHomeSearch] = useState(false);
+    const [selectedStatMetricId, setSelectedStatMetricId] = useState(statsMetricLeaders[0]?.id ?? '');
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -184,6 +201,7 @@ export default function App() {
         if (currentScreen !== 'fantasy_xi') setFantasyFilter('all');
         if (currentScreen !== 'builder' && currentScreen !== 'compare_xi') setBuilderReturnScreen(null);
         if (currentScreen !== 'points_table') setExpandedTeamId(null);
+        if (currentScreen !== 'schedule') setShowHomeSearch(false);
     }, [currentScreen]);
 
     useEffect(() => {
@@ -291,6 +309,7 @@ export default function App() {
     };
 
     const selectedPlayerDetails = playerDetails.find((player) => player.id === selectedPlayerId) || null;
+    const selectedStatMetric = statsMetricLeaders.find((metric) => metric.id === selectedStatMetricId) || statsMetricLeaders[0];
 
     return (
         <div className={`min-h-screen font-sans selection:bg-blue-500/30 pb-16 md:pb-0 pt-20 md:pt-16 transition-colors ${isDark ? 'bg-black text-slate-100' : 'bg-white text-slate-900'}`}>
@@ -313,6 +332,7 @@ export default function App() {
                 onToggleTheme={() => setIsDark(prev => !prev)}
                 onLogoClick={triggerLogoHomeAnimation}
                 isMobileHeaderVisible={isMobileHeaderVisible}
+                onSearchToggle={() => setShowHomeSearch((prev) => !prev)}
             />
             {isLogoTransitioning && (
                 <div className={`fixed inset-0 z-[70] flex items-center justify-center ${isDark ? 'bg-black' : 'bg-white'}`}>
@@ -616,112 +636,57 @@ export default function App() {
 
                             return (
                                 <div className="space-y-8 pb-12">
+                                    {showHomeSearch && (
+                                        <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl space-y-4`}>
+                                            <div className="flex items-center gap-3">
+                                                <Search className={`w-5 h-5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />
+                                                <input
+                                                    value={globalSearch}
+                                                    onChange={(e) => setGlobalSearch(e.target.value)}
+                                                    placeholder="Search teams or players (min 3 letters)"
+                                                    className={`w-full rounded-xl border px-4 py-2 text-sm font-medium outline-none ${isDark ? 'bg-black/30 border-white/20 text-white placeholder:text-slate-400' : 'bg-slate-100 border-black/20 text-slate-900 placeholder:text-slate-500'}`}
+                                                />
+                                            </div>
+                                            {globalSearch.trim().length >= 3 && (
+                                                <div className="grid md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Teams</h4>
+                                                        <div className="space-y-2">
+                                                            {searchResults.teams.map((team) => (
+                                                                <button key={`search-team-${team.id}`} onClick={() => handleTeamSelect(team, 'squad', 'schedule')} className={`w-full text-left rounded-xl border px-3 py-2 flex items-center gap-3 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}>
+                                                                    <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
+                                                                    <span className="font-bold">{team.name}</span>
+                                                                </button>
+                                                            ))}
+                                                            {searchResults.teams.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No teams found.</p>}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Players</h4>
+                                                        <div className="space-y-2 max-h-60 overflow-auto custom-scrollbar pr-1">
+                                                            {searchResults.players.map((player) => (
+                                                                <button
+                                                                    key={`search-player-${player.id}`}
+                                                                    onClick={() => {
+                                                                        setSelectedPlayerId(player.id);
+                                                                        setCurrentScreen('player_details');
+                                                                    }}
+                                                                    className={`w-full text-left rounded-xl border px-3 py-2 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}
+                                                                >
+                                                                    <p className="font-bold">{player.name}</p>
+                                                                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{player.teamShortName} • Completed Matches: {player.completedMatches}</p>
+                                                                </button>
+                                                            ))}
+                                                            {searchResults.players.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No players found.</p>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </section>
+                                    )}
+
                                     <section className={`w-full aspect-[16/9] md:aspect-[20/10] rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl relative`}>
                                         <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%]" />
-                                    </section>
-
-                                    <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl space-y-4`}>
-                                        <div className="flex items-center gap-3">
-                                            <Search className={`w-5 h-5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />
-                                            <input
-                                                value={globalSearch}
-                                                onChange={(e) => setGlobalSearch(e.target.value)}
-                                                placeholder="Search teams or players (min 3 letters)"
-                                                className={`w-full rounded-xl border px-4 py-2 text-sm font-medium outline-none ${isDark ? 'bg-black/30 border-white/20 text-white placeholder:text-slate-400' : 'bg-slate-100 border-black/20 text-slate-900 placeholder:text-slate-500'}`}
-                                            />
-                                        </div>
-                                        {globalSearch.trim().length >= 3 && (
-                                            <div className="grid md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Teams</h4>
-                                                    <div className="space-y-2">
-                                                        {searchResults.teams.map((team) => (
-                                                            <button key={`search-team-${team.id}`} onClick={() => handleTeamSelect(team, 'squad', 'schedule')} className={`w-full text-left rounded-xl border px-3 py-2 flex items-center gap-3 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}>
-                                                                <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
-                                                                <span className="font-bold">{team.name}</span>
-                                                            </button>
-                                                        ))}
-                                                        {searchResults.teams.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No teams found.</p>}
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h4 className={`font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Players</h4>
-                                                    <div className="space-y-2 max-h-60 overflow-auto custom-scrollbar pr-1">
-                                                        {searchResults.players.map((player) => (
-                                                            <button
-                                                                key={`search-player-${player.id}`}
-                                                                onClick={() => {
-                                                                    setSelectedPlayerId(player.id);
-                                                                    setCurrentScreen('player_details');
-                                                                }}
-                                                                className={`w-full text-left rounded-xl border px-3 py-2 ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-800'}`}
-                                                            >
-                                                                <p className="font-bold">{player.name}</p>
-                                                                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{player.teamShortName} • Completed Matches: {player.completedMatches}</p>
-                                                            </button>
-                                                        ))}
-                                                        {searchResults.players.length === 0 && <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No players found.</p>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </section>
-
-                                    <section className="grid lg:grid-cols-2 gap-4">
-                                        <div className={`rounded-3xl border p-4 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'}`}>
-                                            <h3 className={`text-xl font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Batting Stats</h3>
-                                            <div className="space-y-1 text-sm">
-                                                {Object.entries(homeHeaderStats.batting).map(([label, value]) => (
-                                                    <div key={label} className="flex justify-between gap-2"><span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{label}</span><span className="font-bold">{value}</span></div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className={`rounded-3xl border p-4 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'}`}>
-                                            <h3 className={`text-xl font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Bowling Stats</h3>
-                                            <div className="space-y-1 text-sm">
-                                                {Object.entries(homeHeaderStats.bowling).map(([label, value]) => (
-                                                    <div key={label} className="flex justify-between gap-2"><span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{label}</span><span className="font-bold">{value}</span></div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </section>
-
-                                    <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
-                                        <div className={`px-4 py-3 font-black ${isDark ? 'text-white border-b border-white/20' : 'text-slate-900 border-b border-black/20'}`}>Batting Table</div>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-xs sm:text-sm">
-                                                <thead className={isDark ? 'bg-black/30 text-slate-300' : 'bg-slate-100 text-slate-700'}>
-                                                <tr><th className="p-2 text-left">PLAYER</th><th className="p-2">MATCHES</th><th className="p-2">INNS</th><th className="p-2">RUNS</th><th className="p-2">AVG</th><th className="p-2">SR</th><th className="p-2">4s</th><th className="p-2">6s</th></tr>
-                                                </thead>
-                                                <tbody>
-                                                {battingTable.slice(0, 20).map((row) => (
-                                                    <tr key={row.playerId} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
-                                                        <td className="p-2 font-semibold">{row.player} <span className="opacity-60">({row.teamShortName})</span></td>
-                                                        <td className="p-2 text-center">{row.matches}</td><td className="p-2 text-center">{row.inns}</td><td className="p-2 text-center">{row.runs}</td><td className="p-2 text-center">{row.avg}</td><td className="p-2 text-center">{row.sr}</td><td className="p-2 text-center">{row.fours}</td><td className="p-2 text-center">{row.sixes}</td>
-                                                    </tr>
-                                                ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </section>
-
-                                    <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
-                                        <div className={`px-4 py-3 font-black ${isDark ? 'text-white border-b border-white/20' : 'text-slate-900 border-b border-black/20'}`}>Bowling Table</div>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-xs sm:text-sm">
-                                                <thead className={isDark ? 'bg-black/30 text-slate-300' : 'bg-slate-100 text-slate-700'}>
-                                                <tr><th className="p-2 text-left">PLAYER</th><th className="p-2">MATCHES</th><th className="p-2">OVERS</th><th className="p-2">BALLS</th><th className="p-2">WKTS</th><th className="p-2">Avg</th><th className="p-2">RUNS</th><th className="p-2">4-FERS</th><th className="p-2">5-FERS</th></tr>
-                                                </thead>
-                                                <tbody>
-                                                {bowlingTable.slice(0, 20).map((row) => (
-                                                    <tr key={row.playerId} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
-                                                        <td className="p-2 font-semibold">{row.player} <span className="opacity-60">({row.teamShortName})</span></td>
-                                                        <td className="p-2 text-center">{row.matches}</td><td className="p-2 text-center">{row.overs}</td><td className="p-2 text-center">{row.balls}</td><td className="p-2 text-center">{row.wickets}</td><td className="p-2 text-center">{row.avg}</td><td className="p-2 text-center">{row.runs}</td><td className="p-2 text-center">{row.fourWickets}</td><td className="p-2 text-center">{row.fiveWickets}</td>
-                                                    </tr>
-                                                ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
                                     </section>
 
                                     <section>
@@ -906,6 +871,60 @@ export default function App() {
                                             M{tag.matchNumber} {tag.teamShortName} vs {tag.opponentShortName} • {tag.played ? 'Played' : 'Squad'}
                                         </button>
                                     ))}
+                                </div>
+                            </div>
+                        </section>
+                    </motion.div>
+                )}
+                {currentScreen === 'stats' && (
+                    <motion.div key="stats" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto w-full">
+                        <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                            <h2 className={`text-2xl sm:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Tournament Stats (Top 10)</h2>
+                            <div className="md:hidden mb-4">
+                                <select
+                                    value={selectedStatMetric?.id}
+                                    onChange={(e) => setSelectedStatMetricId(e.target.value)}
+                                    className={`w-full rounded-xl border px-3 py-2 text-sm font-semibold ${isDark ? 'bg-black/30 border-white/20 text-white' : 'bg-slate-50 border-black/20 text-slate-900'}`}
+                                >
+                                    {statsMetricLeaders.map((metric) => (
+                                        <option key={metric.id} value={metric.id}>{metric.category.toUpperCase()} • {metric.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid md:grid-cols-[280px_1fr] gap-4">
+                                <aside className={`hidden md:block rounded-2xl border p-3 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <div className="space-y-2">
+                                        {statsMetricLeaders.map((metric) => (
+                                            <button
+                                                key={metric.id}
+                                                onClick={() => setSelectedStatMetricId(metric.id)}
+                                                className={`w-full text-left px-3 py-2 rounded-xl text-sm font-bold border ${selectedStatMetric?.id === metric.id ? 'bg-blue-600 text-white border-blue-600' : (isDark ? 'border-white/15 text-slate-300 hover:bg-white/10' : 'border-black/15 text-slate-700 hover:bg-black/5')}`}
+                                            >
+                                                <div>{metric.label}</div>
+                                                <div className={`text-[10px] ${selectedStatMetric?.id === metric.id ? 'text-white/80' : 'opacity-70'}`}>{metric.category.toUpperCase()}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </aside>
+                                <div className={`rounded-2xl border overflow-hidden ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                    <div className={`px-4 py-3 font-black border-b ${isDark ? 'border-white/20 text-white' : 'border-black/20 text-slate-900'}`}>{selectedStatMetric?.label} — Top 10</div>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead className={isDark ? 'bg-black/30 text-slate-300' : 'bg-slate-100 text-slate-700'}>
+                                            <tr><th className="p-3 text-left">#</th><th className="p-3 text-left">Player</th><th className="p-3 text-left">Team</th><th className="p-3 text-right">Value</th></tr>
+                                            </thead>
+                                            <tbody>
+                                            {selectedStatMetric?.items.map((item, index) => (
+                                                <tr key={`${selectedStatMetric.id}-${item.playerId}-${index}`} className={`border-t ${isDark ? 'border-white/10' : 'border-black/10'}`}>
+                                                    <td className="p-3 font-bold">{index + 1}</td>
+                                                    <td className="p-3">{item.player}</td>
+                                                    <td className="p-3">{item.teamShortName}</td>
+                                                    <td className="p-3 text-right font-bold">{item.value}</td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </section>

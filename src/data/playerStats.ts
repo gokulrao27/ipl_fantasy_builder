@@ -55,6 +55,20 @@ export interface HomeHeaderStats {
   bowling: Record<string, string>;
 }
 
+export interface StatLeaderItem {
+  playerId: string;
+  player: string;
+  teamShortName: string;
+  value: number | string;
+}
+
+export interface StatMetricLeaders {
+  id: string;
+  label: string;
+  category: 'batting' | 'bowling';
+  items: StatLeaderItem[];
+}
+
 const ballsFromOvers = (overs: string): number => {
   const [o, b] = overs.split('.').map(Number);
   return (o || 0) * 6 + (b || 0);
@@ -269,3 +283,28 @@ export const playerDetails = teams.flatMap((team: Team) =>
     bowling: bowlingTable.find((row) => row.playerId === player.id),
   }))
 );
+
+const topN = <T,>(rows: T[], by: (row: T) => number, n = 10, minFilter?: (row: T) => boolean) =>
+  rows
+    .filter((row) => (minFilter ? minFilter(row) : true))
+    .slice()
+    .sort((a, b) => by(b) - by(a))
+    .slice(0, n);
+
+export const statsMetricLeaders: StatMetricLeaders[] = [
+  { id: 'most-runs', label: 'Most Runs', category: 'batting', items: topN(battingTable, (p) => p.runs).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.runs })) },
+  { id: 'highest-score', label: 'Highest Scores', category: 'batting', items: topN(battingTable, (p) => p.highestScore).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.highestScore })) },
+  { id: 'best-batting-average', label: 'Best Batting Average', category: 'batting', items: topN(battingTable, (p) => p.avg, 10, (p) => p.inns >= 1).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.avg })) },
+  { id: 'best-batting-strike-rate', label: 'Best Batting Strike Rate', category: 'batting', items: topN(battingTable, (p) => p.sr, 10, (p) => p.balls >= 10).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.sr })) },
+  { id: 'most-hundreds', label: 'Most Hundreds', category: 'batting', items: topN(battingTable, (p) => p.hundreds).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.hundreds })) },
+  { id: 'most-fifties', label: 'Most Fifties', category: 'batting', items: topN(battingTable, (p) => p.fifties).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fifties })) },
+  { id: 'most-fours', label: 'Most Fours', category: 'batting', items: topN(battingTable, (p) => p.fours).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fours })) },
+  { id: 'most-sixes', label: 'Most Sixes', category: 'batting', items: topN(battingTable, (p) => p.sixes).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.sixes })) },
+  { id: 'most-nineties', label: 'Most Nineties', category: 'batting', items: topN(battingTable, (p) => p.nineties).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.nineties })) },
+  { id: 'most-wickets', label: 'Most Wickets', category: 'bowling', items: topN(bowlingTable, (p) => p.wickets).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.wickets })) },
+  { id: 'best-bowling-average', label: 'Best Bowling Average', category: 'bowling', items: topN(bowlingTable, (p) => -p.avg, 10, (p) => p.wickets > 0).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.avg })) },
+  { id: 'best-bowling', label: 'Best Bowling', category: 'bowling', items: topN(bowlingTable, (p) => Number(p.bestFigure.split('/')[0]) * 100 - Number(p.bestFigure.split('/')[1])).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.bestFigure })) },
+  { id: 'most-5w', label: 'Most 5 Wickets Haul', category: 'bowling', items: topN(bowlingTable, (p) => p.fiveWickets).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.fiveWickets })) },
+  { id: 'best-economy', label: 'Best Economy', category: 'bowling', items: topN(bowlingTable, (p) => -p.economy, 10, (p) => p.balls >= 12).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.economy })) },
+  { id: 'best-bowling-sr', label: 'Best Bowling Strike Rate', category: 'bowling', items: topN(bowlingTable, (p) => -p.strikeRate, 10, (p) => p.wickets > 0).map((p) => ({ playerId: p.playerId, player: p.player, teamShortName: p.teamShortName, value: p.strikeRate })) },
+];
