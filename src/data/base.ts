@@ -543,14 +543,14 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['Guwahati games have seen the winning side hit at least 9 sixes in every completed IPL match.', 'CSK concede among the fewest boundaries per over in the middle phase.'],
     },
     'pbks-gt': {
-        headline: 'New Chandigarh rewards aggressive new-ball hitting but grips enough later for slower balls.',
+        headline: 'Cooper Connolly’s unbeaten 72 lifted PBKS over the line after a tense middle-order collapse.',
         venueStats: { avgFirstInningsScore: 172, chasingWins: 6, totalMatches: 11, bestBowlingFigure: '4/21', boundaryPercentage: 52 },
-        headToHead: { team1Wins: 2, team2Wins: 3, noResult: 0, last5: 'GT lead the rivalry 3-2 overall.' },
+        headToHead: { team1Wins: 3, team2Wins: 3, noResult: 0, last5: 'The rivalry is now level at 3-3 after PBKS won Match 4 in 2026.' },
         playerBattles: [
-            { batter: 'Shubman Gill', bowler: 'Arshdeep Singh', runs: 45, balls: 34, dismissals: 2, note: 'Arshdeep swings it back in early and keeps Gill honest with the fuller length.' },
-            { batter: 'Shreyas Iyer', bowler: 'Rashid Khan', runs: 58, balls: 52, dismissals: 3, note: 'Rashid’s googly has made this a low-risk, low-boundary matchup.' },
+            { batter: 'Cooper Connolly', bowler: 'Prasidh Krishna', runs: 26, balls: 16, dismissals: 0, note: 'Connolly absorbed the collapse phase and still finished with clean boundary options.' },
+            { batter: 'Shubman Gill', bowler: 'Yuzvendra Chahal', runs: 39, balls: 27, dismissals: 1, note: 'Chahal’s wicket at 9.3 overs ended GT’s strongest platform.' },
         ],
-        interestingStats: ['The side winning the powerplay has gone on to win 8 of the first 11 IPL games at Mullanpur.', 'GT have one of the best economy rates in overs 7-15.'],
+        interestingStats: ['PBKS won despite falling from 110/2 to 118/6, one of the sharpest middle-order collapses in a successful chase this season.', 'Vyshak (3/34) and Chahal (2/28) shared 5 wickets, limiting GT to 162/6 despite multiple top-order starts.'],
     },
     'lsg-dc': {
         headline: 'Lucknow usually turns into a tactical chase where strike rotation matters as much as power.',
@@ -718,7 +718,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 1, date: '2026-03-28', dateLabel: '28 Mar', day: 'Saturday', team1: 'rcb', team2: 'srh', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium', status: 'completed' },
     { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium', status: 'completed' },
     { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium', status: 'completed' },
-    { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+    { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium', status: 'completed' },
     { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
     { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
