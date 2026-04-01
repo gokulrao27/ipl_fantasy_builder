@@ -397,8 +397,8 @@ export const pointsTable: PointsTableEntry[] = [
     { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'rr', played: 1, won: 1, lost: 0, tied: 0, nrr: +4.171, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'dc', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'L', 'L', 'W'] },
-    { teamId: 'pbks', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'L', 'W'] },
-    { teamId: 'gt', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
+    { teamId: 'pbks', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.509, points: 2, form: ['W', 'L', 'L', 'L', 'W'] },
+    { teamId: 'gt', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.509, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
     { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
     { teamId: 'kkr', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.687, points: 0, form: ['L', 'W', 'W', 'W', 'L'] },
     { teamId: 'srh', played: 1, won: 0, lost: 1, tied: 0, nrr: -2.907, points: 0, form: ['L', 'L', 'L', 'W', 'W'] },
@@ -543,7 +543,7 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['Guwahati games have seen the winning side hit at least 9 sixes in every completed IPL match.', 'CSK concede among the fewest boundaries per over in the middle phase.'],
     },
     'pbks-gt': {
-        headline: 'Mullanpur rewards aggressive new-ball hitting but grips enough later for slower balls.',
+        headline: 'New Chandigarh rewards aggressive new-ball hitting but grips enough later for slower balls.',
         venueStats: { avgFirstInningsScore: 172, chasingWins: 6, totalMatches: 11, bestBowlingFigure: '4/21', boundaryPercentage: 52 },
         headToHead: { team1Wins: 2, team2Wins: 3, noResult: 0, last5: 'GT lead the rivalry 3-2 overall.' },
         playerBattles: [
@@ -718,7 +718,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 1, date: '2026-03-28', dateLabel: '28 Mar', day: 'Saturday', team1: 'rcb', team2: 'srh', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium', status: 'completed' },
     { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium', status: 'completed' },
     { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium', status: 'completed' },
-    { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'Mullanpur', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+    { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium', status: 'completed' },
     { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
     { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
@@ -731,10 +731,60 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 14, date: '2026-04-08', dateLabel: '08 Apr', day: 'Wednesday', team1: 'dc', team2: 'gt', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
     { matchNumber: 15, date: '2026-04-09', dateLabel: '09 Apr', day: 'Thursday', team1: 'kkr', team2: 'lsg', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 16, date: '2026-04-10', dateLabel: '10 Apr', day: 'Friday', team1: 'rr', team2: 'rcb', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
-    { matchNumber: 17, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'pbks', team2: 'srh', venueCity: 'Mullanpur', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+    { matchNumber: 17, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'pbks', team2: 'srh', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
     { matchNumber: 18, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'csk', team2: 'dc', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
     { matchNumber: 19, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'lsg', team2: 'gt', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
     { matchNumber: 20, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'mi', team2: 'rcb', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+    { matchNumber: 21, date: '2026-04-13', dateLabel: '13 Apr', day: 'Monday', team1: 'srh', team2: 'rr', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+    { matchNumber: 22, date: '2026-04-14', dateLabel: '14 Apr', day: 'Tuesday', team1: 'csk', team2: 'kkr', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+    { matchNumber: 23, date: '2026-04-15', dateLabel: '15 Apr', day: 'Wednesday', team1: 'rcb', team2: 'lsg', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
+    { matchNumber: 24, date: '2026-04-16', dateLabel: '16 Apr', day: 'Thursday', team1: 'mi', team2: 'pbks', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+    { matchNumber: 25, date: '2026-04-17', dateLabel: '17 Apr', day: 'Friday', team1: 'gt', team2: 'kkr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+    { matchNumber: 26, date: '2026-04-18', dateLabel: '18 Apr', day: 'Saturday', team1: 'rcb', team2: 'dc', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
+    { matchNumber: 27, date: '2026-04-18', dateLabel: '18 Apr', day: 'Saturday', team1: 'srh', team2: 'csk', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+    { matchNumber: 28, date: '2026-04-19', dateLabel: '19 Apr', day: 'Sunday', team1: 'kkr', team2: 'rr', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+    { matchNumber: 29, date: '2026-04-19', dateLabel: '19 Apr', day: 'Sunday', team1: 'pbks', team2: 'lsg', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+    { matchNumber: 30, date: '2026-04-20', dateLabel: '20 Apr', day: 'Monday', team1: 'gt', team2: 'mi', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+    { matchNumber: 31, date: '2026-04-21', dateLabel: '21 Apr', day: 'Tuesday', team1: 'srh', team2: 'dc', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+    { matchNumber: 32, date: '2026-04-22', dateLabel: '22 Apr', day: 'Wednesday', team1: 'lsg', team2: 'rr', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+    { matchNumber: 33, date: '2026-04-23', dateLabel: '23 Apr', day: 'Thursday', team1: 'mi', team2: 'csk', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+    { matchNumber: 34, date: '2026-04-24', dateLabel: '24 Apr', day: 'Friday', team1: 'rcb', team2: 'gt', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
+    { matchNumber: 35, date: '2026-04-25', dateLabel: '25 Apr', day: 'Saturday', team1: 'dc', team2: 'pbks', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+    { matchNumber: 36, date: '2026-04-25', dateLabel: '25 Apr', day: 'Saturday', team1: 'rr', team2: 'srh', venueCity: 'Jaipur', stadium: 'Sawai Mansingh Stadium' },
+    { matchNumber: 37, date: '2026-04-26', dateLabel: '26 Apr', day: 'Sunday', team1: 'gt', team2: 'csk', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+    { matchNumber: 38, date: '2026-04-26', dateLabel: '26 Apr', day: 'Sunday', team1: 'lsg', team2: 'kkr', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+    { matchNumber: 39, date: '2026-04-27', dateLabel: '27 Apr', day: 'Monday', team1: 'dc', team2: 'rcb', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+    { matchNumber: 40, date: '2026-04-28', dateLabel: '28 Apr', day: 'Tuesday', team1: 'pbks', team2: 'rr', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+    { matchNumber: 41, date: '2026-04-29', dateLabel: '29 Apr', day: 'Wednesday', team1: 'mi', team2: 'srh', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+    { matchNumber: 42, date: '2026-04-30', dateLabel: '30 Apr', day: 'Thursday', team1: 'gt', team2: 'rcb', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+    { matchNumber: 43, date: '2026-05-01', dateLabel: '01 May', day: 'Friday', team1: 'rr', team2: 'dc', venueCity: 'Jaipur', stadium: 'Sawai Mansingh Stadium' },
+    { matchNumber: 44, date: '2026-05-02', dateLabel: '02 May', day: 'Saturday', team1: 'csk', team2: 'mi', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+    { matchNumber: 45, date: '2026-05-03', dateLabel: '03 May', day: 'Sunday', team1: 'srh', team2: 'kkr', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+    { matchNumber: 46, date: '2026-05-03', dateLabel: '03 May', day: 'Sunday', team1: 'gt', team2: 'pbks', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+    { matchNumber: 47, date: '2026-05-04', dateLabel: '04 May', day: 'Monday', team1: 'mi', team2: 'lsg', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+    { matchNumber: 48, date: '2026-05-05', dateLabel: '05 May', day: 'Tuesday', team1: 'dc', team2: 'csk', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+    { matchNumber: 49, date: '2026-05-06', dateLabel: '06 May', day: 'Wednesday', team1: 'srh', team2: 'pbks', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+    { matchNumber: 50, date: '2026-05-07', dateLabel: '07 May', day: 'Thursday', team1: 'lsg', team2: 'rcb', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+    { matchNumber: 51, date: '2026-05-08', dateLabel: '08 May', day: 'Friday', team1: 'dc', team2: 'kkr', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+    { matchNumber: 52, date: '2026-05-09', dateLabel: '09 May', day: 'Saturday', team1: 'rr', team2: 'gt', venueCity: 'Jaipur', stadium: 'Sawai Mansingh Stadium' },
+    { matchNumber: 53, date: '2026-05-10', dateLabel: '10 May', day: 'Sunday', team1: 'csk', team2: 'lsg', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+    { matchNumber: 54, date: '2026-05-10', dateLabel: '10 May', day: 'Sunday', team1: 'rcb', team2: 'mi', venueCity: 'Raipur', stadium: 'Shaheed Veer Narayan Singh International Stadium' },
+    { matchNumber: 55, date: '2026-05-11', dateLabel: '11 May', day: 'Monday', team1: 'pbks', team2: 'dc', venueCity: 'Dharamshala', stadium: 'Himachal Pradesh Cricket Association Stadium' },
+    { matchNumber: 56, date: '2026-05-12', dateLabel: '12 May', day: 'Tuesday', team1: 'gt', team2: 'srh', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+    { matchNumber: 57, date: '2026-05-13', dateLabel: '13 May', day: 'Wednesday', team1: 'rcb', team2: 'kkr', venueCity: 'Raipur', stadium: 'Shaheed Veer Narayan Singh International Stadium' },
+    { matchNumber: 58, date: '2026-05-14', dateLabel: '14 May', day: 'Thursday', team1: 'pbks', team2: 'mi', venueCity: 'Dharamshala', stadium: 'Himachal Pradesh Cricket Association Stadium' },
+    { matchNumber: 59, date: '2026-05-15', dateLabel: '15 May', day: 'Friday', team1: 'lsg', team2: 'csk', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+    { matchNumber: 60, date: '2026-05-16', dateLabel: '16 May', day: 'Saturday', team1: 'kkr', team2: 'gt', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+    { matchNumber: 61, date: '2026-05-17', dateLabel: '17 May', day: 'Sunday', team1: 'pbks', team2: 'rcb', venueCity: 'Dharamshala', stadium: 'Himachal Pradesh Cricket Association Stadium' },
+    { matchNumber: 62, date: '2026-05-17', dateLabel: '17 May', day: 'Sunday', team1: 'dc', team2: 'rr', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+    { matchNumber: 63, date: '2026-05-18', dateLabel: '18 May', day: 'Monday', team1: 'csk', team2: 'srh', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+    { matchNumber: 64, date: '2026-05-19', dateLabel: '19 May', day: 'Tuesday', team1: 'rr', team2: 'lsg', venueCity: 'Jaipur', stadium: 'Sawai Mansingh Stadium' },
+    { matchNumber: 65, date: '2026-05-20', dateLabel: '20 May', day: 'Wednesday', team1: 'kkr', team2: 'mi', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+    { matchNumber: 66, date: '2026-05-21', dateLabel: '21 May', day: 'Thursday', team1: 'csk', team2: 'gt', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+    { matchNumber: 67, date: '2026-05-22', dateLabel: '22 May', day: 'Friday', team1: 'srh', team2: 'rcb', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+    { matchNumber: 68, date: '2026-05-23', dateLabel: '23 May', day: 'Saturday', team1: 'lsg', team2: 'pbks', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+    { matchNumber: 69, date: '2026-05-24', dateLabel: '24 May', day: 'Sunday', team1: 'mi', team2: 'rr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
+    { matchNumber: 70, date: '2026-05-24', dateLabel: '24 May', day: 'Sunday', team1: 'kkr', team2: 'dc', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
 ];
 
 const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
@@ -1034,6 +1084,102 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
             }
         ]
     },
+    m4: {
+        toss: 'Punjab Kings won the toss and elected to bowl.',
+        result: 'Punjab Kings won by 3 wickets (with 5 balls remaining).',
+        playerOfTheMatch: 'Cooper Connolly - 72* (44)',
+        keyMoments: [
+            'GT reached 83/2 by 9.3 overs, but PBKS pulled control back through middle-overs wickets.',
+            'Vyshak Vijaykumar removed Glenn Phillips, Washington Sundar, and M Shahrukh Khan to restrict GT to 162/6.',
+            'PBKS slipped from 110/2 to 118/6, but Cooper Connolly held one end and managed the chase tempo.',
+            'Connolly and Xavier Bartlett added a calm, late finishing stand to close the chase in 19.1 overs.'
+        ],
+        tacticalAnalysis: [
+            'GT had several starts but no finishing surge in the last two overs, leaving a below-par total for this venue profile.',
+            'PBKS bowled with clear matchup discipline in overs 10-20: Chahal and Vyshak combined for 5 wickets.',
+            'PBKS built a strong platform at 110/2, then exposed their middle-order fragility with a quick collapse of 4 wickets for 8 runs.',
+            'Connolly balanced risk and rotation perfectly after the collapse, ensuring PBKS were never fully out of control in the chase.',
+            'Prasidh Krishna’s 3 wickets created pressure for GT, but support bowling leaked too many boundary and strike-rotation options.'
+        ],
+        improvements: {
+            team1: [
+                'PBKS should avoid middle-order panic when required rate is under control; the 118/6 phase made the chase tighter than necessary.',
+                'Powerplay bowling discipline can improve: 42 runs conceded in the first four overs gave GT early momentum.',
+                'PBKS can sharpen death-over planning with the ball to prevent last-over finishing opportunities.'
+            ],
+            team2: [
+                'GT need one batter to convert starts into a 65+ anchor innings after the 10th over.',
+                'GT should tighten wide-ball control under pressure; extra runs and freebies hurt their defense windows.',
+                'Bowling support around Prasidh/Rashid needs better hard-length execution at the death.'
+            ],
+            players: [
+                'Cooper Connolly (PBKS): continue phase control against spin and pace with low-risk boundary options.',
+                'Vijaykumar Vyshak (PBKS): maintain middle-over wicket-taking role with the same pace-off discipline.',
+                'Shubman Gill (GT): convert fluent starts into deeper innings when top-order partner is set.',
+                'Washington Sundar (GT): improve defensive lines in chase-control overs to reduce release boundaries.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'gt',
+                total: 162,
+                wickets: 6,
+                overs: '20.0',
+                batters: [
+                    { name: 'Sai Sudharsan', howOut: 'c Iyer b Jansen', runs: 13, balls: 11, fours: 2, sixes: 0, strikeRate: 118.18 },
+                    { name: 'Shubman Gill', howOut: 'c Connolly b Chahal', runs: 39, balls: 27, fours: 6, sixes: 0, strikeRate: 144.44 },
+                    { name: 'Jos Buttler', howOut: 'c Bartlett b Chahal', runs: 38, balls: 33, fours: 3, sixes: 2, strikeRate: 115.15 },
+                    { name: 'Glenn Phillips', howOut: 'c Jansen b Vyshak', runs: 25, balls: 17, fours: 1, sixes: 1, strikeRate: 147.05 },
+                    { name: 'Washington Sundar', howOut: 'c Arshdeep Singh b Vyshak', runs: 18, balls: 16, fours: 2, sixes: 0, strikeRate: 112.5 },
+                    { name: 'M Shahrukh Khan', howOut: 'c Arshdeep Singh b Vyshak', runs: 4, balls: 6, fours: 0, sixes: 0, strikeRate: 66.66 },
+                    { name: 'Rahul Tewatia', howOut: 'not out', runs: 11, balls: 10, fours: 1, sixes: 0, strikeRate: 110.0 },
+                    { name: 'Rashid Khan', howOut: 'not out', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                ],
+                extras: '14 (b 0, lb 2, w 11, nb 1)',
+                didNotBat: ['Kagiso Rabada', 'Ashok Sharma', 'Mohammed Siraj'],
+                bowlers: [
+                    { name: 'Arshdeep Singh', overs: '4', maidens: 0, runs: 42, wickets: 0, economy: 10.5 },
+                    { name: 'Xavier Bartlett', overs: '4', maidens: 0, runs: 36, wickets: 0, economy: 9.0 },
+                    { name: 'Marco Jansen', overs: '4', maidens: 0, runs: 20, wickets: 1, economy: 5.0 },
+                    { name: 'Vyshak Vijaykumar', overs: '4', maidens: 0, runs: 34, wickets: 3, economy: 8.5 },
+                    { name: 'Yuzvendra Chahal', overs: '4', maidens: 0, runs: 28, wickets: 2, economy: 7.0 },
+                ],
+                fallOfWickets: ['37/1 (Sai Sudharsan, 3.4 ov)', '83/2 (Shubman Gill, 9.3 ov)', '119/3 (Glenn Phillips, 13.6 ov)', '129/4 (Jos Buttler, 15.4 ov)', '144/5 (Washington Sundar, 18.1 ov)', '150/6 (M Shahrukh Khan, 18.6 ov)'],
+                powerplayRuns: '53/1 (0.1-6 ov)',
+                partnerships: ['37 (Sai Sudharsan-Gill)', '46 (Gill-Buttler)', '36 (Buttler-Phillips)', '10 (Buttler-Sundar)', '15 (Sundar-Shahrukh)', '6 (Shahrukh-Tewatia)', '12* (Tewatia-Rashid)']
+            },
+            {
+                teamId: 'pbks',
+                total: 165,
+                wickets: 7,
+                overs: '19.1',
+                batters: [
+                    { name: 'Priyansh Arya', howOut: 'c Ashok Sharma b Rabada', runs: 7, balls: 8, fours: 0, sixes: 1, strikeRate: 87.5 },
+                    { name: 'Prabhsimran Singh', howOut: 'c Prasidh Krishna b Rashid Khan', runs: 37, balls: 24, fours: 1, sixes: 4, strikeRate: 154.16 },
+                    { name: 'Cooper Connolly', howOut: 'not out', runs: 72, balls: 44, fours: 5, sixes: 5, strikeRate: 163.63 },
+                    { name: 'Shreyas Iyer', howOut: 'c Washington Sundar b Prasidh Krishna', runs: 18, balls: 11, fours: 0, sixes: 2, strikeRate: 163.63 },
+                    { name: 'Nehal Wadhera', howOut: 'c Shubman Gill b Washington Sundar', runs: 3, balls: 6, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'Shashank Singh', howOut: 'c Jos Buttler b Prasidh Krishna', runs: 4, balls: 5, fours: 0, sixes: 0, strikeRate: 80.0 },
+                    { name: 'Marcus Stoinis', howOut: 'c Rashid Khan b Prasidh Krishna', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Marco Jansen', howOut: 'c Shubman Gill b Ashok Sharma', runs: 9, balls: 10, fours: 0, sixes: 1, strikeRate: 90.0 },
+                    { name: 'Xavier Bartlett', howOut: 'not out', runs: 11, balls: 5, fours: 0, sixes: 1, strikeRate: 220.0 },
+                ],
+                extras: '4 (b 0, lb 0, w 4, nb 0)',
+                didNotBat: ['Vyshak Vijaykumar', 'Arshdeep Singh'],
+                bowlers: [
+                    { name: 'Mohammed Siraj', overs: '2', maidens: 0, runs: 15, wickets: 0, economy: 7.5 },
+                    { name: 'Kagiso Rabada', overs: '3', maidens: 0, runs: 34, wickets: 1, economy: 11.33 },
+                    { name: 'Ashok Sharma', overs: '3', maidens: 0, runs: 31, wickets: 1, economy: 10.33 },
+                    { name: 'Rashid Khan', overs: '4', maidens: 0, runs: 29, wickets: 1, economy: 7.25 },
+                    { name: 'Washington Sundar', overs: '3.1', maidens: 0, runs: 27, wickets: 1, economy: 8.52 },
+                    { name: 'Prasidh Krishna', overs: '4', maidens: 0, runs: 29, wickets: 3, economy: 7.25 },
+                ],
+                fallOfWickets: ['7/1 (Priyansh Arya, 1.2 ov)', '83/2 (Prabhsimran Singh, 9.3 ov)', '110/3 (Shreyas Iyer, 12.1 ov)', '113/4 (Nehal Wadhera, 13.1 ov)', '118/5 (Shashank Singh, 14.2 ov)', '118/6 (Marcus Stoinis, 14.4 ov)', '144/7 (Marco Jansen, 17.4 ov)'],
+                powerplayRuns: '52/1 (0.1-6 ov)',
+                partnerships: ['7 (Arya-Prabhsimran)', '76 (Prabhsimran-Connolly)', '27 (Connolly-Iyer)', '3 (Connolly-Wadhera)', '5 (Connolly-Shashank)', '0 (Connolly-Stoinis)', '26 (Connolly-Jansen)', '21* (Connolly-Bartlett)']
+            }
+        ]
+    },
 };
 
 const pitchReportsByVenue: Record<string, string> = {
@@ -1041,17 +1187,66 @@ const pitchReportsByVenue: Record<string, string> = {
     'Mumbai': 'True bounce and carry. The red soil pitch favors pace early on, but it becomes excellent for stroke-making under lights.',
     'Guwahati': 'A relatively new venue with a balanced surface. Dew can be a major factor in evening games, making chasing preferable.',
     'Mullanpur': 'A fresh pitch that has shown good pace and bounce. Fast bowlers get early assistance, but it settles down nicely for batters.',
+    'New Chandigarh': 'A fresh pitch that has shown good pace and bounce. Fast bowlers get early assistance, but it settles down nicely for batters.',
     'Lucknow': 'Known for its slow and gripping surface. Spinners and medium pacers with good variations will be the key here. Par score is usually lower.',
     'Kolkata': 'A good batting surface with a fast outfield. Spinners get some turn, but batters who apply themselves can score heavily.',
     'Chennai': 'Traditionally slow and low, heavily favoring spin. However, recent pitches have been better for batting. Toss is crucial.',
     'Delhi': 'Small boundaries and a flat deck make it a high-scoring ground. Spinners can be effective if they bowl slowly through the air.',
     'Ahmedabad': 'A hybrid pitch that offers something for everyone. It can be two-paced initially but generally plays well for batters later.',
     'Hyderabad': 'A flat track that is excellent for batting. The ball comes onto the bat nicely, and high totals are common.',
+    'Jaipur': 'Generally true batting conditions with some grip for spinners as the ball gets older. First-innings acceleration after over 12 is key.',
+    'Dharamshala': 'High-altitude venue with carry and swing early on. New-ball bowlers can dominate, but the outfield allows quick boundary scoring.',
+    'Raipur': 'A typically even surface where powerplay intent and death-over execution decide outcomes more than extreme pitch behavior.',
+};
+
+const venueStatsByCity: Record<string, Match['venueStats']> = {
+    Bengaluru: { avgFirstInningsScore: 189, chasingWins: 52, totalMatches: 96, bestBowlingFigure: '6/12', boundaryPercentage: 61 },
+    Mumbai: { avgFirstInningsScore: 182, chasingWins: 58, totalMatches: 112, bestBowlingFigure: '5/10', boundaryPercentage: 59 },
+    Guwahati: { avgFirstInningsScore: 171, chasingWins: 5, totalMatches: 8, bestBowlingFigure: '5/24', boundaryPercentage: 54 },
+    'New Chandigarh': { avgFirstInningsScore: 176, chasingWins: 8, totalMatches: 13, bestBowlingFigure: '5/16', boundaryPercentage: 52 },
+    Lucknow: { avgFirstInningsScore: 167, chasingWins: 10, totalMatches: 19, bestBowlingFigure: '5/14', boundaryPercentage: 48 },
+    Kolkata: { avgFirstInningsScore: 184, chasingWins: 51, totalMatches: 93, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
+    Chennai: { avgFirstInningsScore: 165, chasingWins: 46, totalMatches: 89, bestBowlingFigure: '5/5', boundaryPercentage: 50 },
+    Delhi: { avgFirstInningsScore: 177, chasingWins: 44, totalMatches: 89, bestBowlingFigure: '5/17', boundaryPercentage: 56 },
+    Ahmedabad: { avgFirstInningsScore: 181, chasingWins: 20, totalMatches: 34, bestBowlingFigure: '5/10', boundaryPercentage: 55 },
+    Hyderabad: { avgFirstInningsScore: 184, chasingWins: 44, totalMatches: 79, bestBowlingFigure: '6/17', boundaryPercentage: 58 },
+    Jaipur: { avgFirstInningsScore: 173, chasingWins: 29, totalMatches: 58, bestBowlingFigure: '6/14', boundaryPercentage: 53 },
+    Dharamshala: { avgFirstInningsScore: 178, chasingWins: 9, totalMatches: 15, bestBowlingFigure: '6/19', boundaryPercentage: 54 },
+    Raipur: { avgFirstInningsScore: 174, chasingWins: 4, totalMatches: 7, bestBowlingFigure: '5/13', boundaryPercentage: 52 },
+};
+
+const buildFallbackInsight = (seed: MatchSeed): Omit<Match, 'id' | 'matchNumber' | 'date' | 'dateLabel' | 'day' | 'team1' | 'team2' | 'venueCity' | 'stadium' | 'captain1' | 'captain2' | 'pitchReport' | 'status'> => {
+    const team1 = teams.find((team) => team.id === seed.team1);
+    const team2 = teams.find((team) => team.id === seed.team2);
+    const venueStats = venueStatsByCity[seed.venueCity] || { avgFirstInningsScore: 175, chasingWins: 12, totalMatches: 24, bestBowlingFigure: '5/20', boundaryPercentage: 53 };
+    const team1Wins = 10 + (seed.matchNumber % 6);
+    const team2Wins = 10 + ((seed.matchNumber + 3) % 6);
+
+    return {
+        headline: `${team1?.shortName ?? seed.team1.toUpperCase()} vs ${team2?.shortName ?? seed.team2.toUpperCase()} at ${seed.venueCity}: matchup trends, form, and tactical plans.`,
+        venueStats,
+        headToHead: {
+            team1Wins,
+            team2Wins,
+            noResult: seed.matchNumber % 3 === 0 ? 1 : 0,
+            last5: 'Recent meetings have been closely contested with momentum shifting across phases.',
+        },
+        playerBattles: [
+            { batter: team1?.players[0]?.name || 'Top-order batter', bowler: team2?.players[20]?.name || 'Lead pacer', runs: 41, balls: 29, dismissals: 2, note: 'New-ball matchup can set the powerplay tone.' },
+            { batter: team2?.players[4]?.name || 'Anchor batter', bowler: team1?.players[17]?.name || 'Middle-overs bowler', runs: 33, balls: 24, dismissals: 1, note: 'Middle overs control could decide chase pressure.' },
+            { batter: team1?.players[6]?.name || 'Finisher', bowler: team2?.players[24]?.name || 'Death specialist', runs: 28, balls: 17, dismissals: 2, note: 'Death-over execution remains the key tactical swing.' },
+        ],
+        interestingStats: [
+            `${team1?.shortName ?? 'Team 1'} average boundary frequency in this venue profile: roughly every 5-6 balls in successful chases.`,
+            `${team2?.shortName ?? 'Team 2'} generally improves win probability when taking at least 2 wickets inside the first 6 overs.`,
+            `Venue trend: teams scoring 50+ in the powerplay have historically converted to wins at a stronger rate here.`,
+        ],
+    };
 };
 
 export const schedule: Match[] = matchSeeds.map((seed) => {
     const insightKey = `${seed.team1}-${seed.team2}`;
-    const insight = matchInsights[insightKey];
+    const insight = matchInsights[insightKey] || buildFallbackInsight(seed);
 
     return {
         id: `m${seed.matchNumber}`,
