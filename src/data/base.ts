@@ -397,8 +397,8 @@ export const pointsTable: PointsTableEntry[] = [
     { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'rr', played: 1, won: 1, lost: 0, tied: 0, nrr: +4.171, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'dc', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'L', 'L', 'W'] },
-    { teamId: 'pbks', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'L', 'L', 'W'] },
-    { teamId: 'gt', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
+    { teamId: 'pbks', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.509, points: 2, form: ['W', 'L', 'L', 'L', 'W'] },
+    { teamId: 'gt', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.509, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
     { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
     { teamId: 'kkr', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.687, points: 0, form: ['L', 'W', 'W', 'W', 'L'] },
     { teamId: 'srh', played: 1, won: 0, lost: 1, tied: 0, nrr: -2.907, points: 0, form: ['L', 'L', 'L', 'W', 'W'] },
@@ -543,7 +543,7 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['Guwahati games have seen the winning side hit at least 9 sixes in every completed IPL match.', 'CSK concede among the fewest boundaries per over in the middle phase.'],
     },
     'pbks-gt': {
-        headline: 'Mullanpur rewards aggressive new-ball hitting but grips enough later for slower balls.',
+        headline: 'New Chandigarh rewards aggressive new-ball hitting but grips enough later for slower balls.',
         venueStats: { avgFirstInningsScore: 172, chasingWins: 6, totalMatches: 11, bestBowlingFigure: '4/21', boundaryPercentage: 52 },
         headToHead: { team1Wins: 2, team2Wins: 3, noResult: 0, last5: 'GT lead the rivalry 3-2 overall.' },
         playerBattles: [
@@ -1081,6 +1081,102 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['75/1 (Vaibhav Sooryavanshi, 6.2 ov)', '99/2 (Dhruv Jurel, 8.3 ov)'],
                 powerplayRuns: '74/0 (0.1-6 ov)',
                 partnerships: ['75 (Jaiswal-Sooryavanshi)', '24 (Jaiswal-Jurel)', '29* (Jaiswal-Parag)']
+            }
+        ]
+    },
+    m4: {
+        toss: 'Punjab Kings won the toss and elected to bowl.',
+        result: 'Punjab Kings won by 3 wickets (with 5 balls remaining).',
+        playerOfTheMatch: 'Cooper Connolly - 72* (44)',
+        keyMoments: [
+            'GT reached 83/2 by 9.3 overs, but PBKS pulled control back through middle-overs wickets.',
+            'Vyshak Vijaykumar removed Glenn Phillips, Washington Sundar, and M Shahrukh Khan to restrict GT to 162/6.',
+            'PBKS slipped from 110/2 to 118/6, but Cooper Connolly held one end and managed the chase tempo.',
+            'Connolly and Xavier Bartlett added a calm, late finishing stand to close the chase in 19.1 overs.'
+        ],
+        tacticalAnalysis: [
+            'GT had several starts but no finishing surge in the last two overs, leaving a below-par total for this venue profile.',
+            'PBKS bowled with clear matchup discipline in overs 10-20: Chahal and Vyshak combined for 5 wickets.',
+            'PBKS built a strong platform at 110/2, then exposed their middle-order fragility with a quick collapse of 4 wickets for 8 runs.',
+            'Connolly balanced risk and rotation perfectly after the collapse, ensuring PBKS were never fully out of control in the chase.',
+            'Prasidh Krishna’s 3 wickets created pressure for GT, but support bowling leaked too many boundary and strike-rotation options.'
+        ],
+        improvements: {
+            team1: [
+                'PBKS should avoid middle-order panic when required rate is under control; the 118/6 phase made the chase tighter than necessary.',
+                'Powerplay bowling discipline can improve: 42 runs conceded in the first four overs gave GT early momentum.',
+                'PBKS can sharpen death-over planning with the ball to prevent last-over finishing opportunities.'
+            ],
+            team2: [
+                'GT need one batter to convert starts into a 65+ anchor innings after the 10th over.',
+                'GT should tighten wide-ball control under pressure; extra runs and freebies hurt their defense windows.',
+                'Bowling support around Prasidh/Rashid needs better hard-length execution at the death.'
+            ],
+            players: [
+                'Cooper Connolly (PBKS): continue phase control against spin and pace with low-risk boundary options.',
+                'Vijaykumar Vyshak (PBKS): maintain middle-over wicket-taking role with the same pace-off discipline.',
+                'Shubman Gill (GT): convert fluent starts into deeper innings when top-order partner is set.',
+                'Washington Sundar (GT): improve defensive lines in chase-control overs to reduce release boundaries.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'gt',
+                total: 162,
+                wickets: 6,
+                overs: '20.0',
+                batters: [
+                    { name: 'Sai Sudharsan', howOut: 'c Iyer b Jansen', runs: 13, balls: 11, fours: 2, sixes: 0, strikeRate: 118.18 },
+                    { name: 'Shubman Gill', howOut: 'c Connolly b Chahal', runs: 39, balls: 27, fours: 6, sixes: 0, strikeRate: 144.44 },
+                    { name: 'Jos Buttler', howOut: 'c Bartlett b Chahal', runs: 38, balls: 33, fours: 3, sixes: 2, strikeRate: 115.15 },
+                    { name: 'Glenn Phillips', howOut: 'c Jansen b Vyshak', runs: 25, balls: 17, fours: 1, sixes: 1, strikeRate: 147.05 },
+                    { name: 'Washington Sundar', howOut: 'c Arshdeep Singh b Vyshak', runs: 18, balls: 16, fours: 2, sixes: 0, strikeRate: 112.5 },
+                    { name: 'M Shahrukh Khan', howOut: 'c Arshdeep Singh b Vyshak', runs: 4, balls: 6, fours: 0, sixes: 0, strikeRate: 66.66 },
+                    { name: 'Rahul Tewatia', howOut: 'not out', runs: 11, balls: 10, fours: 1, sixes: 0, strikeRate: 110.0 },
+                    { name: 'Rashid Khan', howOut: 'not out', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                ],
+                extras: '14 (b 0, lb 2, w 11, nb 1)',
+                didNotBat: ['Kagiso Rabada', 'Ashok Sharma', 'Mohammed Siraj'],
+                bowlers: [
+                    { name: 'Arshdeep Singh', overs: '4', maidens: 0, runs: 42, wickets: 0, economy: 10.5 },
+                    { name: 'Xavier Bartlett', overs: '4', maidens: 0, runs: 36, wickets: 0, economy: 9.0 },
+                    { name: 'Marco Jansen', overs: '4', maidens: 0, runs: 20, wickets: 1, economy: 5.0 },
+                    { name: 'Vyshak Vijaykumar', overs: '4', maidens: 0, runs: 34, wickets: 3, economy: 8.5 },
+                    { name: 'Yuzvendra Chahal', overs: '4', maidens: 0, runs: 28, wickets: 2, economy: 7.0 },
+                ],
+                fallOfWickets: ['37/1 (Sai Sudharsan, 3.4 ov)', '83/2 (Shubman Gill, 9.3 ov)', '119/3 (Glenn Phillips, 13.6 ov)', '129/4 (Jos Buttler, 15.4 ov)', '144/5 (Washington Sundar, 18.1 ov)', '150/6 (M Shahrukh Khan, 18.6 ov)'],
+                powerplayRuns: '53/1 (0.1-6 ov)',
+                partnerships: ['37 (Sai Sudharsan-Gill)', '46 (Gill-Buttler)', '36 (Buttler-Phillips)', '10 (Buttler-Sundar)', '15 (Sundar-Shahrukh)', '6 (Shahrukh-Tewatia)', '12* (Tewatia-Rashid)']
+            },
+            {
+                teamId: 'pbks',
+                total: 165,
+                wickets: 7,
+                overs: '19.1',
+                batters: [
+                    { name: 'Priyansh Arya', howOut: 'c Ashok Sharma b Rabada', runs: 7, balls: 8, fours: 0, sixes: 1, strikeRate: 87.5 },
+                    { name: 'Prabhsimran Singh', howOut: 'c Prasidh Krishna b Rashid Khan', runs: 37, balls: 24, fours: 1, sixes: 4, strikeRate: 154.16 },
+                    { name: 'Cooper Connolly', howOut: 'not out', runs: 72, balls: 44, fours: 5, sixes: 5, strikeRate: 163.63 },
+                    { name: 'Shreyas Iyer', howOut: 'c Washington Sundar b Prasidh Krishna', runs: 18, balls: 11, fours: 0, sixes: 2, strikeRate: 163.63 },
+                    { name: 'Nehal Wadhera', howOut: 'c Shubman Gill b Washington Sundar', runs: 3, balls: 6, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'Shashank Singh', howOut: 'c Jos Buttler b Prasidh Krishna', runs: 4, balls: 5, fours: 0, sixes: 0, strikeRate: 80.0 },
+                    { name: 'Marcus Stoinis', howOut: 'c Rashid Khan b Prasidh Krishna', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Marco Jansen', howOut: 'c Shubman Gill b Ashok Sharma', runs: 9, balls: 10, fours: 0, sixes: 1, strikeRate: 90.0 },
+                    { name: 'Xavier Bartlett', howOut: 'not out', runs: 11, balls: 5, fours: 0, sixes: 1, strikeRate: 220.0 },
+                ],
+                extras: '4 (b 0, lb 0, w 4, nb 0)',
+                didNotBat: ['Vyshak Vijaykumar', 'Arshdeep Singh'],
+                bowlers: [
+                    { name: 'Mohammed Siraj', overs: '2', maidens: 0, runs: 15, wickets: 0, economy: 7.5 },
+                    { name: 'Kagiso Rabada', overs: '3', maidens: 0, runs: 34, wickets: 1, economy: 11.33 },
+                    { name: 'Ashok Sharma', overs: '3', maidens: 0, runs: 31, wickets: 1, economy: 10.33 },
+                    { name: 'Rashid Khan', overs: '4', maidens: 0, runs: 29, wickets: 1, economy: 7.25 },
+                    { name: 'Washington Sundar', overs: '3.1', maidens: 0, runs: 27, wickets: 1, economy: 8.52 },
+                    { name: 'Prasidh Krishna', overs: '4', maidens: 0, runs: 29, wickets: 3, economy: 7.25 },
+                ],
+                fallOfWickets: ['7/1 (Priyansh Arya, 1.2 ov)', '83/2 (Prabhsimran Singh, 9.3 ov)', '110/3 (Shreyas Iyer, 12.1 ov)', '113/4 (Nehal Wadhera, 13.1 ov)', '118/5 (Shashank Singh, 14.2 ov)', '118/6 (Marcus Stoinis, 14.4 ov)', '144/7 (Marco Jansen, 17.4 ov)'],
+                powerplayRuns: '52/1 (0.1-6 ov)',
+                partnerships: ['7 (Arya-Prabhsimran)', '76 (Prabhsimran-Connolly)', '27 (Connolly-Iyer)', '3 (Connolly-Wadhera)', '5 (Connolly-Shashank)', '0 (Connolly-Stoinis)', '26 (Connolly-Jansen)', '21* (Connolly-Bartlett)']
             }
         ]
     },
