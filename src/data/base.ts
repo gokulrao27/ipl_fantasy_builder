@@ -393,14 +393,14 @@ export interface PointsTableEntry {
 }
 
 export const pointsTable: PointsTableEntry[] = [
-    { teamId: 'rcb', played: 1, won: 1, lost: 0, tied: 0, nrr: +2.907, points: 2, form: ['W', 'W', 'W', 'W', 'W'] },
-    { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'rr', played: 1, won: 1, lost: 0, tied: 0, nrr: +4.171, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'dc', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['L', 'W', 'L', 'L', 'W'] },
+    { teamId: 'rcb', played: 1, won: 1, lost: 0, tied: 0, nrr: +2.907, points: 2, form: ['W', 'W', 'W', 'W', 'W'] },
+    { teamId: 'dc', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.893, points: 2, form: ['W', 'L', 'W', 'L', 'L'] },
+    { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
     { teamId: 'pbks', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.509, points: 2, form: ['W', 'L', 'L', 'L', 'W'] },
     { teamId: 'gt', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.509, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
-    { teamId: 'lsg', played: 0, won: 0, lost: 0, tied: 0, nrr: 0, points: 0, form: ['W', 'L', 'W', 'L', 'L'] },
     { teamId: 'kkr', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.687, points: 0, form: ['L', 'W', 'W', 'W', 'L'] },
+    { teamId: 'lsg', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.893, points: 0, form: ['L', 'W', 'L', 'W', 'L'] },
     { teamId: 'srh', played: 1, won: 0, lost: 1, tied: 0, nrr: -2.907, points: 0, form: ['L', 'L', 'L', 'W', 'W'] },
     { teamId: 'csk', played: 1, won: 0, lost: 1, tied: 0, nrr: -4.171, points: 0, form: ['L', 'W', 'L', 'W', 'L'] },
 ];
@@ -563,64 +563,64 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['Ekana has had one of the lowest boundary percentages among IPL venues.', 'DC’s spin attack becomes more effective when the surface dries under lights.'],
     },
     'kkr-srh': {
-        headline: 'Two high-ceiling batting units with enough mystery spin to swing momentum in bursts.',
+        headline: 'Second game for both sides: KKR need a sharper powerplay after losing to MI, while SRH must recover from RCB’s top-order pressure.',
         venueStats: { avgFirstInningsScore: 181, chasingWins: 39, totalMatches: 93, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
-        headToHead: { team1Wins: 19, team2Wins: 9, noResult: 0, last5: 'KKR have won 4 of the last 5 meetings.' },
+        headToHead: { team1Wins: 18, team2Wins: 12, noResult: 0, last5: 'KKR lead recent meetings, but current-form predictor gives KKR 54% vs SRH 46%.' },
         playerBattles: [
             { batter: 'Heinrich Klaasen', bowler: 'Varun Chakaravarthy', runs: 29, balls: 27, dismissals: 3, note: 'Varun’s pace changes have regularly forced Klaasen into miscues.' },
             { batter: 'Rinku Singh', bowler: 'Pat Cummins', runs: 36, balls: 23, dismissals: 1, note: 'Cummins attacks Rinku with hard-length pace and keeps the deep square boundary in play.' },
         ],
-        interestingStats: ['Eden Gardens has offered the fastest outfield among major IPL venues.', 'Both sides rank near the top for sixes hit between overs 16 and 20.'],
+        interestingStats: ['KKR leaked at the death in Match 2; SRH conceded heavily in the powerplay in Match 1, so overs 1-6 are the pressure phase for both.', 'Win predictor blend (recent H2H + first-match form): KKR 54% | SRH 46%.'],
     },
     'csk-pbks': {
-        headline: 'Chepauk’s slower surface makes matchup bowling and spin-hitting a major theme.',
+        headline: 'CSK enter their second match after a heavy loss to RR, while PBKS arrive with momentum after chasing against GT.',
         venueStats: { avgFirstInningsScore: 168, chasingWins: 33, totalMatches: 80, bestBowlingFigure: '5/13', boundaryPercentage: 45 },
-        headToHead: { team1Wins: 16, team2Wins: 14, noResult: 0, last5: 'CSK lead 3-2 in the last five meetings.' },
+        headToHead: { team1Wins: 16, team2Wins: 14, noResult: 0, last5: 'Historical edge CSK, but second-match predictor is CSK 49% vs PBKS 51%.' },
         playerBattles: [
             { batter: 'MS Dhoni', bowler: 'Arshdeep Singh', runs: 31, balls: 18, dismissals: 2, note: 'Arshdeep often goes full and wide to deny Dhoni his preferred arc.' },
             { batter: 'Marcus Stoinis', bowler: 'Ravindra Jadeja', runs: 40, balls: 37, dismissals: 3, note: 'Jadeja’s angle into the pads has cramped Stoinis in Chennai conditions.' },
         ],
-        interestingStats: ['Chepauk has the lowest six percentage among the established IPL venues.', 'PBKS score quickly in the powerplay but dip more than most teams against spin.'],
+        interestingStats: ['CSK were 40/4 in the powerplay in Match 3 and need a safer start profile to unlock their middle overs.', 'Win predictor blend (venue + form + H2H): CSK 49% | PBKS 51%.'],
     },
     'dc-mi': {
-        headline: 'Delhi often turns into a boundary-heavy contest where wicket-taking pace becomes the separator.',
+        headline: 'DC begin their second game with confidence after beating LSG, while MI arrive after a structured win over KKR.',
         venueStats: { avgFirstInningsScore: 178, chasingWins: 42, totalMatches: 90, bestBowlingFigure: '5/17', boundaryPercentage: 56 },
-        headToHead: { team1Wins: 16, team2Wins: 20, noResult: 0, last5: 'MI lead 3-2 across the last five meetings.' },
+        headToHead: { team1Wins: 16, team2Wins: 20, noResult: 0, last5: 'MI hold the long H2H edge, but current-form predictor is DC 47% vs MI 53%.' },
         playerBattles: [
             { batter: 'Suryakumar Yadav', bowler: 'Kuldeep Yadav', runs: 67, balls: 44, dismissals: 2, note: 'Kuldeep still creates enough dip to keep SKY from free-flowing through cover.' },
             { batter: 'KL Rahul', bowler: 'Jasprit Bumrah', runs: 95, balls: 78, dismissals: 4, note: 'Bumrah owns the late-innings phase in this matchup.' },
         ],
-        interestingStats: ['Arun Jaitley Stadium has one of the highest fours-per-over rates in the tournament.', 'MI’s death bowling record improves sharply when Bumrah bowls two overs at the back end.'],
+        interestingStats: ['DC chased 142 in 17.1 overs in Match 5 and now face a stronger new-ball test from MI’s pace core.', 'Win predictor blend (H2H + first-match execution): DC 47% | MI 53%.'],
     },
     'gt-rr': {
-        headline: 'Ahmedabad usually rewards range hitting, but wrist-spin can still decide the middle overs.',
+        headline: 'GT need a bounce-back after the PBKS defeat, while RR carry strong momentum from a dominant win over CSK.',
         venueStats: { avgFirstInningsScore: 187, chasingWins: 18, totalMatches: 35, bestBowlingFigure: '5/10', boundaryPercentage: 59 },
-        headToHead: { team1Wins: 5, team2Wins: 1, noResult: 0, last5: 'GT have won 4 of the last 5 meetings.' },
+        headToHead: { team1Wins: 5, team2Wins: 1, noResult: 0, last5: 'GT dominate historical H2H, but second-match predictor is GT 48% vs RR 52%.' },
         playerBattles: [
             { batter: 'Sanju Samson', bowler: 'Rashid Khan', runs: 44, balls: 39, dismissals: 3, note: 'Rashid has kept Samson from targeting the leg side pocket.' },
             { batter: 'Shubman Gill', bowler: 'Jofra Archer', runs: 52, balls: 41, dismissals: 2, note: 'Archer’s hard length has produced two big breakthroughs in previous meetings.' },
         ],
-        interestingStats: ['Ahmedabad has produced 180-plus first innings totals in more than half of its IPL matches.', 'GT have historically defended totals well here with their cutters into the surface.'],
+        interestingStats: ['RR’s top order attacked from ball one in Match 3, while GT’s issue in Match 4 was middle-over stagnation after starts.', 'Win predictor blend (venue + form momentum): GT 48% | RR 52%.'],
     },
     'srh-lsg': {
-        headline: 'Hyderabad combines a true surface with late grip, creating a swing between power and spin.',
+        headline: 'Both teams enter Match 10 after first-match losses; SRH seek batting reset and LSG need better batting support around the middle order.',
         venueStats: { avgFirstInningsScore: 185, chasingWins: 40, totalMatches: 79, bestBowlingFigure: '5/19', boundaryPercentage: 60 },
-        headToHead: { team1Wins: 1, team2Wins: 4, noResult: 0, last5: 'LSG have won 4 of 5 against SRH.' },
+        headToHead: { team1Wins: 1, team2Wins: 4, noResult: 0, last5: 'LSG lead recent rivalry, but home-adjusted predictor gives SRH 51% vs LSG 49%.' },
         playerBattles: [
             { batter: 'Nicholas Pooran', bowler: 'Pat Cummins', runs: 39, balls: 25, dismissals: 2, note: 'Cummins uses the short ball sparingly but effectively into Pooran’s body line.' },
             { batter: 'Abhishek Sharma', bowler: 'Mayank Yadav', runs: 18, balls: 14, dismissals: 1, note: 'Extreme pace forces Abhishek to access straighter zones.' },
         ],
-        interestingStats: ['SRH have the best boundary percentage at this venue over the last two seasons.', 'LSG’s left-hand heavy batting unit will test SRH’s matchups early.'],
+        interestingStats: ['LSG were bowled out for 141 in Match 5 and need a stronger powerplay conversion if chasing at Hyderabad.', 'Win predictor blend (home venue + first-match trend + H2H): SRH 51% | LSG 49%.'],
     },
     'rcb-csk': {
-        headline: 'Few IPL fixtures carry more noise: stars, spin, and death overs all matter here.',
+        headline: 'RCB’s second match comes after a commanding opening win, while CSK need a response after their loss to RR.',
         venueStats: { avgFirstInningsScore: 190, chasingWins: 53, totalMatches: 96, bestBowlingFigure: '6/14', boundaryPercentage: 62 },
-        headToHead: { team1Wins: 11, team2Wins: 21, noResult: 1, last5: 'The last five meetings are split 3-2 in CSK’s favour.' },
+        headToHead: { team1Wins: 11, team2Wins: 21, noResult: 1, last5: 'CSK lead historical rivalry, but second-match predictor is RCB 56% vs CSK 44%.' },
         playerBattles: [
             { batter: 'Virat Kohli', bowler: 'Ravindra Jadeja', runs: 132, balls: 109, dismissals: 3, note: 'Jadeja rushes Kohli on the angle whenever the ball grips.' },
             { batter: 'Ruturaj Gaikwad', bowler: 'Josh Hazlewood', runs: 48, balls: 39, dismissals: 2, note: 'Hazlewood’s back-of-a-length line narrows Ruturaj’s scoring areas.' },
         ],
-        interestingStats: ['Chinnaswamy games between these sides usually feature more than 25 boundaries.', 'CSK’s spin trio often controls overs 7-14 better than any visiting attack here.'],
+        interestingStats: ['RCB’s top order looked fluent in Match 1; CSK’s first six overs with bat and ball are the biggest correction zone after Match 3.', 'Win predictor blend (form + venue pattern + H2H): RCB 56% | CSK 44%.'],
     },
     'kkr-pbks': {
         headline: 'An Eden Gardens game where both teams will likely chase sixes and leverage spin in the middle.',
@@ -719,7 +719,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 2, date: '2026-03-29', dateLabel: '29 Mar', day: 'Sunday', team1: 'mi', team2: 'kkr', venueCity: 'Mumbai', stadium: 'Wankhede Stadium', status: 'completed' },
     { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium', status: 'completed' },
     { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium', status: 'completed' },
-    { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
+    { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium', status: 'completed' },
     { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
     { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
@@ -1177,6 +1177,104 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['7/1 (Priyansh Arya, 1.2 ov)', '83/2 (Prabhsimran Singh, 9.3 ov)', '110/3 (Shreyas Iyer, 12.1 ov)', '113/4 (Nehal Wadhera, 13.1 ov)', '118/5 (Shashank Singh, 14.2 ov)', '118/6 (Marcus Stoinis, 14.4 ov)', '144/7 (Marco Jansen, 17.4 ov)'],
                 powerplayRuns: '52/1 (0.1-6 ov)',
                 partnerships: ['7 (Arya-Prabhsimran)', '76 (Prabhsimran-Connolly)', '27 (Connolly-Iyer)', '3 (Connolly-Wadhera)', '5 (Connolly-Shashank)', '0 (Connolly-Stoinis)', '26 (Connolly-Jansen)', '21* (Connolly-Bartlett)']
+            }
+        ]
+    },
+    m5: {
+        toss: 'Delhi Capitals won the toss and elected to bowl.',
+        result: 'Delhi Capitals won by 6 wickets (with 17 balls remaining).',
+        playerOfTheMatch: 'Sameer Rizvi - 70* (47)',
+        keyMoments: [
+            'LSG slipped from 48/1 to 71/5, losing control of the innings despite early starts.',
+            'Natarajan (3/29), Ngidi (3/27), and Kuldeep (2/31) combined for 8 wickets to bowl LSG out in 18.4 overs.',
+            'DC were 26/4 inside 5 overs, but Sameer Rizvi absorbed pressure and rebuilt the chase.',
+            'Rizvi and Tristan Stubbs stitched an unbeaten 119-run stand to seal the chase in 17.1 overs.'
+        ],
+        tacticalAnalysis: [
+            'DC front-loaded spin and change-of-pace options at the right phases, especially against LSG’s middle order.',
+            'LSG’s innings lacked stabilization after the 10th over; only Abdul Samad provided sustained acceleration.',
+            'After losing four early wickets, DC shifted into low-risk accumulation before targeting matchup overs from Nortje and part-time options.',
+            'DC’s chase quality was built on strike rotation and selective boundary hitting rather than all-out powerplay counterattack.',
+            'LSG conceded 20 extras in defense, which reduced scoreboard pressure and shortened their wicket-taking windows.'
+        ],
+        improvements: {
+            team1: [
+                'LSG need a clearer recovery template after collapses; the phase from 5th to 12th over needs one anchor-batter role.',
+                'Bowling discipline at the top can improve: 16 wides and 20 total extras in the chase gave DC free momentum.',
+                'Use frontline bowlers earlier when opposition is 26/4 to press for a knockout spell.'
+            ],
+            team2: [
+                'DC should tighten top-order intent versus new-ball seam after collapsing to 26/4.',
+                'Middle-over bowling lengths at Lucknow can be even fuller when defending sub-150 totals.',
+                'Continue wicket-taking spin usage in overs 7-14 where DC currently look most in control.'
+            ],
+            players: [
+                'Sameer Rizvi (DC): keep anchoring high-pressure chases with tempo control before late acceleration.',
+                'Tristan Stubbs (DC): rotate strike earlier versus spin to reduce required-rate spikes in recovery chases.',
+                'Abdul Samad (LSG): build on finishing role by extending innings deeper when top order has collapsed.',
+                'Rishabh Pant (LSG): as captain, stagger bowling resources more aggressively when early wickets are available.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'lsg',
+                total: 141,
+                wickets: 10,
+                overs: '18.4',
+                batters: [
+                    { name: 'Mitchell Marsh', howOut: 'c Tristan Stubbs b Kuldeep Yadav', runs: 35, balls: 28, fours: 2, sixes: 3, strikeRate: 125.0 },
+                    { name: 'Rishabh Pant', howOut: 'run out', runs: 7, balls: 9, fours: 1, sixes: 0, strikeRate: 77.77 },
+                    { name: 'Aiden Markram', howOut: 'b Axar Patel', runs: 11, balls: 8, fours: 1, sixes: 1, strikeRate: 137.5 },
+                    { name: 'Ayush Badoni', howOut: 'c KL Rahul b T Natarajan', runs: 0, balls: 3, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Nicholas Pooran', howOut: 'b Lungi Ngidi', runs: 8, balls: 8, fours: 1, sixes: 0, strikeRate: 100.0 },
+                    { name: 'Abdul Samad', howOut: 'c David Miller b T Natarajan', runs: 36, balls: 25, fours: 3, sixes: 1, strikeRate: 144.0 },
+                    { name: 'Mukul Choudhary', howOut: 'c & b Kuldeep Yadav', runs: 14, balls: 11, fours: 2, sixes: 0, strikeRate: 127.27 },
+                    { name: 'Shahbaz Ahmed', howOut: 'not out', runs: 15, balls: 16, fours: 1, sixes: 0, strikeRate: 93.75 },
+                    { name: 'Mohammad Shami', howOut: 'c Kuldeep Yadav b T Natarajan', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'Anrich Nortje', howOut: 'c Tristan Stubbs b Lungi Ngidi', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Mohsin Khan', howOut: 'c Mukesh Kumar b Lungi Ngidi', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                ],
+                extras: '14 (b 4, lb 8, w 2, nb 0)',
+                didNotBat: ['Prince Yadav'],
+                bowlers: [
+                    { name: 'Mukesh Kumar', overs: '3', maidens: 0, runs: 17, wickets: 0, economy: 5.67 },
+                    { name: 'Lungi Ngidi', overs: '3.4', maidens: 0, runs: 27, wickets: 3, economy: 7.36 },
+                    { name: 'Axar Patel', overs: '3', maidens: 0, runs: 17, wickets: 1, economy: 5.67 },
+                    { name: 'T Natarajan', overs: '4', maidens: 0, runs: 29, wickets: 3, economy: 7.25 },
+                    { name: 'Kuldeep Yadav', overs: '4', maidens: 0, runs: 31, wickets: 2, economy: 7.75 },
+                    { name: 'Vipraj Nigam', overs: '1', maidens: 0, runs: 8, wickets: 0, economy: 8.0 },
+                ],
+                fallOfWickets: ['19/1 (Rishabh Pant, 2.6 ov)', '48/2 (Aiden Markram, 5.5 ov)', '49/3 (Ayush Badoni, 6.3 ov)', '65/4 (Nicholas Pooran, 8.5 ov)', '71/5 (Mitchell Marsh, 9.3 ov)', '105/6 (Mukul Choudhary, 13.1 ov)', '138/7 (Abdul Samad, 17.3 ov)', '140/8 (Mohammad Shami, 17.6 ov)', '141/9 (Anrich Nortje, 18.3 ov)', '141/10 (Mohsin Khan, 18.4 ov)'],
+                powerplayRuns: '48/2 (0.1-6 ov)',
+                partnerships: ['19 (Marsh-Pant)', '29 (Marsh-Markram)', '1 (Marsh-Badoni)', '16 (Marsh-Pooran)', '6 (Marsh-Samad)', '34 (Samad-Mukul)', '33 (Samad-Shahbaz)', '2 (Shahbaz-Shami)', '1 (Shahbaz-Nortje)', '1 (Shahbaz-Mohsin)']
+            },
+            {
+                teamId: 'dc',
+                total: 145,
+                wickets: 4,
+                overs: '17.1',
+                batters: [
+                    { name: 'KL Rahul', howOut: 'c Mohsin Khan b Mohammad Shami', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Pathum Nissanka', howOut: 'c Rishabh Pant b Prince Yadav', runs: 1, balls: 5, fours: 0, sixes: 0, strikeRate: 20.0 },
+                    { name: 'Nitish Rana', howOut: 'c Abdul Samad b Mohsin Khan', runs: 15, balls: 17, fours: 2, sixes: 1, strikeRate: 88.23 },
+                    { name: 'Sameer Rizvi', howOut: 'not out', runs: 70, balls: 47, fours: 5, sixes: 4, strikeRate: 148.93 },
+                    { name: 'Axar Patel', howOut: 'b Prince Yadav', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Tristan Stubbs', howOut: 'not out', runs: 39, balls: 32, fours: 3, sixes: 1, strikeRate: 121.87 },
+                ],
+                extras: '20 (b 0, lb 4, w 16, nb 0)',
+                didNotBat: ['Vipraj Nigam', 'David Miller', 'Lungi Ngidi', 'Kuldeep Yadav', 'Mukesh Kumar'],
+                bowlers: [
+                    { name: 'Mohammad Shami', overs: '4', maidens: 0, runs: 28, wickets: 1, economy: 7.0 },
+                    { name: 'Prince Yadav', overs: '3', maidens: 0, runs: 20, wickets: 2, economy: 6.67 },
+                    { name: 'Mohsin Khan', overs: '4', maidens: 1, runs: 19, wickets: 1, economy: 4.75 },
+                    { name: 'Anrich Nortje', overs: '4', maidens: 0, runs: 39, wickets: 0, economy: 9.75 },
+                    { name: 'Shahbaz Ahmed', overs: '1', maidens: 0, runs: 16, wickets: 0, economy: 16.0 },
+                    { name: 'Aiden Markram', overs: '1', maidens: 0, runs: 13, wickets: 0, economy: 13.0 },
+                    { name: 'Abdul Samad', overs: '0.1', maidens: 0, runs: 6, wickets: 0, economy: 36.0 },
+                ],
+                fallOfWickets: ['0/1 (KL Rahul, 0.1 ov)', '21/2 (Nitish Rana, 3.3 ov)', '25/3 (Pathum Nissanka, 4.2 ov)', '26/4 (Axar Patel, 4.3 ov)'],
+                powerplayRuns: '33/4 (0.1-6 ov)',
+                partnerships: ['0 (Rahul-Nissanka)', '21 (Nissanka-Rana)', '4 (Nissanka-Rizvi)', '1 (Rizvi-Axar)', '119* (Rizvi-Stubbs)']
             }
         ]
     },
