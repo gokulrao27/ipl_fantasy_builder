@@ -17,6 +17,24 @@ export interface Team {
     players: Player[];
 }
 
+const playerNameAliases: Record<string, string> = {
+    philipsalt: 'philsalt',
+    mshahrukhkhan: 'shahrukhkhan',
+    shahbazahamad: 'shahbazahmed',
+};
+
+export const normalizePlayerName = (name: string): string => {
+    const key = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+    return playerNameAliases[key] || key;
+};
+
+export const findTeamPlayerByName = (team: Team, scorecardName: string): Player | undefined => {
+    const normalizedScorecardName = normalizePlayerName(scorecardName);
+    return team.players.find((player) => normalizePlayerName(player.name) === normalizedScorecardName);
+};
+
 const getAvatar = (name: string, bg: string, color: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=${color}&size=150&bold=true`;
 

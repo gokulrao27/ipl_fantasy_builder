@@ -1,4 +1,4 @@
-import { teams, schedule, Team, Match } from './base';
+import { teams, schedule, Team, Match, findTeamPlayerByName } from './base';
 
 export interface PlayerMatchTag {
   matchId: string;
@@ -94,7 +94,12 @@ export const playerMatchTags = (() => {
 
     [...team1.players, ...team2.players].forEach((player) => {
       const isInCompletedCard = match.completedDetails?.innings.some((inning) =>
-        inning.batters.some((b) => b.name === player.name) || inning.bowlers.some((b) => b.name === player.name) || inning.didNotBat.includes(player.name)
+        inning.batters.some((b) => findTeamPlayerByName(team1.id === inning.teamId ? team1 : team2, b.name)?.id === player.id) ||
+        inning.bowlers.some((b) => {
+          const bowlingTeam = inning.teamId === match.team1 ? team2 : team1;
+          return findTeamPlayerByName(bowlingTeam, b.name)?.id === player.id;
+        }) ||
+        inning.didNotBat.some((name) => findTeamPlayerByName(team1.id === inning.teamId ? team1 : team2, name)?.id === player.id)
       ) ?? false;
 
       const team = player.id.startsWith(team1.id) ? team1 : team2;
@@ -133,7 +138,7 @@ export const battingTable: BattingRow[] = (() => {
       if (!team) return;
 
       inning.batters.forEach((batter) => {
-        const player = team.players.find((p) => p.name === batter.name);
+        const player = findTeamPlayerByName(team, batter.name);
         if (!player) return;
 
         const key = player.id;
@@ -196,7 +201,7 @@ export const bowlingTable: BowlingRow[] = (() => {
       if (!team) return;
 
       inning.bowlers.forEach((bowler) => {
-        const player = team.players.find((p) => p.name === bowler.name);
+        const player = findTeamPlayerByName(team, bowler.name);
         if (!player) return;
 
         const key = player.id;

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders } from './data';
+import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders, findTeamPlayerByName, normalizePlayerName } from './data';
 import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3, Plane, Crown } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
@@ -63,7 +63,7 @@ const createDefaultSavedXIs = (): Record<string, SavedXI> => {
             .slice(0, 11);
 
         const playing11 = xiNames
-            .map((name) => team.players.find((player) => player.name === name))
+            .map((name) => findTeamPlayerByName(team, name))
             .filter((player): player is Player => Boolean(player));
 
         const impactPlayer = team.players.find((player) => !playing11.some((p) => p.id === player.id)) || null;
@@ -389,10 +389,12 @@ export default function App() {
     };
 
     const selectedPlayerDetails = playerDetails.find((player) => player.id === selectedPlayerId) || null;
+    const completedMatchesCount = schedule.filter((match) => match.status === 'completed' && match.completedDetails).length;
+    const playersWithAnyStatsCount = playerDetails.filter((player) => player.batting || player.bowling).length;
     const selectedStatMetric = statsMetricLeaders.find((metric) => metric.id === selectedStatMetricId) || statsMetricLeaders[0];
     const allPlayers = useMemo(() => teams.flatMap((team) => team.players), []);
     const playerByName = useMemo(
-        () => new Map(allPlayers.map((player) => [player.name.toLowerCase(), player])),
+        () => new Map(allPlayers.map((player) => [normalizePlayerName(player.name), player])),
         [allPlayers]
     );
     const tournamentCapLeaders = useMemo(() => {
@@ -414,8 +416,8 @@ export default function App() {
 
         const topRunsEntry = [...batting.entries()].sort((a, b) => b[1] - a[1])[0];
         const topWicketsEntry = [...wickets.entries()].sort((a, b) => b[1] - a[1])[0];
-        const orangeCapPlayer = topRunsEntry ? playerByName.get(topRunsEntry[0].toLowerCase()) ?? null : null;
-        const purpleCapPlayer = topWicketsEntry ? playerByName.get(topWicketsEntry[0].toLowerCase()) ?? null : null;
+        const orangeCapPlayer = topRunsEntry ? playerByName.get(normalizePlayerName(topRunsEntry[0])) ?? null : null;
+        const purpleCapPlayer = topWicketsEntry ? playerByName.get(normalizePlayerName(topWicketsEntry[0])) ?? null : null;
 
         return {
             orangeCapPlayer,
@@ -1145,6 +1147,14 @@ export default function App() {
                             </button>
                             <h2 className={`text-2xl sm:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Tournament Stats (Top 10)</h2>
                             <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Auto-generated from available completed match scorecards. As soon as scorecard entries are updated in data, these rankings update automatically.</p>
+                            <div className="grid sm:grid-cols-2 gap-3 mb-4">
+                                <div className={`rounded-xl border px-4 py-3 text-sm ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-700'}`}>
+                                    Completed matches in stats engine: <span className="font-black">{completedMatchesCount}</span>
+                                </div>
+                                <div className={`rounded-xl border px-4 py-3 text-sm ${isDark ? 'border-white/20 bg-black/20 text-slate-200' : 'border-black/20 bg-slate-50 text-slate-700'}`}>
+                                    Players with tracked scorecard stats: <span className="font-black">{playersWithAnyStatsCount}</span>
+                                </div>
+                            </div>
                             <div className="md:hidden mb-4">
                                 <select
                                     value={selectedStatMetric?.id}
