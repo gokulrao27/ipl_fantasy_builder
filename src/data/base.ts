@@ -21,6 +21,7 @@ const playerNameAliases: Record<string, string> = {
     philipsalt: 'philsalt',
     mshahrukhkhan: 'shahrukhkhan',
     shahbazahamad: 'shahbazahmed',
+    vijaykumarvyshak: 'vyshakvijaykumar',
 };
 
 export const normalizePlayerName = (name: string): string => {
@@ -578,14 +579,14 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['SRH reached 200 in 18.1 overs and still added 26 more, turning a good platform into a match-winning total.', 'KKR were 120/3 after six overs but collapsed to 161 all out in 16 overs, losing 7 wickets for 41 runs.'],
     },
     'csk-pbks': {
-        headline: 'CSK enter their second match after a heavy loss to RR, while PBKS arrive with momentum after chasing against GT.',
+        headline: 'PBKS chased 210 in 18.4 overs after CSK posted 209/5, winning by 5 wickets with 8 balls remaining.',
         venueStats: { avgFirstInningsScore: 168, chasingWins: 33, totalMatches: 80, bestBowlingFigure: '5/13', boundaryPercentage: 45 },
-        headToHead: { team1Wins: 16, team2Wins: 14, noResult: 0, last5: 'Historical edge CSK, but second-match predictor is CSK 49% vs PBKS 51%.' },
+        headToHead: { team1Wins: 16, team2Wins: 15, noResult: 0, last5: 'PBKS have won 3 of the last 5 meetings after their Match 7 chase at Chennai.' },
         playerBattles: [
-            { batter: 'MS Dhoni', bowler: 'Arshdeep Singh', runs: 31, balls: 18, dismissals: 2, note: 'Arshdeep often goes full and wide to deny Dhoni his preferred arc.' },
-            { batter: 'Marcus Stoinis', bowler: 'Ravindra Jadeja', runs: 40, balls: 37, dismissals: 3, note: 'Jadeja’s angle into the pads has cramped Stoinis in Chennai conditions.' },
+            { batter: 'Shreyas Iyer', bowler: 'Anshul Kamboj', runs: 50, balls: 29, dismissals: 1, note: 'Iyer attacked spin and pace in the middle overs before falling at 186.' },
+            { batter: 'Ayush Mhatre', bowler: 'Vyshak Vijaykumar', runs: 73, balls: 43, dismissals: 1, note: 'Mhatre’s counterattack drove CSK to 209, but PBKS neutralized the finish.' },
         ],
-        interestingStats: ['CSK were 40/4 in the powerplay in Match 3 and need a safer start profile to unlock their middle overs.', 'Win predictor blend (venue + form + H2H): CSK 49% | PBKS 51%.'],
+        interestingStats: ['PBKS scored at 11.25 runs per over in the chase and crossed 200 with 8 balls to spare.', 'CSK’s 209/5 included quick fifties from Ayush Mhatre, Shivam Dube, and Sarfaraz Khan, but 24 extras conceded with the ball proved costly.'],
     },
     'dc-mi': {
         headline: 'DC begin their second game with confidence after beating LSG, while MI arrive after a structured win over KKR.',
@@ -727,7 +728,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium', status: 'completed' },
     { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium', status: 'completed' },
     { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens', status: 'completed' },
-    { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
+    { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium', status: 'completed' },
     { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
     { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
     { matchNumber: 10, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'srh', team2: 'lsg', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
@@ -1386,6 +1387,98 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['30/1 (Finn Allen, 1.3 ov)', '67/2 (Ajinkya Rahane, 5.0 ov)', '74/3 (Cameron Green, 6.0 ov)', '120/4 (Angkrish Raghuvanshi, 11.0 ov)', '120/5 (Anukul Roy, 11.2 ov)', '139/6 (Rinku Singh, 13.4 ov)', '154/7 (Sunil Narine, 14.3 ov)', '159/8 (Ramandeep Singh, 15.0 ov)', '161/9 (Kartik Tyagi, 15.5 ov)', '161/10 (Varun Chakaravarthy, 16.0 ov)'],
                 powerplayRuns: '68/2 (0.1-6 ov)',
                 partnerships: ['30 (Rahane-Allen)', '37 (Rahane-Raghuvanshi)', '7 (Raghuvanshi-Green)', '46 (Raghuvanshi-Rinku)', '0 (Rinku-Anukul)', '19 (Rinku-Ramandeep)', '15 (Ramandeep-Narine)', '5 (Ramandeep-Tyagi)', '2 (Tyagi-Vaibhav)', '0 (Vaibhav-Varun)']
+            }
+        ]
+    },
+    m7: {
+        toss: 'Punjab Kings won the toss and elected to bowl.',
+        result: 'Punjab Kings won by 5 wickets (with 8 balls remaining).',
+        playerOfTheMatch: 'Shreyas Iyer - 50 (29)',
+        keyMoments: [
+            'Ayush Mhatre struck 73 off 43 and Sarfaraz Khan blasted 32 off 12 to lift CSK to 209/5.',
+            'PBKS were flying early through Priyansh Arya’s 39 off 11 and reached 61/1 by 4.2 overs.',
+            'Shreyas Iyer controlled the chase with a 29-ball fifty before falling at 186 in the 17th over.',
+            'Shashank Singh and Marcus Stoinis finished the chase in 18.4 overs without further damage.'
+        ],
+        tacticalAnalysis: [
+            'CSK’s middle-order acceleration was excellent, but 15 wides and 2 no-balls handed PBKS too many free runs.',
+            'PBKS consistently attacked matchup overs: Arya set tempo, then Connolly and Iyer kept required rate under control.',
+            'Even after a double strike at 186, PBKS retained boundary options because wickets were preserved for the final phase.',
+            'PBKS pace and leg-spin options limited CSK’s end-overs surge enough to keep the chase within range.'
+        ],
+        improvements: {
+            team1: [
+                'CSK need tighter discipline with the ball; conceding 24 extras made a 209 total significantly less defendable.',
+                'Death-over execution must improve after allowing PBKS to keep the required rate near a run-a-ball after 15 overs.',
+                'Convert powerplay breakthroughs into middle-overs pressure with more dot-ball sequences.'
+            ],
+            team2: [
+                'PBKS can improve wicket retention between overs 10-14 after losing set batters in short clusters.',
+                'Death bowling still needs cleaner yorker execution after conceding 41 and 48 in two pace spells.',
+                'Continue maximizing powerplay intent while balancing risk when chasing 200-plus.'
+            ],
+            players: [
+                'Shreyas Iyer (PBKS): continue anchoring high chases with controlled aggression through spin phases.',
+                'Priyansh Arya (PBKS): maintain explosive starts while extending innings for bigger match impact.',
+                'Ayush Mhatre (CSK): build on his high-tempo middle-overs role after a standout 73.',
+                'Anshul Kamboj (CSK): wicket-taking impact was strong, but could improve boundary prevention at the death.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'csk',
+                total: 209,
+                wickets: 5,
+                overs: '20.0',
+                batters: [
+                    { name: 'Sanju Samson', howOut: 'c Prabhsimran Singh b Xavier Bartlett', runs: 7, balls: 7, fours: 1, sixes: 0, strikeRate: 100.0 },
+                    { name: 'Ruturaj Gaikwad', howOut: 'c Nehal Wadhera b Yuzvendra Chahal', runs: 28, balls: 22, fours: 2, sixes: 0, strikeRate: 127.27 },
+                    { name: 'Ayush Mhatre', howOut: 'c Yuzvendra Chahal b Vijaykumar Vyshak', runs: 73, balls: 43, fours: 6, sixes: 5, strikeRate: 169.76 },
+                    { name: 'Shivam Dube', howOut: 'not out', runs: 45, balls: 27, fours: 5, sixes: 1, strikeRate: 166.67 },
+                    { name: 'Kartik Sharma', howOut: 'lbw b Marco Jansen', runs: 1, balls: 3, fours: 0, sixes: 0, strikeRate: 33.33 },
+                    { name: 'Sarfaraz Khan', howOut: 'c Nehal Wadhera b Vijaykumar Vyshak', runs: 32, balls: 12, fours: 6, sixes: 1, strikeRate: 266.67 },
+                    { name: 'Prashant Veer', howOut: 'not out', runs: 6, balls: 7, fours: 1, sixes: 0, strikeRate: 85.71 },
+                ],
+                extras: '17 (b 1, lb 0, w 15, nb 1)',
+                didNotBat: ['Noor Ahmad', 'Anshul Kamboj', 'Matt Henry', 'Khaleel Ahmed', 'Rahul Chahar'],
+                bowlers: [
+                    { name: 'Arshdeep Singh', overs: '4', maidens: 0, runs: 41, wickets: 0, economy: 10.25 },
+                    { name: 'Xavier Bartlett', overs: '4', maidens: 0, runs: 48, wickets: 1, economy: 12.0 },
+                    { name: 'Marco Jansen', overs: '4', maidens: 0, runs: 43, wickets: 1, economy: 10.75 },
+                    { name: 'Vijaykumar Vyshak', overs: '4', maidens: 0, runs: 38, wickets: 2, economy: 9.5 },
+                    { name: 'Yuzvendra Chahal', overs: '3', maidens: 0, runs: 21, wickets: 1, economy: 7.0 },
+                    { name: 'Marcus Stoinis', overs: '1', maidens: 0, runs: 17, wickets: 0, economy: 17.0 },
+                ],
+                fallOfWickets: ['14/1 (Sanju Samson, 1.6 ov)', '110/2 (Ruturaj Gaikwad, 11.1 ov)', '123/3 (Ayush Mhatre, 12.3 ov)', '130/4 (Kartik Sharma, 13.4 ov)', '168/5 (Sarfaraz Khan, 16.4 ov)'],
+                powerplayRuns: '53/1 (0.1-6 ov)',
+                partnerships: ['14 (Samson-Gaikwad)', '96 (Gaikwad-Mhatre)', '13 (Mhatre-Dube)', '7 (Dube-Kartik)', '38 (Dube-Sarfaraz)', '41* (Dube-Prashant Veer)']
+            },
+            {
+                teamId: 'pbks',
+                total: 210,
+                wickets: 5,
+                overs: '18.4',
+                batters: [
+                    { name: 'Priyansh Arya', howOut: 'b Matt Henry', runs: 39, balls: 11, fours: 3, sixes: 4, strikeRate: 354.55 },
+                    { name: 'Prabhsimran Singh', howOut: 'run out (Sarfaraz Khan/Ruturaj Gaikwad)', runs: 43, balls: 34, fours: 6, sixes: 1, strikeRate: 126.47 },
+                    { name: 'Cooper Connolly', howOut: 'c Matt Henry b Anshul Kamboj', runs: 36, balls: 22, fours: 6, sixes: 0, strikeRate: 163.64 },
+                    { name: 'Shreyas Iyer', howOut: 'c Rahul Chahar b Anshul Kamboj', runs: 50, balls: 29, fours: 4, sixes: 3, strikeRate: 172.41 },
+                    { name: 'Nehal Wadhera', howOut: 'c Noor Ahmad b Matt Henry', runs: 10, balls: 9, fours: 0, sixes: 1, strikeRate: 111.11 },
+                    { name: 'Shashank Singh', howOut: 'not out', runs: 14, balls: 6, fours: 2, sixes: 0, strikeRate: 233.33 },
+                    { name: 'Marcus Stoinis', howOut: 'not out', runs: 9, balls: 3, fours: 2, sixes: 0, strikeRate: 300.0 },
+                ],
+                extras: '9 (b 0, lb 1, w 6, nb 2)',
+                didNotBat: ['Marco Jansen', 'Xavier Bartlett', 'Vijaykumar Vyshak', 'Arshdeep Singh'],
+                bowlers: [
+                    { name: 'Khaleel Ahmed', overs: '3', maidens: 0, runs: 28, wickets: 0, economy: 9.33 },
+                    { name: 'Matt Henry', overs: '4', maidens: 0, runs: 54, wickets: 2, economy: 13.5 },
+                    { name: 'Anshul Kamboj', overs: '3.4', maidens: 0, runs: 43, wickets: 2, economy: 11.73 },
+                    { name: 'Noor Ahmad', overs: '4', maidens: 0, runs: 38, wickets: 0, economy: 9.5 },
+                    { name: 'Rahul Chahar', overs: '4', maidens: 0, runs: 46, wickets: 0, economy: 11.5 },
+                ],
+                fallOfWickets: ['61/1 (Priyansh Arya, 4.2 ov)', '95/2 (Prabhsimran Singh, 8.5 ov)', '127/3 (Cooper Connolly, 11.5 ov)', '186/4 (Shreyas Iyer, 16.6 ov)', '186/5 (Nehal Wadhera, 17.1 ov)'],
+                powerplayRuns: '77/1 (0.1-6 ov)',
+                partnerships: ['61 (Arya-Prabhsimran)', '34 (Prabhsimran-Connolly)', '32 (Connolly-Iyer)', '59 (Iyer-Wadhera)', '0 (Wadhera-Shashank)', '24* (Shashank-Stoinis)']
             }
         ]
     },
