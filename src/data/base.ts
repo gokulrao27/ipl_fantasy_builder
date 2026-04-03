@@ -717,111 +717,7 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         ],
         interestingStats: ['Wankhede rewards teams that preserve wickets for the last six overs.', 'RCB’s top order usually controls run rate, but MI’s pace attack improves sharply with early wickets.'],
     },
-    m6: {
-        toss: 'Kolkata Knight Riders won the toss and elected to bowl.',
-        result: 'Sunrisers Hyderabad won by 65 runs.',
-        playerOfTheMatch: 'Heinrich Klaasen - 52 (35)',
-        keyMoments: [
-            'SRH blasted 82 in 5.4 overs through Travis Head and Abhishek Sharma, instantly taking control of the innings tempo.',
-            'KKR dragged things back with a middle-overs burst led by Blessing Muzarabani (4/41), reducing SRH from 112/2 to 118/4.',
-            'Klaasen and Nitish Kumar Reddy rebuilt decisively, adding high-value runs in overs 13-18 to push SRH to 226/8.',
-            'KKR touched 120/3 after 10.6 overs but then collapsed to 161 all out, losing 7 wickets for just 41 runs.',
-            'Jaydev Unadkat (3/21), Eshan Malinga (2/14), and Nitish Kumar Reddy (2/17) closed out the chase clinically.'
-        ],
-        tacticalAnalysis: [
-            'SRH’s powerplay intent was elite: both openers struck above 200, forcing KKR off their preferred early bowling lengths.',
-            'KKR did execute a recovery phase via Muzarabani, but they could not sustain pressure at the death where SRH scored 56 in the last 2 overs.',
-            'Klaasen’s innings was the structural anchor: he managed spin matchups while still preserving boundary pressure.',
-            'In the chase, KKR’s run rate stayed healthy until 11 overs, but wicket clusters destroyed sequencing and exposed the long tail.',
-            'SRH used role clarity in defense: Unadkat attacked the stumps, Malinga hunted wickets through pace variation, and Nitish hit hard lengths into big square boundaries.',
-            'KKR’s chase plan lacked stabilizer batting once Raghuvanshi fell; the phase from overs 11-16 became a high-risk, low-control collapse window.',
-            'The game was decided by phase dominance: SRH won overs 1-6 with bat and overs 11-16 with ball.'
-        ],
-        improvements: {
-            team1: [
-                'KKR need tighter death-over plans. Conceding 56 in the last two overs turned a recoverable 190-200 projection into 226.',
-                'Top-order aggression must be paired with one batter anchoring through over 15 when chasing 220-plus.',
-                'Bowling fields to Klaasen and Nitish need clearer boundary denial at long-on/deep midwicket in the final overs.'
-            ],
-            team2: [
-                'SRH can improve middle-over wicket protection after fast starts; the 112/2 to 118/4 slide remains a vulnerability.',
-                'New-ball bowling discipline can sharpen despite the win, especially on wides and overcorrections under pressure.',
-                'Fielding standards around direct-hit chances can still improve to convert pressure phases earlier.'
-            ],
-            players: [
-                'Heinrich Klaasen (SRH): continue balancing anchor and accelerator roles against mixed spin-pace attacks.',
-                'Nitish Kumar Reddy (SRH): excellent dual contribution; can further improve death-over yorker execution consistency.',
-                'Blessing Muzarabani (KKR): outstanding wicket-taking spell; needs better support at the opposite end to convert pressure into collapse.',
-                'Angkrish Raghuvanshi (KKR): strong 52, but game context demanded deeper occupation after crossing fifty.',
-                'Ajinkya Rahane (KKR): captain and top-order batter must set a steadier launch template in chases above 200.'
-            ]
-        },
-        innings: [
-            {
-                teamId: 'srh',
-                total: 226,
-                wickets: 8,
-                overs: '20.0',
-                batters: [
-                    { name: 'Travis Head', howOut: 'c Cameron Green b Kartik Tyagi', runs: 46, balls: 21, fours: 6, sixes: 3, strikeRate: 219.04 },
-                    { name: 'Abhishek Sharma', howOut: 'c Varun Chakaravarthy b Blessing Muzarabani', runs: 48, balls: 21, fours: 4, sixes: 4, strikeRate: 228.57 },
-                    { name: 'Ishan Kishan', howOut: 'c Rinku Singh b Blessing Muzarabani', runs: 14, balls: 9, fours: 3, sixes: 0, strikeRate: 155.55 },
-                    { name: 'Heinrich Klaasen', howOut: 'c Ramandeep Singh b Blessing Muzarabani', runs: 52, balls: 35, fours: 4, sixes: 1, strikeRate: 148.57 },
-                    { name: 'Aniket Verma', howOut: 'c Rinku Singh b Anukul Roy', runs: 1, balls: 4, fours: 0, sixes: 0, strikeRate: 25.0 },
-                    { name: 'Nitish Kumar Reddy', howOut: 'c Varun Chakaravarthy b Vaibhav Arora', runs: 39, balls: 24, fours: 4, sixes: 1, strikeRate: 162.5 },
-                    { name: 'Salil Arora', howOut: 'b Vaibhav Arora', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
-                    { name: 'Harsh Dubey', howOut: 'not out', runs: 9, balls: 3, fours: 2, sixes: 0, strikeRate: 300.0 },
-                    { name: 'Shivang Kumar', howOut: 'c Ajinkya Rahane b Blessing Muzarabani', runs: 4, balls: 2, fours: 1, sixes: 0, strikeRate: 200.0 },
-                ],
-                extras: '13 (b 0, lb 4, w 9, nb 0)',
-                didNotBat: ['Jaydev Unadkat', 'David Payne', 'Eshan Malinga'],
-                bowlers: [
-                    { name: 'Vaibhav Arora', overs: '4', maidens: 0, runs: 47, wickets: 2, economy: 11.75 },
-                    { name: 'Blessing Muzarabani', overs: '4', maidens: 0, runs: 41, wickets: 4, economy: 10.25 },
-                    { name: 'Sunil Narine', overs: '4', maidens: 0, runs: 39, wickets: 0, economy: 9.75 },
-                    { name: 'Varun Chakaravarthy', overs: '2', maidens: 0, runs: 31, wickets: 0, economy: 15.5 },
-                    { name: 'Kartik Tyagi', overs: '4', maidens: 0, runs: 48, wickets: 1, economy: 12.0 },
-                    { name: 'Anukul Roy', overs: '2', maidens: 0, runs: 16, wickets: 1, economy: 8.0 },
-                ],
-                fallOfWickets: ['82/1 (Travis Head, 5.4 ov)', '111/2 (Ishan Kishan, 8.2 ov)', '112/3 (Abhishek Sharma, 8.4 ov)', '118/4 (Aniket Verma, 9.2 ov)', '200/5 (Nitish Kumar Reddy, 18.1 ov)', '200/6 (Salil Arora, 18.2 ov)', '222/7 (Heinrich Klaasen, 19.4 ov)', '226/8 (Shivang Kumar, 20.0 ov)'],
-                powerplayRuns: '84/1 (0.1-6 ov)',
-                partnerships: ['82 (Head-Abhishek)', '29 (Abhishek-Ishan)', '1 (Abhishek-Klaasen)', '6 (Klaasen-Aniket)', '82 (Klaasen-Nitish)', '0 (Klaasen-Salil)', '22 (Klaasen-Dubey)', '4 (Dubey-Shivang)']
-            },
-            {
-                teamId: 'kkr',
-                total: 161,
-                wickets: 10,
-                overs: '16.0',
-                batters: [
-                    { name: 'Ajinkya Rahane', howOut: 'c Eshan Malinga b Jaydev Unadkat', runs: 8, balls: 10, fours: 0, sixes: 0, strikeRate: 80.0 },
-                    { name: 'Finn Allen', howOut: 'c & b Harsh Dubey', runs: 28, balls: 7, fours: 4, sixes: 2, strikeRate: 400.0 },
-                    { name: 'Angkrish Raghuvanshi', howOut: 'run out (Eshan Malinga/Shivang Kumar)', runs: 52, balls: 29, fours: 6, sixes: 2, strikeRate: 179.31 },
-                    { name: 'Cameron Green', howOut: 'run out (Eshan Malinga)', runs: 2, balls: 2, fours: 0, sixes: 0, strikeRate: 100.0 },
-                    { name: 'Rinku Singh', howOut: 'c Jaydev Unadkat b Nitish Kumar Reddy', runs: 35, balls: 25, fours: 4, sixes: 1, strikeRate: 140.0 },
-                    { name: 'Anukul Roy', howOut: 'c & b Nitish Kumar Reddy', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
-                    { name: 'Ramandeep Singh', howOut: 'c Jaydev Unadkat b Eshan Malinga', runs: 10, balls: 9, fours: 1, sixes: 0, strikeRate: 111.11 },
-                    { name: 'Sunil Narine', howOut: 'c Aniket Verma b Eshan Malinga', runs: 12, balls: 4, fours: 0, sixes: 2, strikeRate: 300.0 },
-                    { name: 'Kartik Tyagi', howOut: 'c Ishan Kishan b Jaydev Unadkat', runs: 5, balls: 5, fours: 1, sixes: 0, strikeRate: 100.0 },
-                    { name: 'Vaibhav Arora', howOut: 'not out', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
-                    { name: 'Varun Chakaravarthy', howOut: 'b Jaydev Unadkat', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
-                ],
-                extras: '8 (b 0, lb 1, w 7, nb 0)',
-                didNotBat: ['Blessing Muzarabani'],
-                bowlers: [
-                    { name: 'David Payne', overs: '2', maidens: 0, runs: 35, wickets: 0, economy: 17.5 },
-                    { name: 'Harsh Dubey', overs: '2', maidens: 0, runs: 17, wickets: 1, economy: 8.5 },
-                    { name: 'Abhishek Sharma', overs: '1', maidens: 0, runs: 15, wickets: 0, economy: 15.0 },
-                    { name: 'Jaydev Unadkat', overs: '3', maidens: 0, runs: 21, wickets: 3, economy: 7.0 },
-                    { name: 'Eshan Malinga', overs: '2', maidens: 0, runs: 14, wickets: 2, economy: 7.0 },
-                    { name: 'Shivang Kumar', overs: '4', maidens: 0, runs: 41, wickets: 0, economy: 10.25 },
-                    { name: 'Nitish Kumar Reddy', overs: '2', maidens: 0, runs: 17, wickets: 2, economy: 8.5 },
-                ],
-                fallOfWickets: ['30/1 (Finn Allen, 1.3 ov)', '67/2 (Ajinkya Rahane, 5.0 ov)', '74/3 (Cameron Green, 6.0 ov)', '120/4 (Angkrish Raghuvanshi, 11.0 ov)', '120/5 (Anukul Roy, 11.2 ov)', '139/6 (Rinku Singh, 13.4 ov)', '154/7 (Sunil Narine, 14.3 ov)', '159/8 (Ramandeep Singh, 15.0 ov)', '161/9 (Kartik Tyagi, 15.5 ov)', '161/10 (Varun Chakaravarthy, 16.0 ov)'],
-                powerplayRuns: '68/2 (0.1-6 ov)',
-                partnerships: ['30 (Rahane-Allen)', '37 (Rahane-Raghuvanshi)', '7 (Raghuvanshi-Green)', '46 (Raghuvanshi-Rinku)', '0 (Rinku-Anukul)', '19 (Rinku-Ramandeep)', '15 (Ramandeep-Narine)', '5 (Ramandeep-Tyagi)', '2 (Tyagi-Vaibhav)', '0 (Vaibhav-Varun)']
-            }
-        ]
-    },
+
 };
 
 const matchSeeds: MatchSeed[] = [
@@ -1385,6 +1281,111 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['0/1 (KL Rahul, 0.1 ov)', '21/2 (Nitish Rana, 3.3 ov)', '25/3 (Pathum Nissanka, 4.2 ov)', '26/4 (Axar Patel, 4.3 ov)'],
                 powerplayRuns: '33/4 (0.1-6 ov)',
                 partnerships: ['0 (Rahul-Nissanka)', '21 (Nissanka-Rana)', '4 (Nissanka-Rizvi)', '1 (Rizvi-Axar)', '119* (Rizvi-Stubbs)']
+            }
+        ]
+    },
+    m6: {
+        toss: 'Kolkata Knight Riders won the toss and elected to bowl.',
+        result: 'Sunrisers Hyderabad won by 65 runs.',
+        playerOfTheMatch: 'Nitish Kumar Reddy - 39 (24) & 2/17 (2)',
+        keyMoments: [
+            'SRH blasted 82 in 5.4 overs through Travis Head and Abhishek Sharma, instantly taking control of the innings tempo.',
+            'KKR dragged things back with a middle-overs burst led by Blessing Muzarabani (4/41), reducing SRH from 112/2 to 118/4.',
+            'Klaasen and Nitish Kumar Reddy rebuilt decisively, adding high-value runs in overs 13-18 to push SRH to 226/8.',
+            'KKR touched 120/3 after 10.6 overs but then collapsed to 161 all out, losing 7 wickets for just 41 runs.',
+            'Jaydev Unadkat (3/21), Eshan Malinga (2/14), and Nitish Kumar Reddy (2/17) closed out the chase clinically.'
+        ],
+        tacticalAnalysis: [
+            'SRH’s powerplay intent was elite: both openers struck above 200, forcing KKR off their preferred early bowling lengths.',
+            'KKR did execute a recovery phase via Muzarabani, but they could not sustain pressure at the death where SRH scored 56 in the last 2 overs.',
+            'Klaasen’s innings was the structural anchor: he managed spin matchups while still preserving boundary pressure.',
+            'In the chase, KKR’s run rate stayed healthy until 11 overs, but wicket clusters destroyed sequencing and exposed the long tail.',
+            'SRH used role clarity in defense: Unadkat attacked the stumps, Malinga hunted wickets through pace variation, and Nitish hit hard lengths into big square boundaries.',
+            'KKR’s chase plan lacked stabilizer batting once Raghuvanshi fell; the phase from overs 11-16 became a high-risk, low-control collapse window.',
+            'The game was decided by phase dominance: SRH won overs 1-6 with bat and overs 11-16 with ball.'
+        ],
+        improvements: {
+            team1: [
+                'KKR need tighter death-over plans. Conceding 56 in the last two overs turned a recoverable 190-200 projection into 226.',
+                'Top-order aggression must be paired with one batter anchoring through over 15 when chasing 220-plus.',
+                'Bowling fields to Klaasen and Nitish need clearer boundary denial at long-on/deep midwicket in the final overs.'
+            ],
+            team2: [
+                'SRH can improve middle-over wicket protection after fast starts; the 112/2 to 118/4 slide remains a vulnerability.',
+                'New-ball bowling discipline can sharpen despite the win, especially on wides and overcorrections under pressure.',
+                'Fielding standards around direct-hit chances can still improve to convert pressure phases earlier.'
+            ],
+            players: [
+                'Heinrich Klaasen (SRH): continue balancing anchor and accelerator roles against mixed spin-pace attacks.',
+                'Nitish Kumar Reddy (SRH): excellent dual contribution; can further improve death-over yorker execution consistency.',
+                'Blessing Muzarabani (KKR): outstanding wicket-taking spell; needs better support at the opposite end to convert pressure into collapse.',
+                'Angkrish Raghuvanshi (KKR): strong 52, but game context demanded deeper occupation after crossing fifty.',
+                'Ajinkya Rahane (KKR): captain and top-order batter must set a steadier launch template in chases above 200.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'srh',
+                total: 226,
+                wickets: 8,
+                overs: '20.0',
+                batters: [
+                    { name: 'Travis Head', howOut: 'c Cameron Green b Kartik Tyagi', runs: 46, balls: 21, fours: 6, sixes: 3, strikeRate: 219.04 },
+                    { name: 'Abhishek Sharma', howOut: 'c Varun Chakaravarthy b Blessing Muzarabani', runs: 48, balls: 21, fours: 4, sixes: 4, strikeRate: 228.57 },
+                    { name: 'Ishan Kishan', howOut: 'c Rinku Singh b Blessing Muzarabani', runs: 14, balls: 9, fours: 3, sixes: 0, strikeRate: 155.55 },
+                    { name: 'Heinrich Klaasen', howOut: 'c Ramandeep Singh b Blessing Muzarabani', runs: 52, balls: 35, fours: 4, sixes: 1, strikeRate: 148.57 },
+                    { name: 'Aniket Verma', howOut: 'c Rinku Singh b Anukul Roy', runs: 1, balls: 4, fours: 0, sixes: 0, strikeRate: 25.0 },
+                    { name: 'Nitish Kumar Reddy', howOut: 'c Varun Chakaravarthy b Vaibhav Arora', runs: 39, balls: 24, fours: 4, sixes: 1, strikeRate: 162.5 },
+                    { name: 'Salil Arora', howOut: 'b Vaibhav Arora', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Harsh Dubey', howOut: 'not out', runs: 9, balls: 3, fours: 2, sixes: 0, strikeRate: 300.0 },
+                    { name: 'Shivang Kumar', howOut: 'c Ajinkya Rahane b Blessing Muzarabani', runs: 4, balls: 2, fours: 1, sixes: 0, strikeRate: 200.0 },
+                ],
+                extras: '13 (b 0, lb 4, w 9, nb 0)',
+                didNotBat: ['Jaydev Unadkat', 'David Payne', 'Eshan Malinga'],
+                bowlers: [
+                    { name: 'Vaibhav Arora', overs: '4', maidens: 0, runs: 47, wickets: 2, economy: 11.75 },
+                    { name: 'Blessing Muzarabani', overs: '4', maidens: 0, runs: 41, wickets: 4, economy: 10.25 },
+                    { name: 'Sunil Narine', overs: '4', maidens: 0, runs: 39, wickets: 0, economy: 9.75 },
+                    { name: 'Varun Chakaravarthy', overs: '2', maidens: 0, runs: 31, wickets: 0, economy: 15.5 },
+                    { name: 'Kartik Tyagi', overs: '4', maidens: 0, runs: 48, wickets: 1, economy: 12.0 },
+                    { name: 'Anukul Roy', overs: '2', maidens: 0, runs: 16, wickets: 1, economy: 8.0 },
+                ],
+                fallOfWickets: ['82/1 (Travis Head, 5.4 ov)', '111/2 (Ishan Kishan, 8.2 ov)', '112/3 (Abhishek Sharma, 8.4 ov)', '118/4 (Aniket Verma, 9.2 ov)', '200/5 (Nitish Kumar Reddy, 18.1 ov)', '200/6 (Salil Arora, 18.2 ov)', '222/7 (Heinrich Klaasen, 19.4 ov)', '226/8 (Shivang Kumar, 20.0 ov)'],
+                powerplayRuns: '84/1 (0.1-6 ov)',
+                partnerships: ['82 (Head-Abhishek)', '29 (Abhishek-Ishan)', '1 (Abhishek-Klaasen)', '6 (Klaasen-Aniket)', '82 (Klaasen-Nitish)', '0 (Klaasen-Salil)', '22 (Klaasen-Dubey)', '4 (Dubey-Shivang)']
+            },
+            {
+                teamId: 'kkr',
+                total: 161,
+                wickets: 10,
+                overs: '16.0',
+                batters: [
+                    { name: 'Ajinkya Rahane', howOut: 'c Eshan Malinga b Jaydev Unadkat', runs: 8, balls: 10, fours: 0, sixes: 0, strikeRate: 80.0 },
+                    { name: 'Finn Allen', howOut: 'c & b Harsh Dubey', runs: 28, balls: 7, fours: 4, sixes: 2, strikeRate: 400.0 },
+                    { name: 'Angkrish Raghuvanshi', howOut: 'run out (Eshan Malinga/Shivang Kumar)', runs: 52, balls: 29, fours: 6, sixes: 2, strikeRate: 179.31 },
+                    { name: 'Cameron Green', howOut: 'run out (Eshan Malinga)', runs: 2, balls: 2, fours: 0, sixes: 0, strikeRate: 100.0 },
+                    { name: 'Rinku Singh', howOut: 'c Jaydev Unadkat b Nitish Kumar Reddy', runs: 35, balls: 25, fours: 4, sixes: 1, strikeRate: 140.0 },
+                    { name: 'Anukul Roy', howOut: 'c & b Nitish Kumar Reddy', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Ramandeep Singh', howOut: 'c Jaydev Unadkat b Eshan Malinga', runs: 10, balls: 9, fours: 1, sixes: 0, strikeRate: 111.11 },
+                    { name: 'Sunil Narine', howOut: 'c Aniket Verma b Eshan Malinga', runs: 12, balls: 4, fours: 0, sixes: 2, strikeRate: 300.0 },
+                    { name: 'Kartik Tyagi', howOut: 'c Ishan Kishan b Jaydev Unadkat', runs: 5, balls: 5, fours: 1, sixes: 0, strikeRate: 100.0 },
+                    { name: 'Vaibhav Arora', howOut: 'not out', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'Varun Chakaravarthy', howOut: 'b Jaydev Unadkat', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                ],
+                extras: '8 (b 0, lb 1, w 7, nb 0)',
+                didNotBat: ['Blessing Muzarabani'],
+                bowlers: [
+                    { name: 'David Payne', overs: '2', maidens: 0, runs: 35, wickets: 0, economy: 17.5 },
+                    { name: 'Harsh Dubey', overs: '2', maidens: 0, runs: 17, wickets: 1, economy: 8.5 },
+                    { name: 'Abhishek Sharma', overs: '1', maidens: 0, runs: 15, wickets: 0, economy: 15.0 },
+                    { name: 'Jaydev Unadkat', overs: '3', maidens: 0, runs: 21, wickets: 3, economy: 7.0 },
+                    { name: 'Eshan Malinga', overs: '2', maidens: 0, runs: 14, wickets: 2, economy: 7.0 },
+                    { name: 'Shivang Kumar', overs: '4', maidens: 0, runs: 41, wickets: 0, economy: 10.25 },
+                    { name: 'Nitish Kumar Reddy', overs: '2', maidens: 0, runs: 17, wickets: 2, economy: 8.5 },
+                ],
+                fallOfWickets: ['30/1 (Finn Allen, 1.3 ov)', '67/2 (Ajinkya Rahane, 5.0 ov)', '74/3 (Cameron Green, 6.0 ov)', '120/4 (Angkrish Raghuvanshi, 11.0 ov)', '120/5 (Anukul Roy, 11.2 ov)', '139/6 (Rinku Singh, 13.4 ov)', '154/7 (Sunil Narine, 14.3 ov)', '159/8 (Ramandeep Singh, 15.0 ov)', '161/9 (Kartik Tyagi, 15.5 ov)', '161/10 (Varun Chakaravarthy, 16.0 ov)'],
+                powerplayRuns: '68/2 (0.1-6 ov)',
+                partnerships: ['30 (Rahane-Allen)', '37 (Rahane-Raghuvanshi)', '7 (Raghuvanshi-Green)', '46 (Raghuvanshi-Rinku)', '0 (Rinku-Anukul)', '19 (Rinku-Ramandeep)', '15 (Ramandeep-Narine)', '5 (Ramandeep-Tyagi)', '2 (Tyagi-Vaibhav)', '0 (Vaibhav-Varun)']
             }
         ]
     },
