@@ -392,19 +392,6 @@ export interface PointsTableEntry {
     form: ('W' | 'L')[];
 }
 
-export const pointsTable: PointsTableEntry[] = [
-    { teamId: 'rr', played: 1, won: 1, lost: 0, tied: 0, nrr: +4.171, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'rcb', played: 1, won: 1, lost: 0, tied: 0, nrr: +2.907, points: 2, form: ['W', 'W', 'W', 'W', 'W'] },
-    { teamId: 'dc', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.893, points: 2, form: ['W', 'L', 'W', 'L', 'L'] },
-    { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'pbks', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.509, points: 2, form: ['W', 'L', 'L', 'L', 'W'] },
-    { teamId: 'gt', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.509, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
-    { teamId: 'kkr', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.687, points: 0, form: ['L', 'W', 'W', 'W', 'L'] },
-    { teamId: 'lsg', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.893, points: 0, form: ['L', 'W', 'L', 'W', 'L'] },
-    { teamId: 'srh', played: 1, won: 0, lost: 1, tied: 0, nrr: -2.907, points: 0, form: ['L', 'L', 'L', 'W', 'W'] },
-    { teamId: 'csk', played: 1, won: 0, lost: 1, tied: 0, nrr: -4.171, points: 0, form: ['L', 'W', 'L', 'W', 'L'] },
-];
-
 export interface ScorecardBatter {
     name: string;
     howOut: string;
@@ -563,14 +550,14 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['Ekana has had one of the lowest boundary percentages among IPL venues.', 'DC’s spin attack becomes more effective when the surface dries under lights.'],
     },
     'kkr-srh': {
-        headline: 'Second game for both sides: KKR need a sharper powerplay after losing to MI, while SRH must recover from RCB’s top-order pressure.',
+        headline: 'SRH stormed to 226/8 and then bowled KKR out for 161 to seal a dominant 65-run victory at Eden Gardens.',
         venueStats: { avgFirstInningsScore: 181, chasingWins: 39, totalMatches: 93, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
-        headToHead: { team1Wins: 18, team2Wins: 12, noResult: 0, last5: 'KKR lead recent meetings, but current-form predictor gives KKR 54% vs SRH 46%.' },
+        headToHead: { team1Wins: 18, team2Wins: 13, noResult: 0, last5: 'SRH narrowed the rivalry gap with a commanding away win in Match 6.' },
         playerBattles: [
-            { batter: 'Heinrich Klaasen', bowler: 'Varun Chakaravarthy', runs: 29, balls: 27, dismissals: 3, note: 'Varun’s pace changes have regularly forced Klaasen into miscues.' },
-            { batter: 'Rinku Singh', bowler: 'Pat Cummins', runs: 36, balls: 23, dismissals: 1, note: 'Cummins attacks Rinku with hard-length pace and keeps the deep square boundary in play.' },
+            { batter: 'Heinrich Klaasen', bowler: 'Blessing Muzarabani', runs: 52, balls: 35, dismissals: 1, note: 'Klaasen neutralized hard lengths before falling only in the final over.' },
+            { batter: 'Angkrish Raghuvanshi', bowler: 'Jaydev Unadkat', runs: 52, balls: 29, dismissals: 0, note: 'Raghuvanshi fought deep, but SRH kept removing partners at the other end.' },
         ],
-        interestingStats: ['KKR leaked at the death in Match 2; SRH conceded heavily in the powerplay in Match 1, so overs 1-6 are the pressure phase for both.', 'Win predictor blend (recent H2H + first-match form): KKR 54% | SRH 46%.'],
+        interestingStats: ['SRH reached 200 in 18.1 overs and still added 26 more, turning a good platform into a match-winning total.', 'KKR were 120/3 after six overs but collapsed to 161 all out in 16 overs, losing 7 wickets for 41 runs.'],
     },
     'csk-pbks': {
         headline: 'CSK enter their second match after a heavy loss to RR, while PBKS arrive with momentum after chasing against GT.',
@@ -712,6 +699,111 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         ],
         interestingStats: ['Wankhede rewards teams that preserve wickets for the last six overs.', 'RCB’s top order usually controls run rate, but MI’s pace attack improves sharply with early wickets.'],
     },
+    m6: {
+        toss: 'Kolkata Knight Riders won the toss and elected to bowl.',
+        result: 'Sunrisers Hyderabad won by 65 runs.',
+        playerOfTheMatch: 'Heinrich Klaasen - 52 (35)',
+        keyMoments: [
+            'SRH blasted 82 in 5.4 overs through Travis Head and Abhishek Sharma, instantly taking control of the innings tempo.',
+            'KKR dragged things back with a middle-overs burst led by Blessing Muzarabani (4/41), reducing SRH from 112/2 to 118/4.',
+            'Klaasen and Nitish Kumar Reddy rebuilt decisively, adding high-value runs in overs 13-18 to push SRH to 226/8.',
+            'KKR touched 120/3 after 10.6 overs but then collapsed to 161 all out, losing 7 wickets for just 41 runs.',
+            'Jaydev Unadkat (3/21), Eshan Malinga (2/14), and Nitish Kumar Reddy (2/17) closed out the chase clinically.'
+        ],
+        tacticalAnalysis: [
+            'SRH’s powerplay intent was elite: both openers struck above 200, forcing KKR off their preferred early bowling lengths.',
+            'KKR did execute a recovery phase via Muzarabani, but they could not sustain pressure at the death where SRH scored 56 in the last 2 overs.',
+            'Klaasen’s innings was the structural anchor: he managed spin matchups while still preserving boundary pressure.',
+            'In the chase, KKR’s run rate stayed healthy until 11 overs, but wicket clusters destroyed sequencing and exposed the long tail.',
+            'SRH used role clarity in defense: Unadkat attacked the stumps, Malinga hunted wickets through pace variation, and Nitish hit hard lengths into big square boundaries.',
+            'KKR’s chase plan lacked stabilizer batting once Raghuvanshi fell; the phase from overs 11-16 became a high-risk, low-control collapse window.',
+            'The game was decided by phase dominance: SRH won overs 1-6 with bat and overs 11-16 with ball.'
+        ],
+        improvements: {
+            team1: [
+                'KKR need tighter death-over plans. Conceding 56 in the last two overs turned a recoverable 190-200 projection into 226.',
+                'Top-order aggression must be paired with one batter anchoring through over 15 when chasing 220-plus.',
+                'Bowling fields to Klaasen and Nitish need clearer boundary denial at long-on/deep midwicket in the final overs.'
+            ],
+            team2: [
+                'SRH can improve middle-over wicket protection after fast starts; the 112/2 to 118/4 slide remains a vulnerability.',
+                'New-ball bowling discipline can sharpen despite the win, especially on wides and overcorrections under pressure.',
+                'Fielding standards around direct-hit chances can still improve to convert pressure phases earlier.'
+            ],
+            players: [
+                'Heinrich Klaasen (SRH): continue balancing anchor and accelerator roles against mixed spin-pace attacks.',
+                'Nitish Kumar Reddy (SRH): excellent dual contribution; can further improve death-over yorker execution consistency.',
+                'Blessing Muzarabani (KKR): outstanding wicket-taking spell; needs better support at the opposite end to convert pressure into collapse.',
+                'Angkrish Raghuvanshi (KKR): strong 52, but game context demanded deeper occupation after crossing fifty.',
+                'Ajinkya Rahane (KKR): captain and top-order batter must set a steadier launch template in chases above 200.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'srh',
+                total: 226,
+                wickets: 8,
+                overs: '20.0',
+                batters: [
+                    { name: 'Travis Head', howOut: 'c Cameron Green b Kartik Tyagi', runs: 46, balls: 21, fours: 6, sixes: 3, strikeRate: 219.04 },
+                    { name: 'Abhishek Sharma', howOut: 'c Varun Chakaravarthy b Blessing Muzarabani', runs: 48, balls: 21, fours: 4, sixes: 4, strikeRate: 228.57 },
+                    { name: 'Ishan Kishan', howOut: 'c Rinku Singh b Blessing Muzarabani', runs: 14, balls: 9, fours: 3, sixes: 0, strikeRate: 155.55 },
+                    { name: 'Heinrich Klaasen', howOut: 'c Ramandeep Singh b Blessing Muzarabani', runs: 52, balls: 35, fours: 4, sixes: 1, strikeRate: 148.57 },
+                    { name: 'Aniket Verma', howOut: 'c Rinku Singh b Anukul Roy', runs: 1, balls: 4, fours: 0, sixes: 0, strikeRate: 25.0 },
+                    { name: 'Nitish Kumar Reddy', howOut: 'c Varun Chakaravarthy b Vaibhav Arora', runs: 39, balls: 24, fours: 4, sixes: 1, strikeRate: 162.5 },
+                    { name: 'Salil Arora', howOut: 'b Vaibhav Arora', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Harsh Dubey', howOut: 'not out', runs: 9, balls: 3, fours: 2, sixes: 0, strikeRate: 300.0 },
+                    { name: 'Shivang Kumar', howOut: 'c Ajinkya Rahane b Blessing Muzarabani', runs: 4, balls: 2, fours: 1, sixes: 0, strikeRate: 200.0 },
+                ],
+                extras: '13 (b 0, lb 4, w 9, nb 0)',
+                didNotBat: ['Jaydev Unadkat', 'David Payne', 'Eshan Malinga'],
+                bowlers: [
+                    { name: 'Vaibhav Arora', overs: '4', maidens: 0, runs: 47, wickets: 2, economy: 11.75 },
+                    { name: 'Blessing Muzarabani', overs: '4', maidens: 0, runs: 41, wickets: 4, economy: 10.25 },
+                    { name: 'Sunil Narine', overs: '4', maidens: 0, runs: 39, wickets: 0, economy: 9.75 },
+                    { name: 'Varun Chakaravarthy', overs: '2', maidens: 0, runs: 31, wickets: 0, economy: 15.5 },
+                    { name: 'Kartik Tyagi', overs: '4', maidens: 0, runs: 48, wickets: 1, economy: 12.0 },
+                    { name: 'Anukul Roy', overs: '2', maidens: 0, runs: 16, wickets: 1, economy: 8.0 },
+                ],
+                fallOfWickets: ['82/1 (Travis Head, 5.4 ov)', '111/2 (Ishan Kishan, 8.2 ov)', '112/3 (Abhishek Sharma, 8.4 ov)', '118/4 (Aniket Verma, 9.2 ov)', '200/5 (Nitish Kumar Reddy, 18.1 ov)', '200/6 (Salil Arora, 18.2 ov)', '222/7 (Heinrich Klaasen, 19.4 ov)', '226/8 (Shivang Kumar, 20.0 ov)'],
+                powerplayRuns: '84/1 (0.1-6 ov)',
+                partnerships: ['82 (Head-Abhishek)', '29 (Abhishek-Ishan)', '1 (Abhishek-Klaasen)', '6 (Klaasen-Aniket)', '82 (Klaasen-Nitish)', '0 (Klaasen-Salil)', '22 (Klaasen-Dubey)', '4 (Dubey-Shivang)']
+            },
+            {
+                teamId: 'kkr',
+                total: 161,
+                wickets: 10,
+                overs: '16.0',
+                batters: [
+                    { name: 'Ajinkya Rahane', howOut: 'c Eshan Malinga b Jaydev Unadkat', runs: 8, balls: 10, fours: 0, sixes: 0, strikeRate: 80.0 },
+                    { name: 'Finn Allen', howOut: 'c & b Harsh Dubey', runs: 28, balls: 7, fours: 4, sixes: 2, strikeRate: 400.0 },
+                    { name: 'Angkrish Raghuvanshi', howOut: 'run out (Eshan Malinga/Shivang Kumar)', runs: 52, balls: 29, fours: 6, sixes: 2, strikeRate: 179.31 },
+                    { name: 'Cameron Green', howOut: 'run out (Eshan Malinga)', runs: 2, balls: 2, fours: 0, sixes: 0, strikeRate: 100.0 },
+                    { name: 'Rinku Singh', howOut: 'c Jaydev Unadkat b Nitish Kumar Reddy', runs: 35, balls: 25, fours: 4, sixes: 1, strikeRate: 140.0 },
+                    { name: 'Anukul Roy', howOut: 'c & b Nitish Kumar Reddy', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Ramandeep Singh', howOut: 'c Jaydev Unadkat b Eshan Malinga', runs: 10, balls: 9, fours: 1, sixes: 0, strikeRate: 111.11 },
+                    { name: 'Sunil Narine', howOut: 'c Aniket Verma b Eshan Malinga', runs: 12, balls: 4, fours: 0, sixes: 2, strikeRate: 300.0 },
+                    { name: 'Kartik Tyagi', howOut: 'c Ishan Kishan b Jaydev Unadkat', runs: 5, balls: 5, fours: 1, sixes: 0, strikeRate: 100.0 },
+                    { name: 'Vaibhav Arora', howOut: 'not out', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'Varun Chakaravarthy', howOut: 'b Jaydev Unadkat', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                ],
+                extras: '8 (b 0, lb 1, w 7, nb 0)',
+                didNotBat: ['Blessing Muzarabani'],
+                bowlers: [
+                    { name: 'David Payne', overs: '2', maidens: 0, runs: 35, wickets: 0, economy: 17.5 },
+                    { name: 'Harsh Dubey', overs: '2', maidens: 0, runs: 17, wickets: 1, economy: 8.5 },
+                    { name: 'Abhishek Sharma', overs: '1', maidens: 0, runs: 15, wickets: 0, economy: 15.0 },
+                    { name: 'Jaydev Unadkat', overs: '3', maidens: 0, runs: 21, wickets: 3, economy: 7.0 },
+                    { name: 'Eshan Malinga', overs: '2', maidens: 0, runs: 14, wickets: 2, economy: 7.0 },
+                    { name: 'Shivang Kumar', overs: '4', maidens: 0, runs: 41, wickets: 0, economy: 10.25 },
+                    { name: 'Nitish Kumar Reddy', overs: '2', maidens: 0, runs: 17, wickets: 2, economy: 8.5 },
+                ],
+                fallOfWickets: ['30/1 (Finn Allen, 1.3 ov)', '67/2 (Ajinkya Rahane, 5.0 ov)', '74/3 (Cameron Green, 6.0 ov)', '120/4 (Angkrish Raghuvanshi, 11.0 ov)', '120/5 (Anukul Roy, 11.2 ov)', '139/6 (Rinku Singh, 13.4 ov)', '154/7 (Sunil Narine, 14.3 ov)', '159/8 (Ramandeep Singh, 15.0 ov)', '161/9 (Kartik Tyagi, 15.5 ov)', '161/10 (Varun Chakaravarthy, 16.0 ov)'],
+                powerplayRuns: '68/2 (0.1-6 ov)',
+                partnerships: ['30 (Rahane-Allen)', '37 (Rahane-Raghuvanshi)', '7 (Raghuvanshi-Green)', '46 (Raghuvanshi-Rinku)', '0 (Rinku-Anukul)', '19 (Rinku-Ramandeep)', '15 (Ramandeep-Narine)', '5 (Ramandeep-Tyagi)', '2 (Tyagi-Vaibhav)', '0 (Vaibhav-Varun)']
+            }
+        ]
+    },
 };
 
 const matchSeeds: MatchSeed[] = [
@@ -720,7 +812,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 3, date: '2026-03-30', dateLabel: '30 Mar', day: 'Monday', team1: 'rr', team2: 'csk', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium', status: 'completed' },
     { matchNumber: 4, date: '2026-03-31', dateLabel: '31 Mar', day: 'Tuesday', team1: 'pbks', team2: 'gt', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium', status: 'completed' },
     { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium', status: 'completed' },
-    { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+    { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens', status: 'completed' },
     { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
     { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
     { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
@@ -1357,3 +1449,108 @@ export const schedule: Match[] = matchSeeds.map((seed) => {
         completedDetails: completedMatchDetailsById[`m${seed.matchNumber}`],
     };
 });
+
+const oversToBalls = (overs: string): number => {
+    const [whole, part] = overs.split('.').map(Number);
+    return (whole || 0) * 6 + (part || 0);
+};
+
+const computePointsTable = (matches: Match[]): PointsTableEntry[] => {
+    const table = new Map<string, {
+        played: number;
+        won: number;
+        lost: number;
+        tied: number;
+        points: number;
+        runsFor: number;
+        ballsFaced: number;
+        runsAgainst: number;
+        ballsBowled: number;
+        form: ('W' | 'L')[];
+    }>();
+
+    teams.forEach((team) => {
+        table.set(team.id, {
+            played: 0,
+            won: 0,
+            lost: 0,
+            tied: 0,
+            points: 0,
+            runsFor: 0,
+            ballsFaced: 0,
+            runsAgainst: 0,
+            ballsBowled: 0,
+            form: [],
+        });
+    });
+
+    matches.forEach((match) => {
+        if (match.status !== 'completed' || !match.completedDetails) return;
+
+        const [firstInnings, secondInnings] = match.completedDetails.innings;
+        const team1 = table.get(match.team1);
+        const team2 = table.get(match.team2);
+        if (!team1 || !team2) return;
+
+        const team1Innings = firstInnings.teamId === match.team1 ? firstInnings : secondInnings;
+        const team2Innings = team1Innings === firstInnings ? secondInnings : firstInnings;
+
+        const team1FacedBalls = team1Innings.wickets === 10 && oversToBalls(team1Innings.overs) < 120 ? 120 : oversToBalls(team1Innings.overs);
+        const team2FacedBalls = team2Innings.wickets === 10 && oversToBalls(team2Innings.overs) < 120 ? 120 : oversToBalls(team2Innings.overs);
+
+        team1.runsFor += team1Innings.total;
+        team1.ballsFaced += team1FacedBalls;
+        team1.runsAgainst += team2Innings.total;
+        team1.ballsBowled += team2FacedBalls;
+        team1.played += 1;
+
+        team2.runsFor += team2Innings.total;
+        team2.ballsFaced += team2FacedBalls;
+        team2.runsAgainst += team1Innings.total;
+        team2.ballsBowled += team1FacedBalls;
+        team2.played += 1;
+
+        if (team1Innings.total > team2Innings.total) {
+            team1.won += 1;
+            team1.points += 2;
+            team1.form.unshift('W');
+            team2.lost += 1;
+            team2.form.unshift('L');
+        } else if (team1Innings.total < team2Innings.total) {
+            team2.won += 1;
+            team2.points += 2;
+            team2.form.unshift('W');
+            team1.lost += 1;
+            team1.form.unshift('L');
+        } else {
+            team1.tied += 1;
+            team2.tied += 1;
+            team1.points += 1;
+            team2.points += 1;
+        }
+    });
+
+    return teams.map((team) => {
+        const row = table.get(team.id)!;
+        const runRateFor = row.ballsFaced > 0 ? (row.runsFor * 6) / row.ballsFaced : 0;
+        const runRateAgainst = row.ballsBowled > 0 ? (row.runsAgainst * 6) / row.ballsBowled : 0;
+
+        return {
+            teamId: team.id,
+            played: row.played,
+            won: row.won,
+            lost: row.lost,
+            tied: row.tied,
+            nrr: Number((runRateFor - runRateAgainst).toFixed(3)),
+            points: row.points,
+            form: row.form.slice(0, 5),
+        };
+    }).sort((a, b) =>
+        b.points - a.points
+        || b.nrr - a.nrr
+        || b.won - a.won
+        || a.teamId.localeCompare(b.teamId)
+    );
+};
+
+export const pointsTable: PointsTableEntry[] = computePointsTable(schedule);
