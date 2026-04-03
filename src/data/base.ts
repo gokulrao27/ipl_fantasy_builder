@@ -392,19 +392,6 @@ export interface PointsTableEntry {
     form: ('W' | 'L')[];
 }
 
-export const pointsTable: PointsTableEntry[] = [
-    { teamId: 'rr', played: 1, won: 1, lost: 0, tied: 0, nrr: +4.171, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'rcb', played: 1, won: 1, lost: 0, tied: 0, nrr: +2.907, points: 2, form: ['W', 'W', 'W', 'W', 'W'] },
-    { teamId: 'dc', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.893, points: 2, form: ['W', 'L', 'W', 'L', 'L'] },
-    { teamId: 'mi', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.687, points: 2, form: ['W', 'L', 'L', 'W', 'L'] },
-    { teamId: 'pbks', played: 1, won: 1, lost: 0, tied: 0, nrr: +0.509, points: 2, form: ['W', 'L', 'L', 'L', 'W'] },
-    { teamId: 'srh', played: 2, won: 1, lost: 1, tied: 0, nrr: +0.469, points: 2, form: ['W', 'L', 'L', 'W', 'W'] },
-    { teamId: 'gt', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.509, points: 0, form: ['L', 'L', 'L', 'W', 'L'] },
-    { teamId: 'lsg', played: 1, won: 0, lost: 1, tied: 0, nrr: -0.893, points: 0, form: ['L', 'W', 'L', 'W', 'L'] },
-    { teamId: 'kkr', played: 2, won: 0, lost: 2, tied: 0, nrr: -1.725, points: 0, form: ['L', 'L', 'W', 'W', 'L'] },
-    { teamId: 'csk', played: 1, won: 0, lost: 1, tied: 0, nrr: -4.171, points: 0, form: ['L', 'W', 'L', 'W', 'L'] },
-];
-
 export interface ScorecardBatter {
     name: string;
     howOut: string;
@@ -1462,3 +1449,108 @@ export const schedule: Match[] = matchSeeds.map((seed) => {
         completedDetails: completedMatchDetailsById[`m${seed.matchNumber}`],
     };
 });
+
+const oversToBalls = (overs: string): number => {
+    const [whole, part] = overs.split('.').map(Number);
+    return (whole || 0) * 6 + (part || 0);
+};
+
+const computePointsTable = (matches: Match[]): PointsTableEntry[] => {
+    const table = new Map<string, {
+        played: number;
+        won: number;
+        lost: number;
+        tied: number;
+        points: number;
+        runsFor: number;
+        ballsFaced: number;
+        runsAgainst: number;
+        ballsBowled: number;
+        form: ('W' | 'L')[];
+    }>();
+
+    teams.forEach((team) => {
+        table.set(team.id, {
+            played: 0,
+            won: 0,
+            lost: 0,
+            tied: 0,
+            points: 0,
+            runsFor: 0,
+            ballsFaced: 0,
+            runsAgainst: 0,
+            ballsBowled: 0,
+            form: [],
+        });
+    });
+
+    matches.forEach((match) => {
+        if (match.status !== 'completed' || !match.completedDetails) return;
+
+        const [firstInnings, secondInnings] = match.completedDetails.innings;
+        const team1 = table.get(match.team1);
+        const team2 = table.get(match.team2);
+        if (!team1 || !team2) return;
+
+        const team1Innings = firstInnings.teamId === match.team1 ? firstInnings : secondInnings;
+        const team2Innings = team1Innings === firstInnings ? secondInnings : firstInnings;
+
+        const team1FacedBalls = team1Innings.wickets === 10 && oversToBalls(team1Innings.overs) < 120 ? 120 : oversToBalls(team1Innings.overs);
+        const team2FacedBalls = team2Innings.wickets === 10 && oversToBalls(team2Innings.overs) < 120 ? 120 : oversToBalls(team2Innings.overs);
+
+        team1.runsFor += team1Innings.total;
+        team1.ballsFaced += team1FacedBalls;
+        team1.runsAgainst += team2Innings.total;
+        team1.ballsBowled += team2FacedBalls;
+        team1.played += 1;
+
+        team2.runsFor += team2Innings.total;
+        team2.ballsFaced += team2FacedBalls;
+        team2.runsAgainst += team1Innings.total;
+        team2.ballsBowled += team1FacedBalls;
+        team2.played += 1;
+
+        if (team1Innings.total > team2Innings.total) {
+            team1.won += 1;
+            team1.points += 2;
+            team1.form.unshift('W');
+            team2.lost += 1;
+            team2.form.unshift('L');
+        } else if (team1Innings.total < team2Innings.total) {
+            team2.won += 1;
+            team2.points += 2;
+            team2.form.unshift('W');
+            team1.lost += 1;
+            team1.form.unshift('L');
+        } else {
+            team1.tied += 1;
+            team2.tied += 1;
+            team1.points += 1;
+            team2.points += 1;
+        }
+    });
+
+    return teams.map((team) => {
+        const row = table.get(team.id)!;
+        const runRateFor = row.ballsFaced > 0 ? (row.runsFor * 6) / row.ballsFaced : 0;
+        const runRateAgainst = row.ballsBowled > 0 ? (row.runsAgainst * 6) / row.ballsBowled : 0;
+
+        return {
+            teamId: team.id,
+            played: row.played,
+            won: row.won,
+            lost: row.lost,
+            tied: row.tied,
+            nrr: Number((runRateFor - runRateAgainst).toFixed(3)),
+            points: row.points,
+            form: row.form.slice(0, 5),
+        };
+    }).sort((a, b) =>
+        b.points - a.points
+        || b.nrr - a.nrr
+        || b.won - a.won
+        || a.teamId.localeCompare(b.teamId)
+    );
+};
+
+export const pointsTable: PointsTableEntry[] = computePointsTable(schedule);
