@@ -1287,7 +1287,7 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
     m6: {
         toss: 'Kolkata Knight Riders won the toss and elected to bowl.',
         result: 'Sunrisers Hyderabad won by 65 runs.',
-        playerOfTheMatch: 'Heinrich Klaasen - 52 (35)',
+        playerOfTheMatch: 'Nitish Kumar Reddy - 39 (24) & 2/17 (2)',
         keyMoments: [
             'SRH blasted 82 in 5.4 overs through Travis Head and Abhishek Sharma, instantly taking control of the innings tempo.',
             'KKR dragged things back with a middle-overs burst led by Blessing Muzarabani (4/41), reducing SRH from 112/2 to 118/4.',
