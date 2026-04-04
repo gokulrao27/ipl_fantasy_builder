@@ -729,7 +729,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 5, date: '2026-04-01', dateLabel: '01 Apr', day: 'Wednesday', team1: 'lsg', team2: 'dc', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium', status: 'completed' },
     { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens', status: 'completed' },
     { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium', status: 'completed' },
-    { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+    { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium', status: 'completed' },
     { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
     { matchNumber: 10, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'srh', team2: 'lsg', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
     { matchNumber: 11, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'rcb', team2: 'csk', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
@@ -1482,6 +1482,99 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
             }
         ]
     },
+    m8: {
+        toss: 'Delhi Capitals won the toss and elected to bowl.',
+        result: 'Delhi Capitals won by 6 wickets (with 11 balls remaining).',
+        playerOfTheMatch: 'Sameer Rizvi - 90 (51)',
+        keyMoments: [
+            'Mukesh Kumar removed Ryan Rickelton and Tilak Varma in the third over to push MI to 18/2.',
+            'Suryakumar Yadav counterattacked with 51 off 36, but Delhi kept striking at key intervals and limited MI to 162/6.',
+            'DC slipped to 7/2 inside two overs before Pathum Nissanka and Sameer Rizvi rebuilt the chase with a 66-run stand.',
+            'Rizvi dominated the middle and death overs with 90 off 51 to take DC home in 18.1 overs.'
+        ],
+        tacticalAnalysis: [
+            'Delhi won the matchup in overs 7-16: they controlled MI with wicket-taking spin and then attacked the chase through Rizvi.',
+            'Axar Patel\'s 4-0-22-1 gave DC the squeeze phase that kept MI from crossing 175 despite a set Suryakumar.',
+            'MI\'s bowlers conceded few freebies early, but could not contain boundary scoring once Rizvi settled against pace-off lengths.',
+            'DC retained batting depth by keeping Miller back, allowing controlled risk while chasing at just under nine an over.'
+        ],
+        improvements: {
+            team1: [
+                'DC can tighten new-ball batting plans after falling to 7/2 inside two overs in a moderate chase.',
+                'Death bowling remained decent, but finishing overs can be sharper to prevent late momentum swings.',
+                'Continue using Axar as a control matchup in middle overs on flatter surfaces.'
+            ],
+            team2: [
+                'MI need better middle-overs wicket options when opposition has a set batter controlling tempo.',
+                'Batting support around Suryakumar was patchy; one more 30+ contribution could have lifted the total above par.',
+                'Death-over execution with the ball needs adjustment after leaking boundaries to a right-hander targeting leg side.'
+            ],
+            players: [
+                'Sameer Rizvi (DC): keep balancing power hitting with rotation once field spreads.',
+                'Pathum Nissanka (DC): convert strong starts into deeper game-finishing innings.',
+                'Suryakumar Yadav (MI): seek one sustained partnership in the middle overs to maximize his set-base.',
+                'Corbin Bosch (MI): wicket-taking impact was useful, but economy control in final overs can improve.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'mi',
+                total: 162,
+                wickets: 6,
+                overs: '20.0',
+                batters: [
+                    { name: 'Ryan Rickelton', howOut: 'c Axar Patel b Mukesh Kumar', runs: 9, balls: 11, fours: 2, sixes: 0, strikeRate: 81.82 },
+                    { name: 'Rohit Sharma', howOut: 'c Nitish Rana b Axar Patel', runs: 35, balls: 26, fours: 5, sixes: 1, strikeRate: 134.62 },
+                    { name: 'Tilak Varma', howOut: 'c & b Mukesh Kumar', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Suryakumar Yadav', howOut: 'lbw b Lungi Ngidi', runs: 51, balls: 36, fours: 3, sixes: 2, strikeRate: 141.67 },
+                    { name: 'Sherfane Rutherford', howOut: 'c Mukesh Kumar b Vipraj Nigam', runs: 5, balls: 7, fours: 1, sixes: 0, strikeRate: 71.43 },
+                    { name: 'Naman Dhir', howOut: 'c Tristan Stubbs b T Natarajan', runs: 28, balls: 21, fours: 2, sixes: 1, strikeRate: 133.33 },
+                    { name: 'Mitchell Santner', howOut: 'not out', runs: 18, balls: 13, fours: 2, sixes: 0, strikeRate: 138.46 },
+                    { name: 'Corbin Bosch', howOut: 'not out', runs: 11, balls: 4, fours: 2, sixes: 0, strikeRate: 275.0 },
+                ],
+                extras: '5 (b 0, lb 1, w 4, nb 0)',
+                didNotBat: ['Shardul Thakur', 'Deepak Chahar', 'Jasprit Bumrah', 'Mayank Markande'],
+                bowlers: [
+                    { name: 'Mukesh Kumar', overs: '3', maidens: 0, runs: 26, wickets: 2, economy: 8.67 },
+                    { name: 'Lungi Ngidi', overs: '4', maidens: 0, runs: 34, wickets: 1, economy: 8.5 },
+                    { name: 'Axar Patel', overs: '4', maidens: 0, runs: 22, wickets: 1, economy: 5.5 },
+                    { name: 'Vipraj Nigam', overs: '3', maidens: 0, runs: 24, wickets: 1, economy: 8.0 },
+                    { name: 'Kuldeep Yadav', overs: '3', maidens: 0, runs: 31, wickets: 0, economy: 10.33 },
+                    { name: 'T Natarajan', overs: '3', maidens: 0, runs: 24, wickets: 1, economy: 8.0 },
+                ],
+                fallOfWickets: ['18/1 (Ryan Rickelton, 2.3 ov)', '18/2 (Tilak Varma, 2.5 ov)', '71/3 (Rohit Sharma, 9.3 ov)', '85/4 (Sherfane Rutherford, 11.5 ov)', '122/5 (Suryakumar Yadav, 15.3 ov)', '146/6 (Naman Dhir, 18.4 ov)'],
+                powerplayRuns: '43/2 (0.1-6 ov)',
+                partnerships: ['18 (Rickelton-Rohit)', '0 (Rohit-Tilak)', '53 (Rohit-Suryakumar)', '14 (Suryakumar-Rutherford)', '37 (Suryakumar-Dhir)', '24 (Dhir-Santner)', '16* (Santner-Bosch)']
+            },
+            {
+                teamId: 'dc',
+                total: 164,
+                wickets: 4,
+                overs: '18.1',
+                batters: [
+                    { name: 'KL Rahul', howOut: 'c Ryan Rickelton b Deepak Chahar', runs: 1, balls: 3, fours: 0, sixes: 0, strikeRate: 33.33 },
+                    { name: 'Pathum Nissanka', howOut: 'c Mayank Markande b Mitchell Santner', runs: 44, balls: 30, fours: 6, sixes: 1, strikeRate: 146.67 },
+                    { name: 'Nitish Rana', howOut: 'run out (Jasprit Bumrah)', runs: 0, balls: 3, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Sameer Rizvi', howOut: 'c Tilak Varma b Corbin Bosch', runs: 90, balls: 51, fours: 7, sixes: 7, strikeRate: 176.47 },
+                    { name: 'David Miller', howOut: 'not out', runs: 21, balls: 18, fours: 4, sixes: 0, strikeRate: 116.67 },
+                    { name: 'Tristan Stubbs', howOut: 'not out', runs: 3, balls: 4, fours: 0, sixes: 0, strikeRate: 75.0 },
+                ],
+                extras: '5 (b 0, lb 1, w 4, nb 0)',
+                didNotBat: ['Vipraj Nigam', 'Axar Patel', 'Kuldeep Yadav', 'Lungi Ngidi', 'T Natarajan'],
+                bowlers: [
+                    { name: 'Deepak Chahar', overs: '3', maidens: 0, runs: 20, wickets: 1, economy: 6.67 },
+                    { name: 'Jasprit Bumrah', overs: '4', maidens: 0, runs: 21, wickets: 0, economy: 5.25 },
+                    { name: 'Mitchell Santner', overs: '3', maidens: 0, runs: 22, wickets: 1, economy: 7.33 },
+                    { name: 'Shardul Thakur', overs: '3', maidens: 0, runs: 41, wickets: 0, economy: 13.67 },
+                    { name: 'Mayank Markande', overs: '2', maidens: 0, runs: 20, wickets: 0, economy: 10.0 },
+                    { name: 'Corbin Bosch', overs: '3.1', maidens: 0, runs: 39, wickets: 1, economy: 12.31 },
+                ],
+                fallOfWickets: ['2/1 (KL Rahul, 0.4 ov)', '7/2 (Nitish Rana, 1.4 ov)', '73/3 (Pathum Nissanka, 9.5 ov)', '151/4 (Sameer Rizvi, 16.2 ov)'],
+                powerplayRuns: '49/2 (0.1-6 ov)',
+                partnerships: ['2 (Rahul-Nissanka)', '5 (Nissanka-Rana)', '66 (Nissanka-Rizvi)', '78 (Rizvi-Miller)', '13* (Miller-Stubbs)']
+            }
+        ]
+    },
 };
 
 const pitchReportsByVenue: Record<string, string> = {
@@ -1546,19 +1639,97 @@ const buildFallbackInsight = (seed: MatchSeed): Omit<Match, 'id' | 'matchNumber'
     };
 };
 
-export const schedule: Match[] = matchSeeds.map((seed) => {
+const getSeedStatus = (seed: MatchSeed, completedDetails?: CompletedMatchDetails): Match['status'] => {
+    if (completedDetails) return 'completed';
+    return seed.status || 'upcoming';
+};
+
+const resolveTeamName = (teamId: string): string => teams.find((team) => team.id === teamId)?.shortName || teamId.toUpperCase();
+
+const computeTeamFormBeforeMatch = (teamId: string, matchNumber: number, allMatches: Match[]): { played: number; won: number; lost: number; runsFor: number; runsAgainst: number } => {
+    const stats = { played: 0, won: 0, lost: 0, runsFor: 0, runsAgainst: 0 };
+
+    allMatches
+        .filter((m) => m.matchNumber < matchNumber && m.status === 'completed' && m.completedDetails)
+        .forEach((m) => {
+            if (m.team1 !== teamId && m.team2 !== teamId) return;
+            const [firstInnings, secondInnings] = m.completedDetails!.innings;
+            const teamInnings = firstInnings.teamId === teamId ? firstInnings : secondInnings;
+            const oppInnings = firstInnings.teamId === teamId ? secondInnings : firstInnings;
+            stats.played += 1;
+            stats.runsFor += teamInnings.total;
+            stats.runsAgainst += oppInnings.total;
+            const won = (teamInnings.total > oppInnings.total && firstInnings.teamId === teamId) ||
+                (teamInnings.total >= oppInnings.total && secondInnings.teamId === teamId);
+            if (won) stats.won += 1;
+            else stats.lost += 1;
+        });
+
+    return stats;
+};
+
+const validateCompletedDetailsAgainstSquads = (match: Match): void => {
+    if (!match.completedDetails) return;
+    const team1 = teams.find((team) => team.id === match.team1);
+    const team2 = teams.find((team) => team.id === match.team2);
+    if (!team1 || !team2) return;
+
+    match.completedDetails.innings.forEach((innings) => {
+        const battingTeam = innings.teamId === team1.id ? team1 : team2;
+        const bowlingTeam = innings.teamId === team1.id ? team2 : team1;
+        innings.batters.forEach((batter) => {
+            if (!findTeamPlayerByName(battingTeam, batter.name)) {
+                console.warn(`[Data Validation] ${match.id}: batter "${batter.name}" is not listed in ${battingTeam.shortName} squad.`);
+            }
+        });
+        innings.didNotBat.forEach((player) => {
+            if (!findTeamPlayerByName(battingTeam, player)) {
+                console.warn(`[Data Validation] ${match.id}: didNotBat player "${player}" is not listed in ${battingTeam.shortName} squad.`);
+            }
+        });
+        innings.bowlers.forEach((bowler) => {
+            if (!findTeamPlayerByName(bowlingTeam, bowler.name)) {
+                console.warn(`[Data Validation] ${match.id}: bowler "${bowler.name}" is not listed in ${bowlingTeam.shortName} squad.`);
+            }
+        });
+    });
+};
+
+const baseSchedule: Match[] = matchSeeds.map((seed) => {
+    const completedDetails = completedMatchDetailsById[`m${seed.matchNumber}`];
     const insightKey = `${seed.team1}-${seed.team2}`;
     const insight = matchInsights[insightKey] || buildFallbackInsight(seed);
-
     return {
         id: `m${seed.matchNumber}`,
         ...seed,
         captain1: captainByTeam[seed.team1],
         captain2: captainByTeam[seed.team2],
-        status: seed.status || 'upcoming',
+        status: getSeedStatus(seed, completedDetails),
         ...insight,
         pitchReport: pitchReportsByVenue[seed.venueCity] || 'A balanced surface expected to provide an even contest between bat and ball.',
-        completedDetails: completedMatchDetailsById[`m${seed.matchNumber}`],
+        completedDetails,
+    };
+});
+
+export const schedule: Match[] = baseSchedule.map((match) => {
+    validateCompletedDetailsAgainstSquads(match);
+    if (match.status === 'completed') return match;
+
+    const team1Form = computeTeamFormBeforeMatch(match.team1, match.matchNumber, baseSchedule);
+    const team2Form = computeTeamFormBeforeMatch(match.team2, match.matchNumber, baseSchedule);
+    const team1Name = resolveTeamName(match.team1);
+    const team2Name = resolveTeamName(match.team2);
+    const team1AvgFor = team1Form.played ? (team1Form.runsFor / team1Form.played).toFixed(1) : '0.0';
+    const team2AvgFor = team2Form.played ? (team2Form.runsFor / team2Form.played).toFixed(1) : '0.0';
+
+    return {
+        ...match,
+        headline: `${team1Name} (${team1Form.won}-${team1Form.lost}) vs ${team2Name} (${team2Form.won}-${team2Form.lost}) — form-driven preview based on completed matches so far.`,
+        interestingStats: [
+            `${team1Name}: ${team1Form.won} wins in ${team1Form.played} completed matches, average ${team1AvgFor} runs scored.`,
+            `${team2Name}: ${team2Form.won} wins in ${team2Form.played} completed matches, average ${team2AvgFor} runs scored.`,
+            ...match.interestingStats.slice(0, 1),
+        ],
     };
 });
 
