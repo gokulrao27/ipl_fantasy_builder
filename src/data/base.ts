@@ -1393,7 +1393,7 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
     m7: {
         toss: 'Punjab Kings won the toss and elected to bowl.',
         result: 'Punjab Kings won by 5 wickets (with 8 balls remaining).',
-        playerOfTheMatch: 'Shreyas Iyer - 50 (29)',
+        playerOfTheMatch: 'Priyansh Arya - 39 (11)',
         keyMoments: [
             'Ayush Mhatre struck 73 off 43 and Sarfaraz Khan blasted 32 off 12 to lift CSK to 209/5.',
             'PBKS were flying early through Priyansh Arya’s 39 off 11 and reached 61/1 by 4.2 overs.',

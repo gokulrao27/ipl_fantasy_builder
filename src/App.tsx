@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders, findTeamPlayerByName, normalizePlayerName } from './data';
+import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders, findTeamPlayerByName, battingTable, bowlingTable } from './data';
 import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3, Plane, Crown } from 'lucide-react';
 import logoLight from '../logo_light_mode.png';
 import logoDark from '../logo_dark_mode.png';
@@ -392,40 +392,19 @@ export default function App() {
     const completedMatchesCount = schedule.filter((match) => match.status === 'completed' && match.completedDetails).length;
     const playersWithAnyStatsCount = playerDetails.filter((player) => player.batting || player.bowling).length;
     const selectedStatMetric = statsMetricLeaders.find((metric) => metric.id === selectedStatMetricId) || statsMetricLeaders[0];
-    const allPlayers = useMemo(() => teams.flatMap((team) => team.players), []);
-    const playerByName = useMemo(
-        () => new Map(allPlayers.map((player) => [normalizePlayerName(player.name), player])),
-        [allPlayers]
-    );
     const tournamentCapLeaders = useMemo(() => {
-        const batting = new Map<string, number>();
-        const wickets = new Map<string, number>();
-
-        schedule
-            .filter((match) => match.completedDetails)
-            .forEach((match) => {
-                match.completedDetails?.innings.forEach((innings) => {
-                    innings.batters.forEach((batter) => {
-                        batting.set(batter.name, (batting.get(batter.name) || 0) + batter.runs);
-                    });
-                    innings.bowlers.forEach((bowler) => {
-                        wickets.set(bowler.name, (wickets.get(bowler.name) || 0) + bowler.wickets);
-                    });
-                });
-            });
-
-        const topRunsEntry = [...batting.entries()].sort((a, b) => b[1] - a[1])[0];
-        const topWicketsEntry = [...wickets.entries()].sort((a, b) => b[1] - a[1])[0];
-        const orangeCapPlayer = topRunsEntry ? playerByName.get(normalizePlayerName(topRunsEntry[0])) ?? null : null;
-        const purpleCapPlayer = topWicketsEntry ? playerByName.get(normalizePlayerName(topWicketsEntry[0])) ?? null : null;
+        const orangeCapEntry = battingTable[0];
+        const purpleCapEntry = bowlingTable[0];
+        const orangeCapPlayer = orangeCapEntry ? teams.find((team) => team.id === orangeCapEntry.teamId)?.players.find((player) => player.id === orangeCapEntry.playerId) ?? null : null;
+        const purpleCapPlayer = purpleCapEntry ? teams.find((team) => team.id === purpleCapEntry.teamId)?.players.find((player) => player.id === purpleCapEntry.playerId) ?? null : null;
 
         return {
             orangeCapPlayer,
             purpleCapPlayer,
-            topRuns: topRunsEntry?.[1] ?? 0,
-            topWickets: topWicketsEntry?.[1] ?? 0,
+            topRuns: orangeCapEntry?.runs ?? 0,
+            topWickets: purpleCapEntry?.wickets ?? 0,
         };
-    }, [playerByName]);
+    }, []);
     const isOverseasPlayer = (player: Player) => OVERSEAS_PLAYER_NAMES.has(player.name);
     const getCapType = (player: Player) => {
         if (tournamentCapLeaders.orangeCapPlayer?.id === player.id) return 'orange';
