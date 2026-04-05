@@ -623,14 +623,14 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['LSG were bowled out for 141 in Match 5 and need a stronger powerplay conversion if chasing at Hyderabad.', 'Win predictor blend (home venue + first-match trend + H2H): SRH 51% | LSG 49%.'],
     },
     'rcb-csk': {
-        headline: 'RCB’s second match comes after a commanding opening win, while CSK need a response after their loss to RR.',
+        headline: 'RCB hammered 250/3 and then bowled CSK out for 207 in 19.4 overs to seal a 43-run win in Bengaluru.',
         venueStats: { avgFirstInningsScore: 190, chasingWins: 53, totalMatches: 96, bestBowlingFigure: '6/14', boundaryPercentage: 62 },
-        headToHead: { team1Wins: 11, team2Wins: 21, noResult: 1, last5: 'CSK lead historical rivalry, but second-match predictor is RCB 56% vs CSK 44%.' },
+        headToHead: { team1Wins: 12, team2Wins: 21, noResult: 1, last5: 'CSK still lead overall, but RCB took the latest meeting with a 43-run win in Match 11.' },
         playerBattles: [
-            { batter: 'Virat Kohli', bowler: 'Ravindra Jadeja', runs: 132, balls: 109, dismissals: 3, note: 'Jadeja rushes Kohli on the angle whenever the ball grips.' },
-            { batter: 'Ruturaj Gaikwad', bowler: 'Josh Hazlewood', runs: 48, balls: 39, dismissals: 2, note: 'Hazlewood’s back-of-a-length line narrows Ruturaj’s scoring areas.' },
+            { batter: 'Tim David', bowler: 'Noor Ahmad', runs: 34, balls: 10, dismissals: 0, note: 'David finished unbeaten on 70* and consistently won the matchup against spin through the leg side.' },
+            { batter: 'Sarfaraz Khan', bowler: 'Krunal Pandya', runs: 22, balls: 11, dismissals: 1, note: 'Sarfaraz counterattacked to 50, but Krunal’s breakthrough halted CSK’s middle-order momentum.' },
         ],
-        interestingStats: ['RCB’s top order looked fluent in Match 1; CSK’s first six overs with bat and ball are the biggest correction zone after Match 3.', 'Win predictor blend (form + venue pattern + H2H): RCB 56% | CSK 44%.'],
+        interestingStats: ['RCB blasted 250/3 at 12.50 runs per over, powered by Tim David’s 70* off 25 and late-over acceleration from Rajat Patidar.', 'CSK crashed to 30/3 inside 2.5 overs in the chase and never fully recovered despite fifties from Sarfaraz Khan and resistance from the lower middle order.'],
     },
     'kkr-pbks': {
         headline: 'An Eden Gardens game where both teams will likely chase sixes and leverage spin in the middle.',
@@ -736,7 +736,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium', status: 'completed' },
     { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium', status: 'completed' },
     { matchNumber: 10, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'srh', team2: 'lsg', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium', status: 'completed' },
-    { matchNumber: 11, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'rcb', team2: 'csk', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
+    { matchNumber: 11, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'rcb', team2: 'csk', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium', status: 'completed' },
     { matchNumber: 12, date: '2026-04-06', dateLabel: '06 Apr', day: 'Monday', team1: 'kkr', team2: 'pbks', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 13, date: '2026-04-07', dateLabel: '07 Apr', day: 'Tuesday', team1: 'rr', team2: 'mi', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
     { matchNumber: 14, date: '2026-04-08', dateLabel: '08 Apr', day: 'Wednesday', team1: 'dc', team2: 'gt', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
@@ -1770,6 +1770,103 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['37/1 (Mitchell Marsh, 4.4 ov)', '77/2 (Aiden Markram, 9.2 ov)', '102/3 (Ayush Badoni, 12.1 ov)', '105/4 (Nicholas Pooran, 13.1 ov)', '139/5 (Abdul Samad, 17.4 ov)'],
                 powerplayRuns: '52/1 (0.1-6 ov)',
                 partnerships: ['37 (Markram-Marsh)', '40 (Markram-Pant)', '25 (Pant-Badoni)', '3 (Pant-Pooran)', '34 (Pant-Samad)', '21* (Pant-Mukul Choudhary)']
+            }
+        ]
+    },
+    m11: {
+        toss: 'Toss update unavailable in the provided score feed.',
+        result: 'Royal Challengers Bengaluru won by 43 runs.',
+        playerOfTheMatch: 'Tim David - 70* (25)',
+        keyMoments: [
+            'RCB posted a massive 250/3, with Tim David’s unbeaten 70 off 25 and Rajat Patidar’s 48* off 19 powering the finish.',
+            'CSK’s chase derailed early at 30/3 inside 2.5 overs after Jacob Duffy removed both openers in his first spell.',
+            'Sarfaraz Khan’s 50 off 25 and Prashant Veer’s 43 off 29 briefly rebuilt the chase, but regular wickets prevented sustained pressure.',
+            'Bhuvneshwar Kumar closed out the innings with 3 wickets, while Abhinandan Singh and Krunal Pandya shared 4 wickets between them.'
+        ],
+        tacticalAnalysis: [
+            'RCB won the game through phase dominance: a 99-run unbeaten stand from Patidar and David after 14.1 overs transformed a good platform into an elite total.',
+            'CSK leaked boundary balls at the death (including 8 sixes from David), which pushed the par score out of reach for most chases.',
+            'In reply, CSK were forced into high-risk intent from over one after losing wickets early and chasing 251, leading to a wicket every few overs.',
+            'Even with several counterattacking cameos, the asking rate pressure meant CSK could not build a long partnership beyond the 57-run stand between Prashant Veer and Jamie Overton.',
+            'RCB’s varied bowling usage worked well: they absorbed expensive overs from Duffy early because the scoreboard cushion allowed attacking wicket-taking fields.'
+        ],
+        improvements: {
+            team1: [
+                'CSK need stronger death-over execution after conceding 99 runs in the final 35 balls of RCB’s innings.',
+                'Powerplay batting stability remains a priority; losing 3 wickets by 2.5 overs made the chase structurally unstable.',
+                'Bowling plans to set batters should include more wide yorkers and boundary-rider support when finishers like David are in.',
+            ],
+            team2: [
+                'RCB can reduce new-ball economy despite taking wickets; Duffy conceded 58 in 4 overs.',
+                'Middle-overs control against counterattacking batters can improve to avoid giving chases late life.',
+                'Fielding standards were strong overall and should be maintained, especially in high-scoring defenses.',
+            ],
+            players: [
+                'Tim David (RCB): continue targeting spin and pace-off lengths in the death overs; his matchup awareness was outstanding.',
+                'Rajat Patidar (RCB): excellent finishing support role; maintaining this tempo in middle-to-death transition remains key.',
+                'Bhuvneshwar Kumar (RCB): his 3/41 was decisive in closing out resistance and should remain the template at the death.',
+                'Sarfaraz Khan (CSK): his 50 kept the chase alive; converting starts into deeper innings could reduce collapse risk.',
+                'Anshul Kamboj (CSK): all-round impact was useful; control with the ball at high-pressure moments can still improve.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'rcb',
+                total: 250,
+                wickets: 3,
+                overs: '20.0',
+                batters: [
+                    { name: 'Phil Salt', howOut: 'c Noor Ahmad b Shivam Dube', runs: 46, balls: 30, fours: 3, sixes: 2, strikeRate: 153.33 },
+                    { name: 'Virat Kohli', howOut: 'c Shivam Dube b Anshul Kamboj', runs: 28, balls: 18, fours: 2, sixes: 1, strikeRate: 155.56 },
+                    { name: 'Devdutt Padikkal', howOut: 'b Jamie Overton', runs: 50, balls: 29, fours: 5, sixes: 2, strikeRate: 172.41 },
+                    { name: 'Rajat Patidar', howOut: 'not out', runs: 48, balls: 19, fours: 1, sixes: 6, strikeRate: 252.63 },
+                    { name: 'Tim David', howOut: 'not out', runs: 70, balls: 25, fours: 3, sixes: 8, strikeRate: 280.0 },
+                ],
+                extras: '8 (b 1, lb 3, nb 1, w 3)',
+                didNotBat: ['Jitesh Sharma', 'Romario Shepherd', 'Krunal Pandya', 'Bhuvneshwar Kumar', 'Abhinandan Singh', 'Jacob Duffy', 'Suyash Sharma'],
+                bowlers: [
+                    { name: 'Khaleel Ahmed', overs: '4', maidens: 0, runs: 37, wickets: 0, economy: 9.25 },
+                    { name: 'Matt Henry', overs: '3', maidens: 0, runs: 36, wickets: 0, economy: 12.0 },
+                    { name: 'Anshul Kamboj', overs: '4', maidens: 0, runs: 52, wickets: 1, economy: 13.0 },
+                    { name: 'Noor Ahmad', overs: '4', maidens: 0, runs: 49, wickets: 0, economy: 12.25 },
+                    { name: 'Jamie Overton', overs: '3', maidens: 0, runs: 42, wickets: 1, economy: 14.0 },
+                    { name: 'Shivam Dube', overs: '2', maidens: 0, runs: 30, wickets: 1, economy: 15.0 },
+                ],
+                fallOfWickets: ['37/1 (Virat Kohli, 4.3 ov)', '93/2 (Phil Salt, 10.4 ov)', '151/3 (Devdutt Padikkal, 14.1 ov)'],
+                powerplayRuns: 'Powerplay split not available in provided match card.',
+                partnerships: ['37 (Salt-Kohli)', '56 (Salt-Padikkal)', '58 (Padikkal-Patidar)', '99* (Patidar-David)']
+            },
+            {
+                teamId: 'csk',
+                total: 207,
+                wickets: 10,
+                overs: '19.4',
+                batters: [
+                    { name: 'Sanju Samson', howOut: 'c Devdutt Padikkal b Jacob Duffy', runs: 9, balls: 5, fours: 0, sixes: 1, strikeRate: 180.0 },
+                    { name: 'Ruturaj Gaikwad', howOut: 'c Devdutt Padikkal b Jacob Duffy', runs: 7, balls: 3, fours: 0, sixes: 1, strikeRate: 233.33 },
+                    { name: 'Ayush Mhatre', howOut: 'c Rajat Patidar b Bhuvneshwar Kumar', runs: 1, balls: 3, fours: 0, sixes: 0, strikeRate: 33.33 },
+                    { name: 'Sarfaraz Khan', howOut: 'st Jitesh Sharma b Krunal Pandya', runs: 50, balls: 25, fours: 8, sixes: 2, strikeRate: 200.0 },
+                    { name: 'Kartik Sharma', howOut: 'c Abhinandan Singh b Krunal Pandya', runs: 6, balls: 3, fours: 0, sixes: 1, strikeRate: 200.0 },
+                    { name: 'Shivam Dube', howOut: 'c Jitesh Sharma b Abhinandan Singh', runs: 18, balls: 13, fours: 2, sixes: 1, strikeRate: 138.46 },
+                    { name: 'Prashant Veer', howOut: 'c Rajat Patidar b Bhuvneshwar Kumar', runs: 43, balls: 29, fours: 6, sixes: 1, strikeRate: 148.28 },
+                    { name: 'Jamie Overton', howOut: 'c sub (Jacob Bethell) b Suyash Sharma', runs: 37, balls: 16, fours: 4, sixes: 2, strikeRate: 231.25 },
+                    { name: 'Anshul Kamboj', howOut: 'not out', runs: 19, balls: 12, fours: 1, sixes: 1, strikeRate: 158.33 },
+                    { name: 'Noor Ahmad', howOut: 'c Virat Kohli b Bhuvneshwar Kumar', runs: 8, balls: 8, fours: 0, sixes: 1, strikeRate: 100.0 },
+                    { name: 'Matt Henry', howOut: 'c Phil Salt b Abhinandan Singh', runs: 2, balls: 3, fours: 0, sixes: 0, strikeRate: 66.67 },
+                ],
+                extras: '7 (lb 2, nb 2, w 3)',
+                didNotBat: [],
+                bowlers: [
+                    { name: 'Jacob Duffy', overs: '4', maidens: 0, runs: 58, wickets: 2, economy: 14.5 },
+                    { name: 'Bhuvneshwar Kumar', overs: '4', maidens: 0, runs: 41, wickets: 3, economy: 10.25 },
+                    { name: 'Abhinandan Singh', overs: '3.4', maidens: 0, runs: 30, wickets: 2, economy: 8.18 },
+                    { name: 'Krunal Pandya', overs: '3', maidens: 0, runs: 36, wickets: 2, economy: 12.0 },
+                    { name: 'Suyash Sharma', overs: '4', maidens: 0, runs: 21, wickets: 1, economy: 5.25 },
+                    { name: 'Romario Shepherd', overs: '1', maidens: 0, runs: 19, wickets: 0, economy: 19.0 },
+                ],
+                fallOfWickets: ['9/1 (Ruturaj Gaikwad, 0.5 ov)', '10/2 (Ayush Mhatre, 1.2 ov)', '30/3 (Sanju Samson, 2.5 ov)', '77/4 (Sarfaraz Khan, 6.1 ov)', '84/5 (Kartik Sharma, 6.5 ov)', '108/6 (Shivam Dube, 9.5 ov)', '165/7 (Prashant Veer, 15.1 ov)', '178/8 (Jamie Overton, 16.1 ov)', '190/9 (Noor Ahmad, 17.6 ov)', '207/10 (Matt Henry, 19.4 ov)'],
+                powerplayRuns: 'Powerplay split not available in provided match card.',
+                partnerships: ['9 (Samson-Gaikwad)', '1 (Samson-Mhatre)', '20 (Samson-Sarfaraz)', '47 (Sarfaraz-Kartik)', '7 (Dube-Kartik)', '24 (Dube-Prashant)', '57 (Prashant-Overton)', '13 (Overton-Kamboj)', '12 (Kamboj-Noor)', '17 (Kamboj-Henry)']
             }
         ]
     },
