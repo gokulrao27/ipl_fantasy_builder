@@ -730,7 +730,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 6, date: '2026-04-02', dateLabel: '02 Apr', day: 'Thursday', team1: 'kkr', team2: 'srh', venueCity: 'Kolkata', stadium: 'Eden Gardens', status: 'completed' },
     { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium', status: 'completed' },
     { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium', status: 'completed' },
-    { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium' },
+    { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium', status: 'completed' },
     { matchNumber: 10, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'srh', team2: 'lsg', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
     { matchNumber: 11, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'rcb', team2: 'csk', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
     { matchNumber: 12, date: '2026-04-06', dateLabel: '06 Apr', day: 'Monday', team1: 'kkr', team2: 'pbks', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
@@ -1572,6 +1572,103 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['2/1 (KL Rahul, 0.4 ov)', '7/2 (Nitish Rana, 1.4 ov)', '73/3 (Pathum Nissanka, 9.5 ov)', '151/4 (Sameer Rizvi, 16.2 ov)'],
                 powerplayRuns: '49/2 (0.1-6 ov)',
                 partnerships: ['2 (Rahul-Nissanka)', '5 (Nissanka-Rana)', '66 (Nissanka-Rizvi)', '78 (Rizvi-Miller)', '13* (Miller-Stubbs)']
+            }
+        ]
+    },
+    m9: {
+        toss: 'Rajasthan Royals won the toss and elected to bat.',
+        result: 'Rajasthan Royals won by 6 runs.',
+        playerOfTheMatch: 'Ravi Bishnoi - 4/41 (4)',
+        keyMoments: [
+            'Dhruv Jurel’s 75 off 42 powered RR to 210/6 after quick starts from Yashasvi Jaiswal and Vaibhav Sooryavanshi.',
+            'GT reached 127/2 in the 11th over, but Ravi Bishnoi removed Sai Sudharsan and then triggered a middle-order collapse.',
+            'Ravi Bishnoi’s spell included key wickets of Glenn Phillips, Washington Sundar, and Rahul Tewatia, reducing GT from 127/2 to 155/6.',
+            'GT still pushed the chase deep through Rashid Khan and Kagiso Rabada, but RR held nerve to close out the game by 6 runs.'
+        ],
+        tacticalAnalysis: [
+            'RR maximized middle-overs hitting through Jurel and Hetmyer, then protected the total by attacking with wicket-taking spin instead of only defending boundaries.',
+            'GT’s chase had the right platform, but losing four wickets in a short window (10.4 to 14.3 overs) shifted the required-rate pressure sharply.',
+            'RR used varied bowling matchups: Parag and Deshpande chipped in with one wicket each, while Bishnoi took the high-impact overs.',
+            'Despite conceding 204, RR’s control at wicket moments (and only one over remaining by the final wicket) decided the contest.'
+        ],
+        improvements: {
+            team1: [
+                'GT can improve middle-order risk management after a strong start; set batters need one stabilizing stand through overs 11-15.',
+                'Death-over bowling discipline can be sharper after conceding 210, especially against right-handers targeting leg-side boundary pockets.',
+                'Field execution in deep zones needs tightening to convert half-chances in high-scoring games.'
+            ],
+            team2: [
+                'RR can lower new-ball economy after conceding 78/1 by the end of the 8th over in the chase.',
+                'Death-over planning should include more yorker consistency to avoid last-over pressure in 200-plus defenses.',
+                'Continue using Bishnoi as a wicket-taking middle-overs option when opposition set batters are attacking spin.'
+            ],
+            players: [
+                'Ravi Bishnoi (RR): continue attacking stumps and varying pace; his middle-overs strike role was match-defining.',
+                'Dhruv Jurel (RR): convert momentum innings into match-winning anchors while preserving acceleration at the death.',
+                'Sai Sudharsan (GT): deep batting was excellent; converting 70+ starts into chase-finishing knocks will add more wins.',
+                'Rashid Khan (GT): late-order counterattack was valuable and can be paired with earlier partnership building in tight chases.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'rr',
+                total: 210,
+                wickets: 6,
+                overs: '20.0',
+                batters: [
+                    { name: 'Yashasvi Jaiswal', howOut: 'b Kagiso Rabada', runs: 55, balls: 36, fours: 6, sixes: 3, strikeRate: 152.78 },
+                    { name: 'Vaibhav Sooryavanshi', howOut: 'c Glenn Phillips b Rashid Khan', runs: 31, balls: 18, fours: 5, sixes: 1, strikeRate: 172.22 },
+                    { name: 'Dhruv Jurel', howOut: 'c Jos Buttler b Mohammed Siraj', runs: 75, balls: 42, fours: 5, sixes: 5, strikeRate: 178.57 },
+                    { name: 'Riyan Parag', howOut: 'c Kumar Kushagra b Prasidh Krishna', runs: 8, balls: 4, fours: 0, sixes: 1, strikeRate: 200.0 },
+                    { name: 'Shimron Hetmyer', howOut: 'c Mohammed Siraj b Ashok Sharma', runs: 18, balls: 8, fours: 1, sixes: 2, strikeRate: 225.0 },
+                    { name: 'Donovan Ferreira', howOut: 'c Glenn Phillips b Kagiso Rabada', runs: 1, balls: 3, fours: 0, sixes: 0, strikeRate: 33.33 },
+                    { name: 'Ravindra Jadeja', howOut: 'not out', runs: 7, balls: 7, fours: 1, sixes: 0, strikeRate: 100.0 },
+                    { name: 'Jofra Archer', howOut: 'not out', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                ],
+                extras: '14 (b 0, lb 1, w 13, nb 0)',
+                didNotBat: ['Nandre Burger', 'Tushar Deshpande', 'Sandeep Sharma'],
+                bowlers: [
+                    { name: 'Mohammed Siraj', overs: '4', maidens: 0, runs: 48, wickets: 1, economy: 12.0 },
+                    { name: 'Kagiso Rabada', overs: '4', maidens: 0, runs: 42, wickets: 2, economy: 10.5 },
+                    { name: 'Ashok Sharma', overs: '4', maidens: 0, runs: 37, wickets: 1, economy: 9.25 },
+                    { name: 'Prasidh Krishna', overs: '4', maidens: 0, runs: 43, wickets: 1, economy: 10.75 },
+                    { name: 'Rashid Khan', overs: '4', maidens: 0, runs: 39, wickets: 1, economy: 9.75 },
+                ],
+                fallOfWickets: ['70/1 (Vaibhav Sooryavanshi, 6.2 ov)', '126/2 (Yashasvi Jaiswal, 12.3 ov)', '135/3 (Riyan Parag, 13.2 ov)', '165/4 (Shimron Hetmyer, 15.3 ov)', '166/5 (Donovan Ferreira, 16.1 ov)', '205/6 (Dhruv Jurel, 19.3 ov)'],
+                powerplayRuns: '66/0 (0.1-6 ov)',
+                partnerships: ['70 (Jaiswal-Sooryavanshi)', '56 (Jaiswal-Jurel)', '9 (Jurel-Parag)', '30 (Jurel-Hetmyer)', '1 (Jurel-Ferreira)', '39 (Jurel-Jadeja)', '5* (Jadeja-Archer)']
+            },
+            {
+                teamId: 'gt',
+                total: 204,
+                wickets: 8,
+                overs: '20.0',
+                batters: [
+                    { name: 'Sai Sudharsan', howOut: 'c Tushar Deshpande b Ravi Bishnoi', runs: 73, balls: 44, fours: 9, sixes: 3, strikeRate: 165.91 },
+                    { name: 'Kumar Kushagra', howOut: 'c Shimron Hetmyer b Riyan Parag', runs: 18, balls: 14, fours: 3, sixes: 0, strikeRate: 128.57 },
+                    { name: 'Jos Buttler', howOut: 'c Sandeep Sharma b Nandre Burger', runs: 26, balls: 14, fours: 5, sixes: 0, strikeRate: 185.71 },
+                    { name: 'Glenn Phillips', howOut: 'c Jofra Archer b Ravi Bishnoi', runs: 3, balls: 4, fours: 0, sixes: 0, strikeRate: 75.0 },
+                    { name: 'Washington Sundar', howOut: 'c Ravindra Jadeja b Ravi Bishnoi', runs: 4, balls: 2, fours: 1, sixes: 0, strikeRate: 200.0 },
+                    { name: 'Rahul Tewatia', howOut: 'c Dhruv Jurel b Ravi Bishnoi', runs: 12, balls: 6, fours: 1, sixes: 1, strikeRate: 200.0 },
+                    { name: 'M Shahrukh Khan', howOut: 'run out (Ravindra Jadeja/Dhruv Jurel)', runs: 11, balls: 4, fours: 1, sixes: 1, strikeRate: 275.0 },
+                    { name: 'Rashid Khan', howOut: 'c Jofra Archer b Tushar Deshpande', runs: 24, balls: 16, fours: 3, sixes: 0, strikeRate: 150.0 },
+                    { name: 'Kagiso Rabada', howOut: 'not out', runs: 23, balls: 16, fours: 1, sixes: 2, strikeRate: 143.75 },
+                    { name: 'Ashok Sharma', howOut: 'not out', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                ],
+                extras: '10 (b 1, lb 1, w 7, nb 1)',
+                didNotBat: ['Mohammed Siraj'],
+                bowlers: [
+                    { name: 'Jofra Archer', overs: '4', maidens: 0, runs: 38, wickets: 0, economy: 9.5 },
+                    { name: 'Nandre Burger', overs: '3', maidens: 0, runs: 29, wickets: 1, economy: 9.67 },
+                    { name: 'Sandeep Sharma', overs: '3', maidens: 0, runs: 34, wickets: 0, economy: 11.33 },
+                    { name: 'Tushar Deshpande', overs: '3', maidens: 0, runs: 24, wickets: 1, economy: 8.0 },
+                    { name: 'Ravindra Jadeja', overs: '2', maidens: 0, runs: 25, wickets: 0, economy: 12.5 },
+                    { name: 'Riyan Parag', overs: '1', maidens: 0, runs: 11, wickets: 1, economy: 11.0 },
+                    { name: 'Ravi Bishnoi', overs: '4', maidens: 0, runs: 41, wickets: 4, economy: 10.25 },
+                ],
+                fallOfWickets: ['78/1 (Kumar Kushagra, 7.6 ov)', '107/2 (Sai Sudharsan, 10.4 ov)', '127/3 (Glenn Phillips, 12.1 ov)', '131/4 (Washington Sundar, 12.3 ov)', '133/5 (Jos Buttler, 13.1 ov)', '155/6 (Rahul Tewatia, 14.3 ov)', '161/7 (M Shahrukh Khan, 14.5 ov)', '204/8 (Rashid Khan, 19.5 ov)'],
+                powerplayRuns: '62/0 (0.1-6 ov)',
+                partnerships: ['78 (Sudharsan-Kushagra)', '29 (Sudharsan-Buttler)', '20 (Buttler-Phillips)', '4 (Buttler-Sundar)', '2 (Buttler-Tewatia)', '22 (Tewatia-Shahrukh)', '6 (Shahrukh-Rashid)', '43 (Rashid-Rabada)', '0* (Rabada-Ashok)']
             }
         ]
     },
