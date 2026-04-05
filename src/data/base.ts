@@ -2066,6 +2066,8 @@ const computePredictionBeforeMatch = (
     team1Momentum = 0,
     team2Momentum = 0,
     rivalryEdge = 0,
+    team1Strength: { batting: number; bowling: number } = { batting: 0, bowling: 0 },
+    team2Strength: { batting: number; bowling: number } = { batting: 0, bowling: 0 },
 ): MatchPrediction => {
     const team1Matches = team1Form.played || 1;
     const team2Matches = team2Form.played || 1;
@@ -2090,7 +2092,11 @@ const computePredictionBeforeMatch = (
     const winRateEdge = (team1WinRate - team2WinRate) * 2.1;
     const runDeltaEdge = (team1NetRunDelta - team2NetRunDelta) / 20;
     const momentumEdge = (team1Momentum - team2Momentum) * 0.9;
-    const team1Edge = projectionEdge + winRateEdge + runDeltaEdge + (h2hEdge * 0.6) + momentumEdge + (rivalryEdge * 0.8);
+    const strengthEdge = ((team1Strength.batting - team2Strength.batting) * 0.55) + ((team1Strength.bowling - team2Strength.bowling) * 0.45);
+    const pitchBattingBias = match.venueStats.avgFirstInningsScore >= 180 ? 1 : match.venueStats.avgFirstInningsScore <= 168 ? -1 : 0;
+    const pitchChasingBias = ((match.venueStats.chasingWins / Math.max(match.venueStats.totalMatches, 1)) - 0.5) * 2;
+    const pitchEdge = (pitchBattingBias * ((team1Strength.batting - team2Strength.batting) / 8)) + (pitchChasingBias * 0.2);
+    const team1Edge = projectionEdge + winRateEdge + runDeltaEdge + (h2hEdge * 0.6) + momentumEdge + (rivalryEdge * 0.8) + (strengthEdge / 10) + pitchEdge;
 
     const logistic = (value: number): number => 1 / (1 + Math.exp(-value));
     const team1WinProbability = clamp(Math.round(logistic(team1Edge) * 100), 30, 70);
@@ -2107,6 +2113,53 @@ const computePredictionBeforeMatch = (
         team1WinProbability,
         team2WinProbability,
     };
+};
+
+const computeLikelyXIStrength = (teamId: string, likelyXI: string[]): { batting: number; bowling: number } => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return { batting: 0, bowling: 0 };
+
+    const namesToUse = likelyXI.length > 0 ? likelyXI : team.players.slice(0, 11).map((player) => player.name);
+    const battingContrib: number[] = [];
+    const bowlingContrib: number[] = [];
+    const completedMatches = baseSchedule.filter((match) => match.status === 'completed' && match.completedDetails);
+
+    namesToUse.forEach((name) => {
+        const player = findTeamPlayerByName(team, name);
+        if (!player) return;
+        const battingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.batters));
+        const bowlingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.bowlers));
+
+        const normalizedPlayerName = normalizePlayerName(player.name);
+        const playerBattingRows = battingRecords.filter((row) => normalizePlayerName(row.name) === normalizedPlayerName);
+        const playerBowlingRows = bowlingRecords.filter((row) => normalizePlayerName(row.name) === normalizedPlayerName);
+        const battingRuns = playerBattingRows.reduce((sum, row) => sum + row.runs, 0);
+        const battingBalls = playerBattingRows.reduce((sum, row) => sum + Math.max(row.balls, 1), 0);
+        const battingOuts = playerBattingRows.reduce((sum, row) => sum + (/not out/i.test(row.howOut) ? 0 : 1), 0);
+        const battingStrikeRate = battingBalls > 0 ? (battingRuns / battingBalls) * 100 : 0;
+        const battingAverage = battingOuts > 0 ? battingRuns / battingOuts : battingRuns;
+
+        const bowlingWickets = playerBowlingRows.reduce((sum, row) => sum + row.wickets, 0);
+        const bowlingRunsConceded = playerBowlingRows.reduce((sum, row) => sum + row.runs, 0);
+        const bowlingOvers = playerBowlingRows.reduce((sum, row) => sum + oversToBalls(row.overs), 0);
+        const bowlingEconomy = bowlingOvers > 0 ? (bowlingRunsConceded / bowlingOvers) * 6 : 0;
+
+        if (playerBattingRows.length > 0) {
+            battingContrib.push((battingRuns / 45) + (battingStrikeRate / 160) + (battingAverage / 30));
+        } else if (player.role !== 'Bowler') {
+            battingContrib.push(0.8);
+        }
+
+        if (playerBowlingRows.length > 0) {
+            bowlingContrib.push((bowlingWickets / 4) + ((8.8 - bowlingEconomy) / 2.5));
+        } else if (player.role === 'Bowler' || player.role === 'All-rounder') {
+            bowlingContrib.push(0.7);
+        }
+    });
+
+    const batting = battingContrib.length ? Number((mean(battingContrib) * 5).toFixed(2)) : 0;
+    const bowling = bowlingContrib.length ? Number((mean(bowlingContrib) * 5).toFixed(2)) : 0;
+    return { batting, bowling };
 };
 
 const buildFallbackBattlesFromSquads = (match: Match): PlayerBattle[] => {
@@ -2199,10 +2252,22 @@ export const schedule: Match[] = baseSchedule.map((match) => {
     const team1Momentum = computeRecentMomentum(match.team1, match.matchNumber, baseSchedule);
     const team2Momentum = computeRecentMomentum(match.team2, match.matchNumber, baseSchedule);
     const rivalryEdge = computeRecentRivalryEdge(match, baseSchedule);
-    const prediction = computePredictionBeforeMatch({ ...match, venueStats: dynamicVenueStats }, team1Form, team2Form, dynamicHeadToHead, team1Momentum, team2Momentum, rivalryEdge);
-    const predictedWinnerShortName = resolveTeamName(prediction.predictedWinnerTeamId);
     const team1LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team1, match.matchNumber, baseSchedule);
     const team2LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team2, match.matchNumber, baseSchedule);
+    const team1Strength = computeLikelyXIStrength(match.team1, team1LikelyXI);
+    const team2Strength = computeLikelyXIStrength(match.team2, team2LikelyXI);
+    const prediction = computePredictionBeforeMatch(
+        { ...match, venueStats: dynamicVenueStats },
+        team1Form,
+        team2Form,
+        dynamicHeadToHead,
+        team1Momentum,
+        team2Momentum,
+        rivalryEdge,
+        team1Strength,
+        team2Strength,
+    );
+    const predictedWinnerShortName = resolveTeamName(prediction.predictedWinnerTeamId);
     const availabilityWatch1 = computeAvailabilityWatch(match.team1, match.matchNumber, baseSchedule);
     const availabilityWatch2 = computeAvailabilityWatch(match.team2, match.matchNumber, baseSchedule);
     const injuryNews1 = getTeamInjuryNews(team1Name);
