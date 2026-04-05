@@ -1778,6 +1778,68 @@ const getTeamInjuryNews = (teamShortName: string): string[] => {
         .map((item) => item.title);
 };
 
+const getInjuredPlayersForTeam = (teamId: string): Set<string> => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return new Set<string>();
+
+    const injuryPool = [
+        ...((deepResearchSnapshot.injuryNews || []) as Array<{ title: string }>),
+        ...((deepResearchSnapshot.topExternalHeadlines || []) as Array<{ title: string }>),
+    ];
+
+    const injuredPlayers = new Set<string>();
+    injuryPool.forEach((entry) => {
+        const lowerTitle = entry.title.toLowerCase();
+        if (!/\binjur|ruled out|replacement|unavailable|fitness\b/.test(lowerTitle)) return;
+        team.players.forEach((player) => {
+            if (lowerTitle.includes(player.name.toLowerCase())) {
+                injuredPlayers.add(normalizePlayerName(player.name));
+            }
+        });
+    });
+
+    return injuredPlayers;
+};
+
+const isPlayerInTeamSquad = (teamId: string, playerName: string): boolean => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return false;
+    return Boolean(findTeamPlayerByName(team, playerName));
+};
+
+const filterValidPlayerBattles = (
+    match: Match,
+    candidateBattles: PlayerBattle[],
+    team1LikelyXI: string[],
+    team2LikelyXI: string[],
+    team1Injured: Set<string>,
+    team2Injured: Set<string>,
+): PlayerBattle[] => {
+    const inLikelyXI = (xi: string[], name: string) => xi.some((item) => normalizePlayerName(item) === normalizePlayerName(name));
+
+    return candidateBattles.filter((battle) => {
+        const batterNorm = normalizePlayerName(battle.batter);
+        const bowlerNorm = normalizePlayerName(battle.bowler);
+
+        const batterInTeam1 = isPlayerInTeamSquad(match.team1, battle.batter);
+        const batterInTeam2 = isPlayerInTeamSquad(match.team2, battle.batter);
+        const bowlerInTeam1 = isPlayerInTeamSquad(match.team1, battle.bowler);
+        const bowlerInTeam2 = isPlayerInTeamSquad(match.team2, battle.bowler);
+
+        const directValid = batterInTeam1 && bowlerInTeam2 &&
+            !team1Injured.has(batterNorm) && !team2Injured.has(bowlerNorm) &&
+            ((team1LikelyXI.length === 0 || inLikelyXI(team1LikelyXI, battle.batter)) &&
+                (team2LikelyXI.length === 0 || inLikelyXI(team2LikelyXI, battle.bowler)));
+
+        const reverseValid = batterInTeam2 && bowlerInTeam1 &&
+            !team2Injured.has(batterNorm) && !team1Injured.has(bowlerNorm) &&
+            ((team2LikelyXI.length === 0 || inLikelyXI(team2LikelyXI, battle.batter)) &&
+                (team1LikelyXI.length === 0 || inLikelyXI(team1LikelyXI, battle.bowler)));
+
+        return directValid || reverseValid;
+    });
+};
+
 const computeTeamFormBeforeMatch = (teamId: string, matchNumber: number, allMatches: Match[]): { played: number; won: number; lost: number; runsFor: number; runsAgainst: number } => {
     const stats = { played: 0, won: 0, lost: 0, runsFor: 0, runsAgainst: 0 };
 
@@ -2040,12 +2102,14 @@ export const schedule: Match[] = baseSchedule.map((match) => {
     const availabilityWatch2 = computeAvailabilityWatch(match.team2, match.matchNumber, baseSchedule);
     const injuryNews1 = getTeamInjuryNews(team1Name);
     const injuryNews2 = getTeamInjuryNews(team2Name);
-    const filteredBattles = match.playerBattles
-        .filter((battle) =>
-            team1LikelyXI.some((name) => normalizePlayerName(name) === normalizePlayerName(battle.batter)) &&
-            team2LikelyXI.some((name) => normalizePlayerName(name) === normalizePlayerName(battle.bowler)))
-        .slice(0, 2);
-    const selectedBattles = filteredBattles.length > 0 ? filteredBattles : match.playerBattles.slice(0, 2);
+    const team1Injured = getInjuredPlayersForTeam(match.team1);
+    const team2Injured = getInjuredPlayersForTeam(match.team2);
+    const filteredBattles = filterValidPlayerBattles(match, match.playerBattles, team1LikelyXI, team2LikelyXI, team1Injured, team2Injured).slice(0, 2);
+    const squadOnlyFallback = match.playerBattles.filter((battle) =>
+        (isPlayerInTeamSquad(match.team1, battle.batter) && isPlayerInTeamSquad(match.team2, battle.bowler)) ||
+        (isPlayerInTeamSquad(match.team2, battle.batter) && isPlayerInTeamSquad(match.team1, battle.bowler))
+    ).slice(0, 2);
+    const selectedBattles = filteredBattles.length > 0 ? filteredBattles : squadOnlyFallback;
 
     const pitchType = dynamicVenueStats.avgFirstInningsScore >= 182
         ? 'batting-friendly'
