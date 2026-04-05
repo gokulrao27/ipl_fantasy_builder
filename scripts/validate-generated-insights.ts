@@ -20,6 +20,7 @@ for (const match of upcoming) {
   const team1 = teamById.get(match.team1);
   const team2 = teamById.get(match.team2);
   ensure(Boolean(team1) && Boolean(team2), `${match.id}: teams must exist.`);
+  ensure(match.playerBattles.length >= 2, `${match.id}: at least two key matchups are required.`);
 
   for (const battle of match.playerBattles) {
     const batterInTeam1 = Boolean(team1 && findTeamPlayerByName(team1, battle.batter));

@@ -1862,6 +1862,53 @@ const computeTeamFormBeforeMatch = (teamId: string, matchNumber: number, allMatc
     return stats;
 };
 
+const computeRecentMomentum = (teamId: string, matchNumber: number, allMatches: Match[]): number => {
+    const recentMatches = allMatches
+        .filter((m) => m.matchNumber < matchNumber && m.status === 'completed' && m.completedDetails && (m.team1 === teamId || m.team2 === teamId))
+        .sort((a, b) => b.matchNumber - a.matchNumber)
+        .slice(0, 3);
+
+    if (!recentMatches.length) return 0;
+
+    const weighted = recentMatches.map((match, index) => {
+        const [firstInnings, secondInnings] = match.completedDetails!.innings;
+        const teamInnings = firstInnings.teamId === teamId ? firstInnings : secondInnings;
+        const oppInnings = firstInnings.teamId === teamId ? secondInnings : firstInnings;
+        const margin = teamInnings.total - oppInnings.total;
+        const resultScore = margin > 0 ? 1 : margin < 0 ? -1 : 0;
+        const marginScore = clamp(margin / 25, -1.2, 1.2);
+        const recencyWeight = index === 0 ? 1.2 : index === 1 ? 1.0 : 0.8;
+        return (resultScore * 0.75 + marginScore * 0.25) * recencyWeight;
+    });
+
+    return weighted.reduce((sum, value) => sum + value, 0) / recentMatches.length;
+};
+
+const computeRecentRivalryEdge = (match: Match, allMatches: Match[]): number => {
+    const recentMeetings = allMatches
+        .filter((m) => m.matchNumber < match.matchNumber && m.status === 'completed' && m.completedDetails &&
+            ((m.team1 === match.team1 && m.team2 === match.team2) || (m.team1 === match.team2 && m.team2 === match.team1)))
+        .sort((a, b) => b.matchNumber - a.matchNumber)
+        .slice(0, 5);
+
+    if (!recentMeetings.length) return 0;
+
+    let team1Score = 0;
+    let team2Score = 0;
+    recentMeetings.forEach((meeting, index) => {
+        const [firstInnings, secondInnings] = meeting.completedDetails!.innings;
+        const recencyWeight = index === 0 ? 1.4 : index === 1 ? 1.2 : 1;
+        if (firstInnings.total === secondInnings.total) return;
+        const winner = firstInnings.total > secondInnings.total ? firstInnings.teamId : secondInnings.teamId;
+        if (winner === match.team1) team1Score += recencyWeight;
+        if (winner === match.team2) team2Score += recencyWeight;
+    });
+
+    const denominator = team1Score + team2Score;
+    if (denominator === 0) return 0;
+    return (team1Score - team2Score) / denominator;
+};
+
 type MatchPrediction = {
     predictedWinnerTeamId: string;
     confidence: number;
@@ -2009,6 +2056,9 @@ const computePredictionBeforeMatch = (
     team1Form: { played: number; won: number; runsFor: number; runsAgainst: number },
     team2Form: { played: number; won: number; runsFor: number; runsAgainst: number },
     headToHead?: Match['headToHead'],
+    team1Momentum = 0,
+    team2Momentum = 0,
+    rivalryEdge = 0,
 ): MatchPrediction => {
     const team1Matches = team1Form.played || 1;
     const team2Matches = team2Form.played || 1;
@@ -2032,7 +2082,8 @@ const computePredictionBeforeMatch = (
     const projectionEdge = (team1ProjectedScore - team2ProjectedScore) / 14;
     const winRateEdge = (team1WinRate - team2WinRate) * 2.1;
     const runDeltaEdge = (team1NetRunDelta - team2NetRunDelta) / 20;
-    const team1Edge = projectionEdge + winRateEdge + runDeltaEdge + (h2hEdge * 0.8);
+    const momentumEdge = (team1Momentum - team2Momentum) * 0.9;
+    const team1Edge = projectionEdge + winRateEdge + runDeltaEdge + (h2hEdge * 0.6) + momentumEdge + (rivalryEdge * 0.8);
 
     const logistic = (value: number): number => 1 / (1 + Math.exp(-value));
     const team1WinProbability = clamp(Math.round(logistic(team1Edge) * 100), 30, 70);
@@ -2049,6 +2100,36 @@ const computePredictionBeforeMatch = (
         team1WinProbability,
         team2WinProbability,
     };
+};
+
+const buildFallbackBattlesFromSquads = (match: Match): PlayerBattle[] => {
+    const team1 = teams.find((team) => team.id === match.team1);
+    const team2 = teams.find((team) => team.id === match.team2);
+    if (!team1 || !team2) return [];
+
+    const team1Batter = team1.players.find((p) => p.role === 'Batsman' || p.role === 'Wicket-keeper') || team1.players[0];
+    const team2Bowler = team2.players.find((p) => p.role === 'Bowler' || p.role === 'All-rounder') || team2.players[0];
+    const team2Batter = team2.players.find((p) => p.role === 'Batsman' || p.role === 'Wicket-keeper') || team2.players[0];
+    const team1Bowler = team1.players.find((p) => p.role === 'Bowler' || p.role === 'All-rounder') || team1.players[0];
+
+    return [
+        {
+            batter: team1Batter.name,
+            bowler: team2Bowler.name,
+            runs: 0,
+            balls: 0,
+            dismissals: 0,
+            note: `${team1.shortName} top-order vs ${team2.shortName} strike bowler matchup generated from current squads.`,
+        },
+        {
+            batter: team2Batter.name,
+            bowler: team1Bowler.name,
+            runs: 0,
+            balls: 0,
+            dismissals: 0,
+            note: `${team2.shortName} top-order vs ${team1.shortName} strike bowler matchup generated from current squads.`,
+        },
+    ];
 };
 
 const validateCompletedDetailsAgainstSquads = (match: Match): void => {
@@ -2108,7 +2189,10 @@ export const schedule: Match[] = baseSchedule.map((match) => {
     const team2AvgFor = team2Form.played ? (team2Form.runsFor / team2Form.played).toFixed(1) : '0.0';
     const dynamicVenueStats = computeVenueStatsFromCompletedMatches(match, baseSchedule);
     const dynamicHeadToHead = computeHeadToHeadBeforeMatch(match, baseSchedule);
-    const prediction = computePredictionBeforeMatch({ ...match, venueStats: dynamicVenueStats }, team1Form, team2Form, dynamicHeadToHead);
+    const team1Momentum = computeRecentMomentum(match.team1, match.matchNumber, baseSchedule);
+    const team2Momentum = computeRecentMomentum(match.team2, match.matchNumber, baseSchedule);
+    const rivalryEdge = computeRecentRivalryEdge(match, baseSchedule);
+    const prediction = computePredictionBeforeMatch({ ...match, venueStats: dynamicVenueStats }, team1Form, team2Form, dynamicHeadToHead, team1Momentum, team2Momentum, rivalryEdge);
     const predictedWinnerShortName = resolveTeamName(prediction.predictedWinnerTeamId);
     const team1LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team1, match.matchNumber, baseSchedule);
     const team2LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team2, match.matchNumber, baseSchedule);
@@ -2123,7 +2207,8 @@ export const schedule: Match[] = baseSchedule.map((match) => {
         (isPlayerInTeamSquad(match.team1, battle.batter) && isPlayerInTeamSquad(match.team2, battle.bowler)) ||
         (isPlayerInTeamSquad(match.team2, battle.batter) && isPlayerInTeamSquad(match.team1, battle.bowler))
     ).slice(0, 2);
-    const selectedBattles = filteredBattles.length > 0 ? filteredBattles : squadOnlyFallback;
+    const selectedBattles = (filteredBattles.length > 0 ? filteredBattles : squadOnlyFallback);
+    const ensuredBattles = selectedBattles.length >= 2 ? selectedBattles : buildFallbackBattlesFromSquads(match);
     const completedAtVenue = baseSchedule.filter((m) => m.matchNumber < match.matchNumber && m.venueCity === match.venueCity && m.status === 'completed' && m.completedDetails);
     const recentVenueScores = completedAtVenue.slice(-3).map((m) => m.completedDetails!.innings[0].total);
     const recentVenueAvg = recentVenueScores.length > 0 ? Math.round(mean(recentVenueScores)) : dynamicVenueStats.avgFirstInningsScore;
@@ -2146,7 +2231,7 @@ export const schedule: Match[] = baseSchedule.map((match) => {
         pitchReport,
         venueStats: dynamicVenueStats,
         headToHead: dynamicHeadToHead,
-        playerBattles: selectedBattles,
+        playerBattles: ensuredBattles.slice(0, 2),
         interestingStats: [
             `${team1Name}: ${team1Form.won} wins in ${team1Form.played} completed matches, avg runs ${team1AvgFor}. ${team2Name}: ${team2Form.won} wins in ${team2Form.played}, avg runs ${team2AvgFor}.`,
             `Win predictor (data weighted): ${team1Name} ${prediction.team1WinProbability}% vs ${team2Name} ${prediction.team2WinProbability}%. Projected totals — ${team1Name}: ${prediction.team1ProjectedScore}, ${team2Name}: ${prediction.team2ProjectedScore}.`,
