@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders, findTeamPlayerByName, battingTable, bowlingTable } from './data';
 import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3, Plane, Crown } from 'lucide-react';
@@ -8,6 +8,11 @@ import iplHero from '../ipl.jpeg';
 
 type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details' | 'stats';
 type SavedXI = { playing11: (Player | null)[]; impactPlayer: Player | null };
+type PollStore = {
+    userVotes: Record<string, string>;
+    tally: Record<string, Record<string, number>>;
+    totalVotes: Record<string, number>;
+};
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
 const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
@@ -85,7 +90,28 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
     }
 };
 
+const getInitialPollStore = (): PollStore => {
+    const stored = safeReadStorage<PollStore | Record<string, string>>(MATCH_POLL_KEY, { userVotes: {}, tally: {}, totalVotes: {} });
+    if (stored && typeof stored === 'object' && 'userVotes' in stored) {
+        const typed = stored as PollStore;
+        return {
+            userVotes: typed.userVotes || {},
+            tally: typed.tally || {},
+            totalVotes: typed.totalVotes || {},
+        };
+    }
+
+    const legacyVotes = (stored as Record<string, string>) || {};
+    const migrated: PollStore = { userVotes: legacyVotes, tally: {}, totalVotes: {} };
+    Object.entries(legacyVotes).forEach(([matchId, teamId]) => {
+        migrated.tally[matchId] = { ...(migrated.tally[matchId] || {}), [teamId]: ((migrated.tally[matchId] || {})[teamId] || 0) + 1 };
+        migrated.totalVotes[matchId] = (migrated.totalVotes[matchId] || 0) + 1;
+    });
+    return migrated;
+};
+
 const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.55] origin-bottom' : ''}`;
+const getTeamLogoFallback = (name: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0f172a&color=ffffff&size=64&bold=true`;
 
 const Navigation = ({
                         currentScreen,
@@ -122,7 +148,7 @@ const Navigation = ({
             <div className={`md:hidden fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${isMobileHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
                 <div className={`mx-2 mt-0 rounded-b-2xl px-4 h-16 backdrop-blur-xl flex items-center justify-between ${isDark ? 'bg-black/85 border-white/20' : 'bg-white/95 border-black/20 shadow-lg shadow-black/5'}`}>
                     <button onClick={onLogoClick} className="flex items-center" aria-label="Go to home">
-                        <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
+                        <img src={isDark ? logoLight : logoDark} alt="Logo" loading="eager" decoding="async" onError={(e) => { e.currentTarget.src = isDark ? logoDark : logoLight; }} className="h-16 w-auto object-contain" />
                     </button>
                     <div className="flex items-center gap-2">
                         {currentScreen === 'schedule' && (
@@ -172,7 +198,7 @@ const Navigation = ({
             <div className={`hidden md:block fixed top-0 left-0 right-0 backdrop-blur-xl border-b z-50 ${isDark ? 'bg-[#000000]/95 border-white/20' : 'bg-white/95 border-black/20 shadow-sm'}`}>
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <button className="flex items-center cursor-pointer" onClick={onLogoClick} aria-label="Go to home">
-                        <img src={isDark ? logoLight : logoDark} alt="Logo" className="h-16 w-auto object-contain" />
+                        <img src={isDark ? logoLight : logoDark} alt="Logo" loading="eager" decoding="async" onError={(e) => { e.currentTarget.src = isDark ? logoDark : logoLight; }} className="h-16 w-auto object-contain" />
                     </button>
                     <div className="flex items-center gap-1">
                         {currentScreen === 'schedule' && (
@@ -227,7 +253,8 @@ export default function App() {
     const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
     const [showHomeSearch, setShowHomeSearch] = useState(false);
     const [selectedStatMetricId, setSelectedStatMetricId] = useState(statsMetricLeaders[0]?.id ?? '');
-    const [matchPollVotes, setMatchPollVotes] = useState<Record<string, string>>(() => safeReadStorage<Record<string, string>>(MATCH_POLL_KEY, {}));
+    const [pollStore, setPollStore] = useState<PollStore>(() => getInitialPollStore());
+    const scheduleCardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -238,8 +265,8 @@ export default function App() {
     }, [fantasyXI]);
 
     useEffect(() => {
-        window.localStorage.setItem(MATCH_POLL_KEY, JSON.stringify(matchPollVotes));
-    }, [matchPollVotes]);
+        window.localStorage.setItem(MATCH_POLL_KEY, JSON.stringify(pollStore));
+    }, [pollStore]);
 
     useEffect(() => {
         window.localStorage.setItem('cricto-theme-dark', JSON.stringify(isDark));
@@ -269,6 +296,21 @@ export default function App() {
 
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
+    }, [currentScreen]);
+
+    useEffect(() => {
+        if (currentScreen !== 'schedule_list') return;
+        const today = new Date().toISOString().slice(0, 10);
+        const currentOrNext = schedule.find((match) => match.status !== 'completed' && match.date >= today) ||
+            schedule.find((match) => match.date === today) ||
+            schedule[schedule.length - 1];
+        if (!currentOrNext) return;
+
+        const timer = window.setTimeout(() => {
+            const target = scheduleCardRefs.current[currentOrNext.id];
+            target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 120);
+        return () => window.clearTimeout(timer);
     }, [currentScreen]);
 
     useEffect(() => {
@@ -405,6 +447,87 @@ export default function App() {
             topWickets: purpleCapEntry?.wickets ?? 0,
         };
     }, []);
+    const homeArticles = useMemo(() => {
+        const completedMatches = schedule.filter((match) => match.status === 'completed' && match.completedDetails).sort((a, b) => b.matchNumber - a.matchNumber);
+        const upcomingMatches = schedule.filter((match) => match.status !== 'completed').sort((a, b) => a.matchNumber - b.matchNumber);
+
+        const latestCompleted = completedMatches[0];
+        const nextMatch = upcomingMatches[0];
+
+        const articles = [];
+        if (latestCompleted) {
+            const team1 = teams.find((team) => team.id === latestCompleted.team1);
+            const team2 = teams.find((team) => team.id === latestCompleted.team2);
+            const [innings1, innings2] = latestCompleted.completedDetails!.innings;
+            articles.push({
+                id: `article-recap-${latestCompleted.id}`,
+                title: `Match Recap: ${team1?.shortName} vs ${team2?.shortName}`,
+                summary: latestCompleted.completedDetails?.result || 'Completed match summary',
+                bullets: [
+                    `${team1?.shortName} ${innings1.total}/${innings1.wickets} (${innings1.overs}) vs ${team2?.shortName} ${innings2.total}/${innings2.wickets} (${innings2.overs}).`,
+                    `Player of the match: ${latestCompleted.completedDetails?.playerOfTheMatch || 'N/A'}.`,
+                    ...(latestCompleted.completedDetails?.keyMoments.slice(0, 1) || []),
+                ],
+            });
+        }
+
+        if (nextMatch) {
+            const team1 = teams.find((team) => team.id === nextMatch.team1);
+            const team2 = teams.find((team) => team.id === nextMatch.team2);
+            articles.push({
+                id: `article-preview-${nextMatch.id}`,
+                title: `Next Match Preview: ${team1?.shortName} vs ${team2?.shortName}`,
+                summary: nextMatch.headline,
+                bullets: [
+                    nextMatch.pitchReport,
+                    ...nextMatch.interestingStats.slice(0, 2),
+                ],
+            });
+        }
+
+        if (upcomingMatches[1]) {
+            const second = upcomingMatches[1];
+            const team1 = teams.find((team) => team.id === second.team1);
+            const team2 = teams.find((team) => team.id === second.team2);
+            articles.push({
+                id: `article-watch-${second.id}`,
+                title: `Coming Up: ${team1?.shortName} vs ${team2?.shortName}`,
+                summary: second.headline,
+                bullets: second.interestingStats.slice(0, 3),
+            });
+        }
+
+        return articles;
+    }, []);
+
+    const getPollPercentage = (matchId: string, teamId: string): number => {
+        const matchTotal = pollStore.totalVotes[matchId] || 0;
+        if (matchTotal === 0) return 0;
+        const votes = pollStore.tally[matchId]?.[teamId] || 0;
+        return Math.round((votes / matchTotal) * 100);
+    };
+
+    const handlePollVote = (matchId: string, teamId: string): void => {
+        setPollStore((prev) => {
+            const previousVote = prev.userVotes[matchId];
+            if (previousVote === teamId) return prev;
+
+            const next: PollStore = {
+                userVotes: { ...prev.userVotes, [matchId]: teamId },
+                tally: { ...prev.tally, [matchId]: { ...(prev.tally[matchId] || {}) } },
+                totalVotes: { ...prev.totalVotes },
+            };
+
+            if (previousVote) {
+                next.tally[matchId][previousVote] = Math.max(0, (next.tally[matchId][previousVote] || 0) - 1);
+            } else {
+                next.totalVotes[matchId] = (next.totalVotes[matchId] || 0) + 1;
+            }
+
+            next.tally[matchId][teamId] = (next.tally[matchId][teamId] || 0) + 1;
+            return next;
+        });
+    };
     const isOverseasPlayer = (player: Player) => OVERSEAS_PLAYER_NAMES.has(player.name);
     const getCapType = (player: Player) => {
         if (tournamentCapLeaders.orangeCapPlayer?.id === player.id) return 'orange';
@@ -443,6 +566,7 @@ export default function App() {
                         alt="Cricto loading"
                         loading="eager"
                         decoding="sync"
+                        onError={(e) => { e.currentTarget.src = isDark ? logoDark : logoLight; }}
                         initial={{ scale: 0.65, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -464,6 +588,9 @@ export default function App() {
                     <motion.img
                         src={isDark ? logoLight : logoDark}
                         alt="Loading home"
+                        loading="eager"
+                        decoding="async"
+                        onError={(e) => { e.currentTarget.src = isDark ? logoDark : logoLight; }}
                         initial={{ scale: 0.7, opacity: 0.2, rotate: -20 }}
                         animate={{ scale: [0.7, 1.15, 1], opacity: [0.2, 1, 1], rotate: [-20, 0, 6, 0] }}
                         transition={{ duration: 0.7, ease: 'easeInOut' }}
@@ -868,7 +995,7 @@ export default function App() {
                                     )}
 
                                     <section className={`w-full aspect-[16/9] md:aspect-[20/10] rounded-3xl overflow-hidden border ${isDark ? 'border-white/20 bg-[#0d111a]' : 'border-black/20 bg-slate-50'} shadow-xl relative`}>
-                                        <img src={iplHero} alt="IPL" className="w-full h-full object-cover object-[center_15%] scale-[1.02]" />
+                                        <img src={iplHero} alt="IPL" loading="eager" decoding="async" onError={(e) => { e.currentTarget.src = isDark ? logoLight : logoDark; }} className="w-full h-full object-cover object-[center_15%] scale-[1.02]" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                                         <div className="absolute inset-x-0 bottom-0 p-4 sm:p-8">
                                             <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white/80 font-bold">IPL Fantasy Intelligence</p>
@@ -938,31 +1065,36 @@ export default function App() {
                                         </div>
                                     </section>
                                     {todayMatches.length > 0 && (
-                                        <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
+                                        <section className={`rounded-3xl border p-3 sm:p-6 ${isDark ? 'border-white/20 bg-[#111827]' : 'border-black/20 bg-white'} shadow-xl`}>
                                             <h2 className={`text-xl sm:text-2xl font-black mb-4 ${isDark ? 'text-white' : 'text-black'}`}>Matchday Poll</h2>
                                             <div className="space-y-4">
                                                 {todayMatches.map((match) => {
                                                     const team1 = teams.find((team) => team.id === match.team1);
                                                     const team2 = teams.find((team) => team.id === match.team2);
                                                     if (!team1 || !team2) return null;
-                                                    const votedTeam = matchPollVotes[match.id];
+                                                    const votedTeam = pollStore.userVotes[match.id];
+                                                    const totalVotes = pollStore.totalVotes[match.id] || 0;
                                                     return (
-                                                        <div key={`poll-${match.id}`} className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                                        <div key={`poll-${match.id}`} className={`rounded-2xl border p-3 sm:p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
                                                             <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Who will win • {match.dateLabel}</p>
-                                                            <div className="grid sm:grid-cols-2 gap-3">
+                                                            <div className="grid sm:grid-cols-2 gap-2 sm:gap-3">
                                                                 {[team1, team2].map((team) => (
                                                                     <button
                                                                         key={`vote-${match.id}-${team.id}`}
-                                                                        onClick={() => setMatchPollVotes((prev) => ({ ...prev, [match.id]: team.id }))}
-                                                                        className={`rounded-xl border px-4 py-3 flex items-center gap-3 transition-all ${votedTeam === team.id
+                                                                        onClick={() => handlePollVote(match.id, team.id)}
+                                                                        className={`rounded-xl border px-2.5 py-2 sm:px-4 sm:py-3 flex items-center gap-2 sm:gap-3 transition-all ${votedTeam === team.id
                                                                             ? isDark ? 'border-emerald-300 bg-emerald-400/15' : 'border-emerald-500 bg-emerald-50'
                                                                             : isDark ? 'border-white/20 hover:border-white/40' : 'border-black/20 hover:border-black/40'}`}
                                                                     >
-                                                                        <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
-                                                                        <span className={`font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{team.name}</span>
+                                                                        <img src={team.logoUrl} alt={team.shortName} onError={(e) => { e.currentTarget.src = getTeamLogoFallback(team.shortName); }} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
+                                                                        <div className="flex-1 text-left">
+                                                                            <span className={`font-black block text-xs sm:text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{team.name}</span>
+                                                                            <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{getPollPercentage(match.id, team.id)}%</span>
+                                                                        </div>
                                                                     </button>
                                                                 ))}
                                                             </div>
+                                                            <p className={`mt-3 text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Total votes: {totalVotes}</p>
                                                         </div>
                                                     );
                                                 })}
@@ -1022,44 +1154,22 @@ export default function App() {
                                         )}
                                     </section>
 
-                                    <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
-                                        <div className={`px-4 sm:px-6 py-4 border-b ${isDark ? 'border-white/20 text-white' : 'border-black/20 text-black'} font-black text-lg`}>
-                                            Points Table
+                                    <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Data Stories</h2>
                                         </div>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left border-collapse">
-                                                <thead>
-                                                <tr className={`text-[10px] sm:text-xs uppercase tracking-wider ${isDark ? 'bg-black/30 text-slate-400' : 'bg-slate-100 text-slate-600'}`}>
-                                                    <th className="p-2 sm:p-4 font-bold">Team</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">P</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">W</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">L</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">NRR</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">Pts</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {[...pointsTable].sort((a, b) => b.points - a.points || b.nrr - a.nrr).map((entry) => {
-                                                    const team = teams.find(t => t.id === entry.teamId);
-                                                    if (!team) return null;
-                                                    return (
-                                                        <tr key={entry.teamId} className={`border-t ${isDark ? 'border-white/25' : 'border-black/20'}`}>
-                                                            <td className="p-2 sm:p-4">
-                                                                <div className="flex items-center gap-2 sm:gap-3">
-                                                                    <img src={team.logoUrl} alt={team.shortName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
-                                                                    <span className={`font-bold text-xs sm:text-sm ${isDark ? 'text-white' : 'text-black'}`}>{team.shortName}</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.played}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.won}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.lost}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.nrr > 0 ? `+${entry.nrr}` : entry.nrr}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-sm sm:text-base font-black ${isDark ? 'text-white' : 'text-black'}`}>{entry.points}</td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                                </tbody>
-                                            </table>
+                                        <div className="grid gap-4">
+                                            {homeArticles.map((article) => (
+                                                <article key={article.id} className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                                    <h3 className={`font-black text-base sm:text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{article.title}</h3>
+                                                    <p className={`mt-1 text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{article.summary}</p>
+                                                    <ul className="mt-3 space-y-2">
+                                                        {article.bullets.map((line) => (
+                                                            <li key={line} className={`text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {line}</li>
+                                                        ))}
+                                                    </ul>
+                                                </article>
+                                            ))}
                                         </div>
                                     </section>
                                 </div>
@@ -1224,12 +1334,15 @@ export default function App() {
                                             setCurrentScreen('match_details');
                                         }}
                                         key={match.id}
+                                        ref={(el) => { scheduleCardRefs.current[match.id] = el; }}
                                         className={`w-full text-left transition-colors border rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col gap-4 relative overflow-hidden cursor-pointer group ${isDark ? 'bg-[#151A27] hover:bg-[#1A2133] border-white/20' : 'bg-white hover:bg-slate-50 border-black/20'}`}
                                     >
                                         <div className="absolute top-0 left-0 right-0 h-1 flex">
                                             <div className={`flex-1 bg-gradient-to-r ${team1.gradient}`} />
                                             <div className={`flex-1 bg-gradient-to-l ${team2.gradient}`} />
                                         </div>
+                                        <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${team1.gradient}`} />
+                                        <div className={`absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b ${team2.gradient}`} />
                                         <div className={`flex justify-between items-center text-xs sm:text-sm font-medium uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                             <span>Match {match.matchNumber} • {match.stadium}, {match.venueCity}</span>
                                             <div className="flex items-center gap-2">
@@ -2109,6 +2222,25 @@ export default function App() {
                                                                         {teamMatches.map(match => {
                                                                             const oppTeamId = match.team1 === team.id ? match.team2 : match.team1;
                                                                             const oppTeam = teams.find(t => t.id === oppTeamId);
+                                                                            const isCompleted = match.status === 'completed' && Boolean(match.completedDetails);
+                                                                            let resultPill = 'Upcoming';
+                                                                            let resultPillClass = isDark ? 'text-slate-400 bg-white/10' : 'text-slate-600 bg-slate-200';
+                                                                            if (isCompleted && match.completedDetails) {
+                                                                                const innings = match.completedDetails.innings;
+                                                                                const teamInnings = innings.find((i) => i.teamId === team.id);
+                                                                                const oppInnings = innings.find((i) => i.teamId === oppTeamId);
+                                                                                if (teamInnings && oppInnings) {
+                                                                                    if (teamInnings.total > oppInnings.total) {
+                                                                                        resultPill = `Won by ${teamInnings.total - oppInnings.total} runs`;
+                                                                                        resultPillClass = isDark ? 'text-emerald-300 bg-emerald-500/20' : 'text-emerald-700 bg-emerald-100';
+                                                                                    } else if (teamInnings.total < oppInnings.total) {
+                                                                                        resultPill = `Lost by ${oppInnings.total - teamInnings.total} runs`;
+                                                                                        resultPillClass = isDark ? 'text-rose-300 bg-rose-500/20' : 'text-rose-700 bg-rose-100';
+                                                                                    } else {
+                                                                                        resultPill = 'Tie';
+                                                                                    }
+                                                                                }
+                                                                            }
                                                                             return (
                                                                                 <div
                                                                                     key={match.id}
@@ -2124,6 +2256,7 @@ export default function App() {
                                                                                     <div className="flex flex-col">
                                                                                         <span className={`text-[9px] sm:text-[10px] font-bold ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{match.dateLabel}</span>
                                                                                         <span className={`text-[11px] sm:text-xs font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>vs {oppTeam?.shortName}</span>
+                                                                                        <span className={`mt-1 inline-flex w-fit px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${resultPillClass}`}>{resultPill}</span>
                                                                                     </div>
                                                                                     <ChevronLeft className={`w-3 h-3 sm:w-4 sm:h-4 rotate-180 ${isDark ? 'text-slate-600' : 'text-slate-400'}`} />
                                                                                 </div>

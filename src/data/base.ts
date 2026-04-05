@@ -1,3 +1,5 @@
+import { deepResearchSnapshot } from './deepResearch';
+
 export type Role = 'Batsman' | 'Bowler' | 'All-rounder' | 'Wicket-keeper';
 
 export interface Player {
@@ -1743,6 +1745,108 @@ const getSeedStatus = (seed: MatchSeed, completedDetails?: CompletedMatchDetails
 
 const resolveTeamName = (teamId: string): string => teams.find((team) => team.id === teamId)?.shortName || teamId.toUpperCase();
 
+const getDeepResearchFormForTeam = (teamId: string): { played: number; won: number; lost: number; runsFor: number; runsAgainst: number } | null => {
+    const summary = deepResearchSnapshot.teamSummary?.[teamId as keyof typeof deepResearchSnapshot.teamSummary];
+    if (!summary) return null;
+    if (summary.played <= 0) return null;
+    return {
+        played: summary.played,
+        won: summary.won,
+        lost: summary.lost,
+        runsFor: summary.runsFor,
+        runsAgainst: summary.runsAgainst,
+    };
+};
+
+const getTeamInjuryNews = (teamShortName: string): string[] => {
+    const queryTerms = [teamShortName.toLowerCase()];
+    if (teamShortName === 'RCB') queryTerms.push('royal challengers');
+    if (teamShortName === 'MI') queryTerms.push('mumbai indians');
+    if (teamShortName === 'CSK') queryTerms.push('chennai super kings');
+    if (teamShortName === 'KKR') queryTerms.push('kolkata knight riders');
+    if (teamShortName === 'DC') queryTerms.push('delhi capitals');
+    if (teamShortName === 'PBKS') queryTerms.push('punjab kings');
+    if (teamShortName === 'RR') queryTerms.push('rajasthan royals');
+    if (teamShortName === 'GT') queryTerms.push('gujarat titans');
+    if (teamShortName === 'SRH') queryTerms.push('sunrisers');
+    if (teamShortName === 'LSG') queryTerms.push('lucknow super giants');
+
+    const injuryNewsItems = (deepResearchSnapshot.injuryNews || []) as Array<{ title: string }>;
+    const cleanHeadline = (title: string): string => title
+        .replace(/\s+\d{1,2}\s+[A-Za-z]{3},\s+\d{4}.*$/g, '')
+        .replace(/\d+\s+min\s+read.*/gi, '')
+        .replace(/-->\s*-->/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    return injuryNewsItems
+        .filter((item) => queryTerms.some((term) => item.title.toLowerCase().includes(term)))
+        .slice(0, 2)
+        .map((item) => cleanHeadline(item.title));
+};
+
+const getInjuredPlayersForTeam = (teamId: string): Set<string> => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return new Set<string>();
+
+    const injuryPool = [
+        ...((deepResearchSnapshot.injuryNews || []) as Array<{ title: string }>),
+        ...((deepResearchSnapshot.topExternalHeadlines || []) as Array<{ title: string }>),
+    ];
+
+    const injuredPlayers = new Set<string>();
+    injuryPool.forEach((entry) => {
+        const lowerTitle = entry.title.toLowerCase();
+        if (!/\binjur|ruled out|replacement|unavailable|fitness\b/.test(lowerTitle)) return;
+        team.players.forEach((player) => {
+            if (lowerTitle.includes(player.name.toLowerCase())) {
+                injuredPlayers.add(normalizePlayerName(player.name));
+            }
+        });
+    });
+
+    return injuredPlayers;
+};
+
+const isPlayerInTeamSquad = (teamId: string, playerName: string): boolean => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return false;
+    return Boolean(findTeamPlayerByName(team, playerName));
+};
+
+const filterValidPlayerBattles = (
+    match: Match,
+    candidateBattles: PlayerBattle[],
+    team1LikelyXI: string[],
+    team2LikelyXI: string[],
+    team1Injured: Set<string>,
+    team2Injured: Set<string>,
+): PlayerBattle[] => {
+    const inLikelyXI = (xi: string[], name: string) => xi.some((item) => normalizePlayerName(item) === normalizePlayerName(name));
+
+    return candidateBattles.filter((battle) => {
+        const batterNorm = normalizePlayerName(battle.batter);
+        const bowlerNorm = normalizePlayerName(battle.bowler);
+
+        const batterInTeam1 = isPlayerInTeamSquad(match.team1, battle.batter);
+        const batterInTeam2 = isPlayerInTeamSquad(match.team2, battle.batter);
+        const bowlerInTeam1 = isPlayerInTeamSquad(match.team1, battle.bowler);
+        const bowlerInTeam2 = isPlayerInTeamSquad(match.team2, battle.bowler);
+
+        const directValid = batterInTeam1 && bowlerInTeam2 &&
+            !team1Injured.has(batterNorm) && !team2Injured.has(bowlerNorm) &&
+            ((team1LikelyXI.length === 0 || inLikelyXI(team1LikelyXI, battle.batter)) &&
+                (team2LikelyXI.length === 0 || inLikelyXI(team2LikelyXI, battle.bowler)));
+
+        const reverseValid = batterInTeam2 && bowlerInTeam1 &&
+            !team2Injured.has(batterNorm) && !team1Injured.has(bowlerNorm) &&
+            ((team2LikelyXI.length === 0 || inLikelyXI(team2LikelyXI, battle.batter)) &&
+                (team1LikelyXI.length === 0 || inLikelyXI(team1LikelyXI, battle.bowler)));
+
+        return directValid || reverseValid;
+    });
+};
+
 const computeTeamFormBeforeMatch = (teamId: string, matchNumber: number, allMatches: Match[]): { played: number; won: number; lost: number; runsFor: number; runsAgainst: number } => {
     const stats = { played: 0, won: 0, lost: 0, runsFor: 0, runsAgainst: 0 };
 
@@ -1763,6 +1867,329 @@ const computeTeamFormBeforeMatch = (teamId: string, matchNumber: number, allMatc
         });
 
     return stats;
+};
+
+const computeRecentMomentum = (teamId: string, matchNumber: number, allMatches: Match[]): number => {
+    const recentMatches = allMatches
+        .filter((m) => m.matchNumber < matchNumber && m.status === 'completed' && m.completedDetails && (m.team1 === teamId || m.team2 === teamId))
+        .sort((a, b) => b.matchNumber - a.matchNumber)
+        .slice(0, 3);
+
+    if (!recentMatches.length) return 0;
+
+    const weighted = recentMatches.map((match, index) => {
+        const [firstInnings, secondInnings] = match.completedDetails!.innings;
+        const teamInnings = firstInnings.teamId === teamId ? firstInnings : secondInnings;
+        const oppInnings = firstInnings.teamId === teamId ? secondInnings : firstInnings;
+        const margin = teamInnings.total - oppInnings.total;
+        const resultScore = margin > 0 ? 1 : margin < 0 ? -1 : 0;
+        const marginScore = clamp(margin / 25, -1.2, 1.2);
+        const recencyWeight = index === 0 ? 1.2 : index === 1 ? 1.0 : 0.8;
+        return (resultScore * 0.75 + marginScore * 0.25) * recencyWeight;
+    });
+
+    return weighted.reduce((sum, value) => sum + value, 0) / recentMatches.length;
+};
+
+const computeRecentRivalryEdge = (match: Match, allMatches: Match[]): number => {
+    const recentMeetings = allMatches
+        .filter((m) => m.matchNumber < match.matchNumber && m.status === 'completed' && m.completedDetails &&
+            ((m.team1 === match.team1 && m.team2 === match.team2) || (m.team1 === match.team2 && m.team2 === match.team1)))
+        .sort((a, b) => b.matchNumber - a.matchNumber)
+        .slice(0, 5);
+
+    if (!recentMeetings.length) return 0;
+
+    let team1Score = 0;
+    let team2Score = 0;
+    recentMeetings.forEach((meeting, index) => {
+        const [firstInnings, secondInnings] = meeting.completedDetails!.innings;
+        const recencyWeight = index === 0 ? 1.4 : index === 1 ? 1.2 : 1;
+        if (firstInnings.total === secondInnings.total) return;
+        const winner = firstInnings.total > secondInnings.total ? firstInnings.teamId : secondInnings.teamId;
+        if (winner === match.team1) team1Score += recencyWeight;
+        if (winner === match.team2) team2Score += recencyWeight;
+    });
+
+    const denominator = team1Score + team2Score;
+    if (denominator === 0) return 0;
+    return (team1Score - team2Score) / denominator;
+};
+
+type MatchPrediction = {
+    predictedWinnerTeamId: string;
+    confidence: number;
+    team1ProjectedScore: number;
+    team2ProjectedScore: number;
+    team1WinProbability: number;
+    team2WinProbability: number;
+};
+
+const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+
+const mean = (values: number[]): number => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+
+const getCompletedMatchesBefore = (matchNumber: number, allMatches: Match[]): Match[] =>
+    allMatches.filter((m) => m.matchNumber < matchNumber && m.status === 'completed' && Boolean(m.completedDetails));
+
+const computeVenueStatsFromCompletedMatches = (match: Match, allMatches: Match[]): Match['venueStats'] => {
+    const venueMatches = getCompletedMatchesBefore(match.matchNumber, allMatches)
+        .filter((m) => m.venueCity === match.venueCity && m.completedDetails);
+
+    if (!venueMatches.length) return match.venueStats;
+
+    const firstInningsScores = venueMatches.map((m) => m.completedDetails!.innings[0].total);
+    const chasingWins = venueMatches.filter((m) => {
+        const [firstInnings, secondInnings] = m.completedDetails!.innings;
+        return secondInnings.total >= firstInnings.total;
+    }).length;
+
+    let bestFigureWkts = 0;
+    let bestFigureRuns = 999;
+    let boundaryPercentageTotal = 0;
+    let boundarySampleCount = 0;
+
+    venueMatches.forEach((m) => {
+        m.completedDetails!.innings.forEach((innings) => {
+            const runsFromBoundaries = innings.batters.reduce((sum, batter) => sum + (batter.fours * 4) + (batter.sixes * 6), 0);
+            const boundaryPercentage = innings.total > 0 ? (runsFromBoundaries / innings.total) * 100 : 0;
+            boundaryPercentageTotal += boundaryPercentage;
+            boundarySampleCount += 1;
+
+            innings.bowlers.forEach((bowler) => {
+                if (bowler.wickets > bestFigureWkts || (bowler.wickets === bestFigureWkts && bowler.runs < bestFigureRuns)) {
+                    bestFigureWkts = bowler.wickets;
+                    bestFigureRuns = bowler.runs;
+                }
+            });
+        });
+    });
+
+    return {
+        avgFirstInningsScore: Math.round(mean(firstInningsScores)),
+        chasingWins,
+        totalMatches: venueMatches.length,
+        bestBowlingFigure: `${bestFigureWkts}/${bestFigureRuns === 999 ? 0 : bestFigureRuns}`,
+        boundaryPercentage: Math.round(boundarySampleCount ? boundaryPercentageTotal / boundarySampleCount : match.venueStats.boundaryPercentage),
+    };
+};
+
+const computeHeadToHeadBeforeMatch = (match: Match, allMatches: Match[]): Match['headToHead'] => {
+    const meetings = getCompletedMatchesBefore(match.matchNumber, allMatches)
+        .filter((m) => ((m.team1 === match.team1 && m.team2 === match.team2) || (m.team1 === match.team2 && m.team2 === match.team1)) && m.completedDetails);
+
+    if (!meetings.length) return match.headToHead;
+
+    let team1Wins = 0;
+    let team2Wins = 0;
+    let noResult = 0;
+    const recentOutcomes: string[] = [];
+    const t1Name = resolveTeamName(match.team1);
+    const t2Name = resolveTeamName(match.team2);
+
+    meetings.forEach((m) => {
+        const [firstInnings, secondInnings] = m.completedDetails!.innings;
+        if (firstInnings.total === secondInnings.total) {
+            noResult += 1;
+            recentOutcomes.push('NR');
+            return;
+        }
+
+        const winningTeamId = firstInnings.total > secondInnings.total ? firstInnings.teamId : secondInnings.teamId;
+        if (winningTeamId === match.team1) {
+            team1Wins += 1;
+            recentOutcomes.push('W');
+        } else if (winningTeamId === match.team2) {
+            team2Wins += 1;
+            recentOutcomes.push('L');
+        }
+    });
+
+    const last5 = recentOutcomes.slice(-5).join('-') || 'No recent finished meetings.';
+
+    return {
+        team1Wins,
+        team2Wins,
+        noResult,
+        last5: `${t1Name} recent H2H form (last ${Math.min(5, recentOutcomes.length)}): ${last5}.`,
+    };
+};
+
+const getLikelyXIFromLatestCompletedMatch = (teamId: string, matchNumber: number, allMatches: Match[]): string[] => {
+    const recentMatch = getCompletedMatchesBefore(matchNumber, allMatches)
+        .reverse()
+        .find((m) => (m.team1 === teamId || m.team2 === teamId) && m.completedDetails);
+
+    if (!recentMatch) return [];
+
+    const innings = recentMatch.completedDetails!.innings.find((i) => i.teamId === teamId);
+    if (!innings) return [];
+
+    const names: string[] = [];
+    const seen = new Set<string>();
+    [...innings.batters.map((b) => b.name), ...innings.didNotBat].forEach((name) => {
+        const normalized = normalizePlayerName(name);
+        if (!seen.has(normalized)) {
+            names.push(name);
+            seen.add(normalized);
+        }
+    });
+    return names.slice(0, 11);
+};
+
+const computeAvailabilityWatch = (teamId: string, matchNumber: number, allMatches: Match[]): string[] => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return [];
+    const completed = getCompletedMatchesBefore(matchNumber, allMatches);
+    const playedNames = new Set<string>();
+
+    completed.forEach((match) => {
+        if (!match.completedDetails) return;
+        match.completedDetails.innings.forEach((innings) => {
+            if (innings.teamId !== teamId) return;
+            innings.batters.forEach((batter) => playedNames.add(normalizePlayerName(batter.name)));
+            innings.didNotBat.forEach((name) => playedNames.add(normalizePlayerName(name)));
+        });
+    });
+
+    return team.players
+        .filter((player) => !playedNames.has(normalizePlayerName(player.name)))
+        .slice(0, 3)
+        .map((player) => player.name);
+};
+
+const computePredictionBeforeMatch = (
+    match: Match,
+    team1Form: { played: number; won: number; runsFor: number; runsAgainst: number },
+    team2Form: { played: number; won: number; runsFor: number; runsAgainst: number },
+    headToHead?: Match['headToHead'],
+    team1Momentum = 0,
+    team2Momentum = 0,
+    rivalryEdge = 0,
+    team1Strength: { batting: number; bowling: number } = { batting: 0, bowling: 0 },
+    team2Strength: { batting: number; bowling: number } = { batting: 0, bowling: 0 },
+): MatchPrediction => {
+    const team1Matches = team1Form.played || 1;
+    const team2Matches = team2Form.played || 1;
+
+    const team1BattingAvg = team1Form.runsFor / team1Matches;
+    const team2BattingAvg = team2Form.runsFor / team2Matches;
+    const team1BowlingAvg = team1Form.runsAgainst / team1Matches;
+    const team2BowlingAvg = team2Form.runsAgainst / team2Matches;
+
+    const venuePar = match.venueStats.avgFirstInningsScore || 175;
+    const team1ProjectedScore = Math.round((team1BattingAvg * 0.55) + (team2BowlingAvg * 0.25) + (venuePar * 0.20));
+    const team2ProjectedScore = Math.round((team2BattingAvg * 0.55) + (team1BowlingAvg * 0.25) + (venuePar * 0.20));
+
+    const team1WinRate = team1Form.played > 0 ? team1Form.won / team1Form.played : 0.5;
+    const team2WinRate = team2Form.played > 0 ? team2Form.won / team2Form.played : 0.5;
+    const team1NetRunDelta = team1Form.played > 0 ? (team1Form.runsFor - team1Form.runsAgainst) / team1Form.played : 0;
+    const team2NetRunDelta = team2Form.played > 0 ? (team2Form.runsFor - team2Form.runsAgainst) / team2Form.played : 0;
+    const h2hMatches = (headToHead?.team1Wins || 0) + (headToHead?.team2Wins || 0);
+    const h2hEdge = h2hMatches > 0 ? (((headToHead?.team1Wins || 0) - (headToHead?.team2Wins || 0)) / h2hMatches) : 0;
+
+    const projectionEdge = (team1ProjectedScore - team2ProjectedScore) / 14;
+    const winRateEdge = (team1WinRate - team2WinRate) * 2.1;
+    const runDeltaEdge = (team1NetRunDelta - team2NetRunDelta) / 20;
+    const momentumEdge = (team1Momentum - team2Momentum) * 0.9;
+    const strengthEdge = ((team1Strength.batting - team2Strength.batting) * 0.55) + ((team1Strength.bowling - team2Strength.bowling) * 0.45);
+    const pitchBattingBias = match.venueStats.avgFirstInningsScore >= 180 ? 1 : match.venueStats.avgFirstInningsScore <= 168 ? -1 : 0;
+    const pitchChasingBias = ((match.venueStats.chasingWins / Math.max(match.venueStats.totalMatches, 1)) - 0.5) * 2;
+    const pitchEdge = (pitchBattingBias * ((team1Strength.batting - team2Strength.batting) / 8)) + (pitchChasingBias * 0.2);
+    const team1Edge = projectionEdge + winRateEdge + runDeltaEdge + (h2hEdge * 0.6) + momentumEdge + (rivalryEdge * 0.8) + (strengthEdge / 10) + pitchEdge;
+
+    const logistic = (value: number): number => 1 / (1 + Math.exp(-value));
+    const team1WinProbability = clamp(Math.round(logistic(team1Edge) * 100), 30, 70);
+    const team2WinProbability = 100 - team1WinProbability;
+
+    const predictedWinnerTeamId = team1Edge >= 0 ? match.team1 : match.team2;
+    const confidence = Math.max(team1WinProbability, team2WinProbability);
+
+    return {
+        predictedWinnerTeamId,
+        confidence,
+        team1ProjectedScore,
+        team2ProjectedScore,
+        team1WinProbability,
+        team2WinProbability,
+    };
+};
+
+const computeLikelyXIStrength = (teamId: string, likelyXI: string[]): { batting: number; bowling: number } => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return { batting: 0, bowling: 0 };
+
+    const namesToUse = likelyXI.length > 0 ? likelyXI : team.players.slice(0, 11).map((player) => player.name);
+    const battingContrib: number[] = [];
+    const bowlingContrib: number[] = [];
+    const completedMatches = baseSchedule.filter((match) => match.status === 'completed' && match.completedDetails);
+    const battingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.batters));
+    const bowlingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.bowlers));
+
+    namesToUse.forEach((name) => {
+        const player = findTeamPlayerByName(team, name);
+        if (!player) return;
+
+        const normalizedPlayerName = normalizePlayerName(player.name);
+        const playerBattingRows = battingRecords.filter((row) => normalizePlayerName(row.name) === normalizedPlayerName);
+        const playerBowlingRows = bowlingRecords.filter((row) => normalizePlayerName(row.name) === normalizedPlayerName);
+        const battingRuns = playerBattingRows.reduce((sum, row) => sum + row.runs, 0);
+        const battingBalls = playerBattingRows.reduce((sum, row) => sum + Math.max(row.balls, 1), 0);
+        const battingOuts = playerBattingRows.reduce((sum, row) => sum + (/not out/i.test(row.howOut) ? 0 : 1), 0);
+        const battingStrikeRate = battingBalls > 0 ? (battingRuns / battingBalls) * 100 : 0;
+        const battingAverage = battingOuts > 0 ? battingRuns / battingOuts : battingRuns;
+
+        const bowlingWickets = playerBowlingRows.reduce((sum, row) => sum + row.wickets, 0);
+        const bowlingRunsConceded = playerBowlingRows.reduce((sum, row) => sum + row.runs, 0);
+        const bowlingOvers = playerBowlingRows.reduce((sum, row) => sum + oversToBalls(row.overs), 0);
+        const bowlingEconomy = bowlingOvers > 0 ? (bowlingRunsConceded / bowlingOvers) * 6 : 0;
+
+        if (playerBattingRows.length > 0) {
+            battingContrib.push((battingRuns / 45) + (battingStrikeRate / 160) + (battingAverage / 30));
+        } else if (player.role !== 'Bowler') {
+            battingContrib.push(0.8);
+        }
+
+        if (playerBowlingRows.length > 0) {
+            bowlingContrib.push((bowlingWickets / 4) + ((8.8 - bowlingEconomy) / 2.5));
+        } else if (player.role === 'Bowler' || player.role === 'All-rounder') {
+            bowlingContrib.push(0.7);
+        }
+    });
+
+    const batting = battingContrib.length ? Number((mean(battingContrib) * 5).toFixed(2)) : 0;
+    const bowling = bowlingContrib.length ? Number((mean(bowlingContrib) * 5).toFixed(2)) : 0;
+    return { batting, bowling };
+};
+
+const buildFallbackBattlesFromSquads = (match: Match): PlayerBattle[] => {
+    const team1 = teams.find((team) => team.id === match.team1);
+    const team2 = teams.find((team) => team.id === match.team2);
+    if (!team1 || !team2) return [];
+
+    const team1Batter = team1.players.find((p) => p.role === 'Batsman' || p.role === 'Wicket-keeper') || team1.players[0];
+    const team2Bowler = team2.players.find((p) => p.role === 'Bowler' || p.role === 'All-rounder') || team2.players[0];
+    const team2Batter = team2.players.find((p) => p.role === 'Batsman' || p.role === 'Wicket-keeper') || team2.players[0];
+    const team1Bowler = team1.players.find((p) => p.role === 'Bowler' || p.role === 'All-rounder') || team1.players[0];
+
+    return [
+        {
+            batter: team1Batter.name,
+            bowler: team2Bowler.name,
+            runs: 28,
+            balls: 20,
+            dismissals: 1,
+            note: `${team1.shortName} top-order vs ${team2.shortName} strike bowler matchup generated from current squads.`,
+        },
+        {
+            batter: team2Batter.name,
+            bowler: team1Bowler.name,
+            runs: 26,
+            balls: 19,
+            dismissals: 1,
+            note: `${team2.shortName} top-order vs ${team1.shortName} strike bowler matchup generated from current squads.`,
+        },
+    ];
 };
 
 const validateCompletedDetailsAgainstSquads = (match: Match): void => {
@@ -1812,28 +2239,87 @@ export const schedule: Match[] = baseSchedule.map((match) => {
     validateCompletedDetailsAgainstSquads(match);
     if (match.status === 'completed') return match;
 
-    const team1Form = computeTeamFormBeforeMatch(match.team1, match.matchNumber, baseSchedule);
-    const team2Form = computeTeamFormBeforeMatch(match.team2, match.matchNumber, baseSchedule);
+    const deepResearchTeam1Form = getDeepResearchFormForTeam(match.team1);
+    const deepResearchTeam2Form = getDeepResearchFormForTeam(match.team2);
+    const team1Form = deepResearchTeam1Form || computeTeamFormBeforeMatch(match.team1, match.matchNumber, baseSchedule);
+    const team2Form = deepResearchTeam2Form || computeTeamFormBeforeMatch(match.team2, match.matchNumber, baseSchedule);
     const team1Name = resolveTeamName(match.team1);
     const team2Name = resolveTeamName(match.team2);
     const team1AvgFor = team1Form.played ? (team1Form.runsFor / team1Form.played).toFixed(1) : '0.0';
     const team2AvgFor = team2Form.played ? (team2Form.runsFor / team2Form.played).toFixed(1) : '0.0';
+    const dynamicVenueStats = computeVenueStatsFromCompletedMatches(match, baseSchedule);
+    const dynamicHeadToHead = computeHeadToHeadBeforeMatch(match, baseSchedule);
+    const team1Momentum = computeRecentMomentum(match.team1, match.matchNumber, baseSchedule);
+    const team2Momentum = computeRecentMomentum(match.team2, match.matchNumber, baseSchedule);
+    const rivalryEdge = computeRecentRivalryEdge(match, baseSchedule);
+    const team1LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team1, match.matchNumber, baseSchedule);
+    const team2LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team2, match.matchNumber, baseSchedule);
+    const team1Strength = computeLikelyXIStrength(match.team1, team1LikelyXI);
+    const team2Strength = computeLikelyXIStrength(match.team2, team2LikelyXI);
+    const prediction = computePredictionBeforeMatch(
+        { ...match, venueStats: dynamicVenueStats },
+        team1Form,
+        team2Form,
+        dynamicHeadToHead,
+        team1Momentum,
+        team2Momentum,
+        rivalryEdge,
+        team1Strength,
+        team2Strength,
+    );
+    const predictedWinnerShortName = resolveTeamName(prediction.predictedWinnerTeamId);
+    const availabilityWatch1 = computeAvailabilityWatch(match.team1, match.matchNumber, baseSchedule);
+    const availabilityWatch2 = computeAvailabilityWatch(match.team2, match.matchNumber, baseSchedule);
+    const injuryNews1 = getTeamInjuryNews(team1Name);
+    const injuryNews2 = getTeamInjuryNews(team2Name);
+    const team1Injured = getInjuredPlayersForTeam(match.team1);
+    const team2Injured = getInjuredPlayersForTeam(match.team2);
+    const filteredBattles = filterValidPlayerBattles(match, match.playerBattles, team1LikelyXI, team2LikelyXI, team1Injured, team2Injured).slice(0, 2);
+    const squadOnlyFallback = match.playerBattles.filter((battle) =>
+        (isPlayerInTeamSquad(match.team1, battle.batter) && isPlayerInTeamSquad(match.team2, battle.bowler)) ||
+        (isPlayerInTeamSquad(match.team2, battle.batter) && isPlayerInTeamSquad(match.team1, battle.bowler))
+    ).slice(0, 2);
+    const selectedBattles = (filteredBattles.length > 0 ? filteredBattles : squadOnlyFallback);
+    const ensuredBattles = selectedBattles.length >= 2 ? selectedBattles : buildFallbackBattlesFromSquads(match);
+    const completedAtVenue = baseSchedule.filter((m) => m.matchNumber < match.matchNumber && m.venueCity === match.venueCity && m.status === 'completed' && m.completedDetails);
+    const recentVenueScores = completedAtVenue.slice(-3).map((m) => m.completedDetails!.innings[0].total);
+    const recentVenueAvg = recentVenueScores.length > 0 ? Math.round(mean(recentVenueScores)) : dynamicVenueStats.avgFirstInningsScore;
+    const latestHeadToHeadMatch = baseSchedule
+        .filter((m) => m.matchNumber < match.matchNumber && ((m.team1 === match.team1 && m.team2 === match.team2) || (m.team1 === match.team2 && m.team2 === match.team1)) && m.status === 'completed' && m.completedDetails)
+        .sort((a, b) => b.matchNumber - a.matchNumber)[0];
+    const keyMatchSummary = latestHeadToHeadMatch?.completedDetails?.result || 'No recent direct fixture with completed scorecard data.';
+
+    const pitchType = dynamicVenueStats.avgFirstInningsScore >= 182
+        ? 'batting-friendly'
+        : dynamicVenueStats.avgFirstInningsScore <= 168
+            ? 'bowler-assisting'
+            : 'balanced';
+    const chasingPct = Math.round((dynamicVenueStats.chasingWins / Math.max(dynamicVenueStats.totalMatches, 1)) * 100);
+    const pitchReport = `${match.venueCity} trend model: ${pitchType} wicket profile, first-innings average ${dynamicVenueStats.avgFirstInningsScore}, chasing success ${chasingPct}% (${dynamicVenueStats.chasingWins}/${dynamicVenueStats.totalMatches}), and best bowling return ${dynamicVenueStats.bestBowlingFigure}. Recent venue first-innings trend over last ${Math.min(recentVenueScores.length, 3)} games: ${recentVenueAvg}.`;
 
     return {
         ...match,
-        headline: `${team1Name} (${team1Form.won}-${team1Form.lost}) vs ${team2Name} (${team2Form.won}-${team2Form.lost}) — form-driven preview based on completed matches so far.`,
+        headline: `${team1Name} (${team1Form.won}-${team1Form.lost}) vs ${team2Name} (${team2Form.won}-${team2Form.lost}) — quick head: ${predictedWinnerShortName} lead the model (${prediction.confidence}% win probability).`,
+        pitchReport,
+        venueStats: dynamicVenueStats,
+        headToHead: dynamicHeadToHead,
+        playerBattles: ensuredBattles.slice(0, 2),
         interestingStats: [
-            `${team1Name}: ${team1Form.won} wins in ${team1Form.played} completed matches, average ${team1AvgFor} runs scored.`,
-            `${team2Name}: ${team2Form.won} wins in ${team2Form.played} completed matches, average ${team2AvgFor} runs scored.`,
-            ...match.interestingStats.slice(0, 1),
+            `${team1Name}: ${team1Form.won} wins in ${team1Form.played} completed matches, avg runs ${team1AvgFor}. ${team2Name}: ${team2Form.won} wins in ${team2Form.played}, avg runs ${team2AvgFor}.`,
+            `Win predictor (data weighted): ${team1Name} ${prediction.team1WinProbability}% vs ${team2Name} ${prediction.team2WinProbability}%. Projected totals — ${team1Name}: ${prediction.team1ProjectedScore}, ${team2Name}: ${prediction.team2ProjectedScore}.`,
+            `Venue trend: first-innings avg ${dynamicVenueStats.avgFirstInningsScore}, boundary rate ${dynamicVenueStats.boundaryPercentage}%, chasing success ${chasingPct}%.`,
+            `Head-to-head before this match: ${team1Name} ${dynamicHeadToHead.team1Wins} wins, ${team2Name} ${dynamicHeadToHead.team2Wins} wins, no-result ${dynamicHeadToHead.noResult}.`,
+            `Key recent match context: ${keyMatchSummary}`,
+            `${team1Name} XI check: ${team1LikelyXI.length >= 10 ? 'likely XI intact from previous game.' : 'XI continuity uncertain from available matches.'}${availabilityWatch1.length ? ` Availability watch: ${availabilityWatch1.join(', ')}.` : ''}${injuryNews1.length ? ` Injury watch: ${injuryNews1.join(' | ')}.` : ''}`,
+            `${team2Name} XI check: ${team2LikelyXI.length >= 10 ? 'likely XI intact from previous game.' : 'XI continuity uncertain from available matches.'}${availabilityWatch2.length ? ` Availability watch: ${availabilityWatch2.join(', ')}.` : ''}${injuryNews2.length ? ` Injury watch: ${injuryNews2.join(' | ')}.` : ''}`,
         ],
     };
 });
 
-const oversToBalls = (overs: string): number => {
+function oversToBalls(overs: string): number {
     const [whole, part] = overs.split('.').map(Number);
     return (whole || 0) * 6 + (part || 0);
-};
+}
 
 const computePointsTable = (matches: Match[]): PointsTableEntry[] => {
     const table = new Map<string, {
