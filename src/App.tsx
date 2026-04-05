@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { teams, Team, Player, schedule, Match, pointsTable, playerDetails, statsMetricLeaders, findTeamPlayerByName, battingTable, bowlingTable } from './data';
 import { ChevronLeft, Users, Shield, Zap, Check, X, Trophy, Calendar, MapPin, Info, LayoutList, ListOrdered, Sun, Moon, Home, Search, BarChart3, Plane, Crown } from 'lucide-react';
@@ -254,6 +254,7 @@ export default function App() {
     const [showHomeSearch, setShowHomeSearch] = useState(false);
     const [selectedStatMetricId, setSelectedStatMetricId] = useState(statsMetricLeaders[0]?.id ?? '');
     const [pollStore, setPollStore] = useState<PollStore>(() => getInitialPollStore());
+    const scheduleCardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -295,6 +296,21 @@ export default function App() {
 
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
+    }, [currentScreen]);
+
+    useEffect(() => {
+        if (currentScreen !== 'schedule_list') return;
+        const today = new Date().toISOString().slice(0, 10);
+        const currentOrNext = schedule.find((match) => match.status !== 'completed' && match.date >= today) ||
+            schedule.find((match) => match.date === today) ||
+            schedule[schedule.length - 1];
+        if (!currentOrNext) return;
+
+        const timer = window.setTimeout(() => {
+            const target = scheduleCardRefs.current[currentOrNext.id];
+            target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 120);
+        return () => window.clearTimeout(timer);
     }, [currentScreen]);
 
     useEffect(() => {
@@ -1318,6 +1334,7 @@ export default function App() {
                                             setCurrentScreen('match_details');
                                         }}
                                         key={match.id}
+                                        ref={(el) => { scheduleCardRefs.current[match.id] = el; }}
                                         className={`w-full text-left transition-colors border rounded-2xl p-4 sm:p-6 shadow-lg flex flex-col gap-4 relative overflow-hidden cursor-pointer group ${isDark ? 'bg-[#151A27] hover:bg-[#1A2133] border-white/20' : 'bg-white hover:bg-slate-50 border-black/20'}`}
                                     >
                                         <div className="absolute top-0 left-0 right-0 h-1 flex">
