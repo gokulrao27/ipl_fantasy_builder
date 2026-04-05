@@ -2123,12 +2123,12 @@ const computeLikelyXIStrength = (teamId: string, likelyXI: string[]): { batting:
     const battingContrib: number[] = [];
     const bowlingContrib: number[] = [];
     const completedMatches = baseSchedule.filter((match) => match.status === 'completed' && match.completedDetails);
+    const battingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.batters));
+    const bowlingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.bowlers));
 
     namesToUse.forEach((name) => {
         const player = findTeamPlayerByName(team, name);
         if (!player) return;
-        const battingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.batters));
-        const bowlingRecords = completedMatches.flatMap((match) => match.completedDetails!.innings.flatMap((innings) => innings.bowlers));
 
         const normalizedPlayerName = normalizePlayerName(player.name);
         const playerBattingRows = battingRecords.filter((row) => normalizePlayerName(row.name) === normalizedPlayerName);
@@ -2316,10 +2316,10 @@ export const schedule: Match[] = baseSchedule.map((match) => {
     };
 });
 
-const oversToBalls = (overs: string): number => {
+function oversToBalls(overs: string): number {
     const [whole, part] = overs.split('.').map(Number);
     return (whole || 0) * 6 + (part || 0);
-};
+}
 
 const computePointsTable = (matches: Match[]): PointsTableEntry[] => {
     const table = new Map<string, {
