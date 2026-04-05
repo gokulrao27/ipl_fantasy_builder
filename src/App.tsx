@@ -1341,6 +1341,8 @@ export default function App() {
                                             <div className={`flex-1 bg-gradient-to-r ${team1.gradient}`} />
                                             <div className={`flex-1 bg-gradient-to-l ${team2.gradient}`} />
                                         </div>
+                                        <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${team1.gradient}`} />
+                                        <div className={`absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b ${team2.gradient}`} />
                                         <div className={`flex justify-between items-center text-xs sm:text-sm font-medium uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                             <span>Match {match.matchNumber} • {match.stadium}, {match.venueCity}</span>
                                             <div className="flex items-center gap-2">
