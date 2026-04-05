@@ -8,6 +8,11 @@ import iplHero from '../ipl.jpeg';
 
 type Screen = 'teams' | 'squad' | 'builder' | 'dashboard' | 'schedule' | 'schedule_list' | 'match_details' | 'compare_xi' | 'fantasy_xi' | 'points_table' | 'player_details' | 'stats';
 type SavedXI = { playing11: (Player | null)[]; impactPlayer: Player | null };
+type PollStore = {
+    userVotes: Record<string, string>;
+    tally: Record<string, Record<string, number>>;
+    totalVotes: Record<string, number>;
+};
 
 const SAVED_XI_KEY = 'ipl-builder-saved-xis';
 const FANTASY_XI_KEY = 'ipl-builder-fantasy-xis';
@@ -83,6 +88,26 @@ const safeReadStorage = <T,>(key: string, fallback: T): T => {
     } catch {
         return fallback;
     }
+};
+
+const getInitialPollStore = (): PollStore => {
+    const stored = safeReadStorage<PollStore | Record<string, string>>(MATCH_POLL_KEY, { userVotes: {}, tally: {}, totalVotes: {} });
+    if (stored && typeof stored === 'object' && 'userVotes' in stored) {
+        const typed = stored as PollStore;
+        return {
+            userVotes: typed.userVotes || {},
+            tally: typed.tally || {},
+            totalVotes: typed.totalVotes || {},
+        };
+    }
+
+    const legacyVotes = (stored as Record<string, string>) || {};
+    const migrated: PollStore = { userVotes: legacyVotes, tally: {}, totalVotes: {} };
+    Object.entries(legacyVotes).forEach(([matchId, teamId]) => {
+        migrated.tally[matchId] = { ...(migrated.tally[matchId] || {}), [teamId]: ((migrated.tally[matchId] || {})[teamId] || 0) + 1 };
+        migrated.totalVotes[matchId] = (migrated.totalVotes[matchId] || 0) + 1;
+    });
+    return migrated;
 };
 
 const getPlayerImageClass = (playerId: string, baseClassName: string) => `${baseClassName} ${playerId.startsWith('rcb') ? 'scale-[1.55] origin-bottom' : ''}`;
@@ -227,7 +252,7 @@ export default function App() {
     const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
     const [showHomeSearch, setShowHomeSearch] = useState(false);
     const [selectedStatMetricId, setSelectedStatMetricId] = useState(statsMetricLeaders[0]?.id ?? '');
-    const [matchPollVotes, setMatchPollVotes] = useState<Record<string, string>>(() => safeReadStorage<Record<string, string>>(MATCH_POLL_KEY, {}));
+    const [pollStore, setPollStore] = useState<PollStore>(() => getInitialPollStore());
 
     useEffect(() => {
         window.localStorage.setItem(SAVED_XI_KEY, JSON.stringify(savedXIs));
@@ -238,8 +263,8 @@ export default function App() {
     }, [fantasyXI]);
 
     useEffect(() => {
-        window.localStorage.setItem(MATCH_POLL_KEY, JSON.stringify(matchPollVotes));
-    }, [matchPollVotes]);
+        window.localStorage.setItem(MATCH_POLL_KEY, JSON.stringify(pollStore));
+    }, [pollStore]);
 
     useEffect(() => {
         window.localStorage.setItem('cricto-theme-dark', JSON.stringify(isDark));
@@ -405,6 +430,87 @@ export default function App() {
             topWickets: purpleCapEntry?.wickets ?? 0,
         };
     }, []);
+    const homeArticles = useMemo(() => {
+        const completedMatches = schedule.filter((match) => match.status === 'completed' && match.completedDetails).sort((a, b) => b.matchNumber - a.matchNumber);
+        const upcomingMatches = schedule.filter((match) => match.status !== 'completed').sort((a, b) => a.matchNumber - b.matchNumber);
+
+        const latestCompleted = completedMatches[0];
+        const nextMatch = upcomingMatches[0];
+
+        const articles = [];
+        if (latestCompleted) {
+            const team1 = teams.find((team) => team.id === latestCompleted.team1);
+            const team2 = teams.find((team) => team.id === latestCompleted.team2);
+            const [innings1, innings2] = latestCompleted.completedDetails!.innings;
+            articles.push({
+                id: `article-recap-${latestCompleted.id}`,
+                title: `Match Recap: ${team1?.shortName} vs ${team2?.shortName}`,
+                summary: latestCompleted.completedDetails?.result || 'Completed match summary',
+                bullets: [
+                    `${team1?.shortName} ${innings1.total}/${innings1.wickets} (${innings1.overs}) vs ${team2?.shortName} ${innings2.total}/${innings2.wickets} (${innings2.overs}).`,
+                    `Player of the match: ${latestCompleted.completedDetails?.playerOfTheMatch || 'N/A'}.`,
+                    ...(latestCompleted.completedDetails?.keyMoments.slice(0, 1) || []),
+                ],
+            });
+        }
+
+        if (nextMatch) {
+            const team1 = teams.find((team) => team.id === nextMatch.team1);
+            const team2 = teams.find((team) => team.id === nextMatch.team2);
+            articles.push({
+                id: `article-preview-${nextMatch.id}`,
+                title: `Next Match Preview: ${team1?.shortName} vs ${team2?.shortName}`,
+                summary: nextMatch.headline,
+                bullets: [
+                    nextMatch.pitchReport,
+                    ...nextMatch.interestingStats.slice(0, 2),
+                ],
+            });
+        }
+
+        if (upcomingMatches[1]) {
+            const second = upcomingMatches[1];
+            const team1 = teams.find((team) => team.id === second.team1);
+            const team2 = teams.find((team) => team.id === second.team2);
+            articles.push({
+                id: `article-watch-${second.id}`,
+                title: `Coming Up: ${team1?.shortName} vs ${team2?.shortName}`,
+                summary: second.headline,
+                bullets: second.interestingStats.slice(0, 3),
+            });
+        }
+
+        return articles;
+    }, []);
+
+    const getPollPercentage = (matchId: string, teamId: string): number => {
+        const matchTotal = pollStore.totalVotes[matchId] || 0;
+        if (matchTotal === 0) return 0;
+        const votes = pollStore.tally[matchId]?.[teamId] || 0;
+        return Math.round((votes / matchTotal) * 100);
+    };
+
+    const handlePollVote = (matchId: string, teamId: string): void => {
+        setPollStore((prev) => {
+            const previousVote = prev.userVotes[matchId];
+            if (previousVote === teamId) return prev;
+
+            const next: PollStore = {
+                userVotes: { ...prev.userVotes, [matchId]: teamId },
+                tally: { ...prev.tally, [matchId]: { ...(prev.tally[matchId] || {}) } },
+                totalVotes: { ...prev.totalVotes },
+            };
+
+            if (previousVote) {
+                next.tally[matchId][previousVote] = Math.max(0, (next.tally[matchId][previousVote] || 0) - 1);
+            } else {
+                next.totalVotes[matchId] = (next.totalVotes[matchId] || 0) + 1;
+            }
+
+            next.tally[matchId][teamId] = (next.tally[matchId][teamId] || 0) + 1;
+            return next;
+        });
+    };
     const isOverseasPlayer = (player: Player) => OVERSEAS_PLAYER_NAMES.has(player.name);
     const getCapType = (player: Player) => {
         if (tournamentCapLeaders.orangeCapPlayer?.id === player.id) return 'orange';
@@ -945,7 +1051,8 @@ export default function App() {
                                                     const team1 = teams.find((team) => team.id === match.team1);
                                                     const team2 = teams.find((team) => team.id === match.team2);
                                                     if (!team1 || !team2) return null;
-                                                    const votedTeam = matchPollVotes[match.id];
+                                                    const votedTeam = pollStore.userVotes[match.id];
+                                                    const totalVotes = pollStore.totalVotes[match.id] || 0;
                                                     return (
                                                         <div key={`poll-${match.id}`} className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
                                                             <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Who will win • {match.dateLabel}</p>
@@ -953,16 +1060,20 @@ export default function App() {
                                                                 {[team1, team2].map((team) => (
                                                                     <button
                                                                         key={`vote-${match.id}-${team.id}`}
-                                                                        onClick={() => setMatchPollVotes((prev) => ({ ...prev, [match.id]: team.id }))}
+                                                                        onClick={() => handlePollVote(match.id, team.id)}
                                                                         className={`rounded-xl border px-4 py-3 flex items-center gap-3 transition-all ${votedTeam === team.id
                                                                             ? isDark ? 'border-emerald-300 bg-emerald-400/15' : 'border-emerald-500 bg-emerald-50'
                                                                             : isDark ? 'border-white/20 hover:border-white/40' : 'border-black/20 hover:border-black/40'}`}
                                                                     >
                                                                         <img src={team.logoUrl} alt={team.shortName} className="w-8 h-8 object-contain" />
-                                                                        <span className={`font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{team.name}</span>
+                                                                        <div className="flex-1 text-left">
+                                                                            <span className={`font-black block ${isDark ? 'text-white' : 'text-slate-900'}`}>{team.name}</span>
+                                                                            <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{getPollPercentage(match.id, team.id)}%</span>
+                                                                        </div>
                                                                     </button>
                                                                 ))}
                                                             </div>
+                                                            <p className={`mt-3 text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Total votes: {totalVotes}</p>
                                                         </div>
                                                     );
                                                 })}
@@ -1022,44 +1133,23 @@ export default function App() {
                                         )}
                                     </section>
 
-                                    <section className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
-                                        <div className={`px-4 sm:px-6 py-4 border-b ${isDark ? 'border-white/20 text-white' : 'border-black/20 text-black'} font-black text-lg`}>
-                                            Points Table
+                                    <section className={`rounded-3xl border p-4 sm:p-6 ${isDark ? 'bg-[#111827] border-white/20' : 'bg-white border-black/20'} shadow-xl`}>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h2 className={`text-xl sm:text-2xl font-black ${isDark ? 'text-white' : 'text-black'}`}>Data Stories (Auto-updated)</h2>
+                                            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Updates after completed matches</span>
                                         </div>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left border-collapse">
-                                                <thead>
-                                                <tr className={`text-[10px] sm:text-xs uppercase tracking-wider ${isDark ? 'bg-black/30 text-slate-400' : 'bg-slate-100 text-slate-600'}`}>
-                                                    <th className="p-2 sm:p-4 font-bold">Team</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">P</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">W</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">L</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">NRR</th>
-                                                    <th className="p-2 sm:p-4 font-bold text-center">Pts</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {[...pointsTable].sort((a, b) => b.points - a.points || b.nrr - a.nrr).map((entry) => {
-                                                    const team = teams.find(t => t.id === entry.teamId);
-                                                    if (!team) return null;
-                                                    return (
-                                                        <tr key={entry.teamId} className={`border-t ${isDark ? 'border-white/25' : 'border-black/20'}`}>
-                                                            <td className="p-2 sm:p-4">
-                                                                <div className="flex items-center gap-2 sm:gap-3">
-                                                                    <img src={team.logoUrl} alt={team.shortName} className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
-                                                                    <span className={`font-bold text-xs sm:text-sm ${isDark ? 'text-white' : 'text-black'}`}>{team.shortName}</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.played}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.won}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.lost}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{entry.nrr > 0 ? `+${entry.nrr}` : entry.nrr}</td>
-                                                            <td className={`p-2 sm:p-4 text-center text-sm sm:text-base font-black ${isDark ? 'text-white' : 'text-black'}`}>{entry.points}</td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                                </tbody>
-                                            </table>
+                                        <div className="grid gap-4">
+                                            {homeArticles.map((article) => (
+                                                <article key={article.id} className={`rounded-2xl border p-4 ${isDark ? 'border-white/20 bg-black/20' : 'border-black/20 bg-slate-50'}`}>
+                                                    <h3 className={`font-black text-base sm:text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{article.title}</h3>
+                                                    <p className={`mt-1 text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{article.summary}</p>
+                                                    <ul className="mt-3 space-y-2">
+                                                        {article.bullets.map((line) => (
+                                                            <li key={line} className={`text-xs sm:text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>• {line}</li>
+                                                        ))}
+                                                    </ul>
+                                                </article>
+                                            ))}
                                         </div>
                                     </section>
                                 </div>
