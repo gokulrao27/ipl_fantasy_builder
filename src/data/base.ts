@@ -24,6 +24,8 @@ const playerNameAliases: Record<string, string> = {
     mshahrukhkhan: 'shahrukhkhan',
     shahbazahamad: 'shahbazahmed',
     vijaykumarvyshak: 'vyshakvijaykumar',
+    mohammedshami: 'mohammadshami',
+    manimaransiddharth: 'msiddharth',
 };
 
 export const normalizePlayerName = (name: string): string => {
@@ -733,7 +735,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 7, date: '2026-04-03', dateLabel: '03 Apr', day: 'Friday', team1: 'csk', team2: 'pbks', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium', status: 'completed' },
     { matchNumber: 8, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'dc', team2: 'mi', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium', status: 'completed' },
     { matchNumber: 9, date: '2026-04-04', dateLabel: '04 Apr', day: 'Saturday', team1: 'gt', team2: 'rr', venueCity: 'Ahmedabad', stadium: 'Narendra Modi Stadium', status: 'completed' },
-    { matchNumber: 10, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'srh', team2: 'lsg', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium' },
+    { matchNumber: 10, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'srh', team2: 'lsg', venueCity: 'Hyderabad', stadium: 'Rajiv Gandhi International Stadium', status: 'completed' },
     { matchNumber: 11, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'rcb', team2: 'csk', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium' },
     { matchNumber: 12, date: '2026-04-06', dateLabel: '06 Apr', day: 'Monday', team1: 'kkr', team2: 'pbks', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 13, date: '2026-04-07', dateLabel: '07 Apr', day: 'Tuesday', team1: 'rr', team2: 'mi', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
@@ -1671,6 +1673,103 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['78/1 (Kumar Kushagra, 7.6 ov)', '107/2 (Sai Sudharsan, 10.4 ov)', '127/3 (Glenn Phillips, 12.1 ov)', '131/4 (Washington Sundar, 12.3 ov)', '133/5 (Jos Buttler, 13.1 ov)', '155/6 (Rahul Tewatia, 14.3 ov)', '161/7 (M Shahrukh Khan, 14.5 ov)', '204/8 (Rashid Khan, 19.5 ov)'],
                 powerplayRuns: '62/0 (0.1-6 ov)',
                 partnerships: ['78 (Sudharsan-Kushagra)', '29 (Sudharsan-Buttler)', '20 (Buttler-Phillips)', '4 (Buttler-Sundar)', '2 (Buttler-Tewatia)', '22 (Tewatia-Shahrukh)', '6 (Shahrukh-Rashid)', '43 (Rashid-Rabada)', '0* (Rabada-Ashok)']
+            }
+        ]
+    },
+    m10: {
+        toss: 'Sunrisers Hyderabad won the toss and elected to bat.',
+        result: 'Lucknow Super Giants won by 5 wickets (with 1 ball remaining).',
+        playerOfTheMatch: 'Mohammed Shami - 2/9 (4)',
+        keyMoments: [
+            'Mohammed Shami dismantled SRH’s top order with two wickets in his opening spell and finished with exceptional figures of 2/9 in 4 overs.',
+            'SRH were 26/4 in the 8th over before Heinrich Klaasen and Nitish Kumar Reddy rebuilt the innings with an aggressive 116-run stand for the fifth wicket.',
+            'LSG were 77/2 at the halfway mark in the chase, with Aiden Markram’s 45 and Rishabh Pant anchoring the innings against SRH’s mixed pace-spin attack.',
+            'Even after two late wickets, Pant stayed unbeaten on 68 to close the chase at 160/5 in 19.5 overs.'
+        ],
+        tacticalAnalysis: [
+            'LSG won the powerplay phase decisively: Shami’s hard lengths and seam movement reduced SRH to 11/3 and forced a consolidation innings.',
+            'SRH recovered strongly through Klaasen and Nitish Kumar Reddy, but the total of 156 remained slightly under par on a Hyderabad surface where chasing teams can accelerate at the back end.',
+            'In the chase, LSG balanced tempo and wicket control. Markram set the tone, while Pant absorbed risk in the middle overs and attacked matchups selectively.',
+            'SRH’s bowling lacked sustained pressure in overs 7-16 despite picking up wickets; only Harsh Dubey’s 2/18 created a meaningful squeeze window.',
+            'LSG’s ability to keep wickets in hand until the final three overs meant the required run rate never became unmanageable.'
+        ],
+        improvements: {
+            team1: [
+                'SRH need a more stable powerplay batting plan after losing four wickets inside 8 overs.',
+                'Death-over bowling execution can improve; defending 157 required tighter yorker and slower-ball control in overs 18-20.',
+                'Middle-overs strike options should be clearer when set batters like Pant are rotating comfortably.'
+            ],
+            team2: [
+                'LSG can improve finishing efficiency after taking the chase deep despite a manageable asking rate.',
+                'Middle-overs control with the ball remains an area to tighten after conceding 118 runs between overs 8-20.',
+                'Fielding and running between wickets in the final phase can be cleaner to avoid avoidable pressure.'
+            ],
+            players: [
+                'Mohammed Shami (LSG): maintain this powerplay template; his length and seam presentation were match-defining.',
+                'Rishabh Pant (LSG): excellent chase management; converting a controlling 68* into earlier closure remains the next step.',
+                'Heinrich Klaasen (SRH): continue taking on spin in the middle overs; his counterattack rescued the innings.',
+                'Nitish Kumar Reddy (SRH): his 56 was high impact and should be paired with stronger top-order support.',
+                'Jaydev Unadkat (SRH): death overs can be tighter after conceding 50 in 3.5 overs.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'srh',
+                total: 156,
+                wickets: 9,
+                overs: '20.0',
+                batters: [
+                    { name: 'Travis Head', howOut: 'c Aiden Markram b Mohammed Shami', runs: 7, balls: 8, fours: 1, sixes: 0, strikeRate: 87.5 },
+                    { name: 'Abhishek Sharma', howOut: 'c M Siddharth b Mohammed Shami', runs: 0, balls: 2, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Ishan Kishan', howOut: 'b Prince Yadav', runs: 1, balls: 4, fours: 0, sixes: 0, strikeRate: 25.0 },
+                    { name: 'Liam Livingstone', howOut: 'c Rishabh Pant b Digvesh Rathi', runs: 14, balls: 20, fours: 0, sixes: 1, strikeRate: 70.0 },
+                    { name: 'Heinrich Klaasen', howOut: 'c Rishabh Pant b Avesh Khan', runs: 62, balls: 41, fours: 5, sixes: 2, strikeRate: 151.22 },
+                    { name: 'Nitish Kumar Reddy', howOut: 'c Prince Yadav b M Siddharth', runs: 56, balls: 33, fours: 3, sixes: 5, strikeRate: 169.7 },
+                    { name: 'Aniket Verma', howOut: 'not out', runs: 2, balls: 5, fours: 0, sixes: 0, strikeRate: 40.0 },
+                    { name: 'Harsh Dubey', howOut: 'b Avesh Khan', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Shivang Kumar', howOut: 'b Prince Yadav', runs: 5, balls: 4, fours: 1, sixes: 0, strikeRate: 125.0 },
+                    { name: 'Harshal Patel', howOut: 'run out (Rishabh Pant)', runs: 4, balls: 2, fours: 1, sixes: 0, strikeRate: 200.0 },
+                ],
+                extras: '5 (b 1, lb 1, w 3, nb 0)',
+                didNotBat: ['Jaydev Unadkat', 'Eshan Malinga'],
+                bowlers: [
+                    { name: 'Mohammed Shami', overs: '4', maidens: 0, runs: 9, wickets: 2, economy: 2.25 },
+                    { name: 'Digvesh Rathi', overs: '4', maidens: 0, runs: 46, wickets: 1, economy: 11.5 },
+                    { name: 'Prince Yadav', overs: '4', maidens: 0, runs: 34, wickets: 2, economy: 8.5 },
+                    { name: 'Manimaran Siddharth', overs: '4', maidens: 0, runs: 29, wickets: 1, economy: 7.25 },
+                    { name: 'Avesh Khan', overs: '4', maidens: 0, runs: 36, wickets: 2, economy: 9.0 },
+                ],
+                fallOfWickets: ['1/1 (Abhishek Sharma, 0.6 ov)', '8/2 (Travis Head, 2.1 ov)', '11/3 (Ishan Kishan, 3.3 ov)', '26/4 (Liam Livingstone, 7.1 ov)', '142/5 (Nitish Kumar Reddy, 17.4 ov)', '144/6 (Heinrich Klaasen, 18.1 ov)', '144/7 (Harsh Dubey, 18.2 ov)', '151/8 (Shivang Kumar, 19.3 ov)', '156/9 (Harshal Patel, 19.6 ov)'],
+                powerplayRuns: '16/3 (0.1-6 ov)',
+                partnerships: ['1 (Head-Abhishek)', '7 (Head-Ishan)', '3 (Ishan-Livingstone)', '15 (Livingstone-Klaasen)', '116 (Klaasen-Nitish Kumar Reddy)', '2 (Klaasen-Aniket)', '0 (Aniket-Harsh)', '7 (Aniket-Shivang)', '5 (Aniket-Harshal)']
+            },
+            {
+                teamId: 'lsg',
+                total: 160,
+                wickets: 5,
+                overs: '19.5',
+                batters: [
+                    { name: 'Aiden Markram', howOut: 'c Liam Livingstone b Shivang Kumar', runs: 45, balls: 27, fours: 6, sixes: 2, strikeRate: 166.67 },
+                    { name: 'Mitchell Marsh', howOut: 'c Nitish Kumar Reddy b Eshan Malinga', runs: 14, balls: 12, fours: 2, sixes: 0, strikeRate: 116.67 },
+                    { name: 'Rishabh Pant', howOut: 'not out', runs: 68, balls: 50, fours: 9, sixes: 0, strikeRate: 136.0 },
+                    { name: 'Ayush Badoni', howOut: 'st Ishan Kishan b Harsh Dubey', runs: 12, balls: 9, fours: 1, sixes: 0, strikeRate: 133.33 },
+                    { name: 'Nicholas Pooran', howOut: 'run out (Ishan Kishan)', runs: 1, balls: 4, fours: 0, sixes: 0, strikeRate: 25.0 },
+                    { name: 'Abdul Samad', howOut: 'c Liam Livingstone b Harsh Dubey', runs: 16, balls: 12, fours: 2, sixes: 0, strikeRate: 133.33 },
+                    { name: 'Mukul Choudhary', howOut: 'not out', runs: 2, balls: 5, fours: 0, sixes: 0, strikeRate: 40.0 },
+                ],
+                extras: '2 (b 1, lb 1, w 0, nb 0)',
+                didNotBat: ['Manimaran Siddharth', 'Avesh Khan', 'Digvesh Rathi', 'Prince Yadav'],
+                bowlers: [
+                    { name: 'Harsh Dubey', overs: '4', maidens: 0, runs: 18, wickets: 2, economy: 4.5 },
+                    { name: 'Nitish Kumar Reddy', overs: '1', maidens: 0, runs: 14, wickets: 0, economy: 14.0 },
+                    { name: 'Jaydev Unadkat', overs: '3.5', maidens: 0, runs: 50, wickets: 0, economy: 13.04 },
+                    { name: 'Eshan Malinga', overs: '4', maidens: 0, runs: 30, wickets: 1, economy: 7.5 },
+                    { name: 'Harshal Patel', overs: '3', maidens: 0, runs: 16, wickets: 0, economy: 5.33 },
+                    { name: 'Shivang Kumar', overs: '4', maidens: 0, runs: 30, wickets: 1, economy: 7.5 },
+                ],
+                fallOfWickets: ['37/1 (Mitchell Marsh, 4.4 ov)', '77/2 (Aiden Markram, 9.2 ov)', '102/3 (Ayush Badoni, 12.1 ov)', '105/4 (Nicholas Pooran, 13.1 ov)', '139/5 (Abdul Samad, 17.4 ov)'],
+                powerplayRuns: '52/1 (0.1-6 ov)',
+                partnerships: ['37 (Markram-Marsh)', '40 (Markram-Pant)', '25 (Pant-Badoni)', '3 (Pant-Pooran)', '34 (Pant-Samad)', '21* (Pant-Mukul Choudhary)']
             }
         ]
     },
