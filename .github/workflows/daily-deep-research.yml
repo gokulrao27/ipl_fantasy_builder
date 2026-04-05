@@ -31,6 +31,9 @@ jobs:
       - name: Validate deep research snapshot
         run: npm run test:deep-research
 
+      - name: Validate generated insights
+        run: npm run test:insights
+
       - name: Type-check
         run: npm run lint
 

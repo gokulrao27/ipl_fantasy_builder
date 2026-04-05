@@ -1867,6 +1867,8 @@ type MatchPrediction = {
     confidence: number;
     team1ProjectedScore: number;
     team2ProjectedScore: number;
+    team1WinProbability: number;
+    team2WinProbability: number;
 };
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
@@ -2006,6 +2008,7 @@ const computePredictionBeforeMatch = (
     match: Match,
     team1Form: { played: number; won: number; runsFor: number; runsAgainst: number },
     team2Form: { played: number; won: number; runsFor: number; runsAgainst: number },
+    headToHead?: Match['headToHead'],
 ): MatchPrediction => {
     const team1Matches = team1Form.played || 1;
     const team2Matches = team2Form.played || 1;
@@ -2021,18 +2024,30 @@ const computePredictionBeforeMatch = (
 
     const team1WinRate = team1Form.played > 0 ? team1Form.won / team1Form.played : 0.5;
     const team2WinRate = team2Form.played > 0 ? team2Form.won / team2Form.played : 0.5;
-    const projectionEdge = (team1ProjectedScore - team2ProjectedScore) / 10;
-    const winRateEdge = (team1WinRate - team2WinRate) * 10;
-    const team1Edge = projectionEdge + winRateEdge;
+    const team1NetRunDelta = team1Form.played > 0 ? (team1Form.runsFor - team1Form.runsAgainst) / team1Form.played : 0;
+    const team2NetRunDelta = team2Form.played > 0 ? (team2Form.runsFor - team2Form.runsAgainst) / team2Form.played : 0;
+    const h2hMatches = (headToHead?.team1Wins || 0) + (headToHead?.team2Wins || 0);
+    const h2hEdge = h2hMatches > 0 ? (((headToHead?.team1Wins || 0) - (headToHead?.team2Wins || 0)) / h2hMatches) : 0;
+
+    const projectionEdge = (team1ProjectedScore - team2ProjectedScore) / 14;
+    const winRateEdge = (team1WinRate - team2WinRate) * 2.1;
+    const runDeltaEdge = (team1NetRunDelta - team2NetRunDelta) / 20;
+    const team1Edge = projectionEdge + winRateEdge + runDeltaEdge + (h2hEdge * 0.8);
+
+    const logistic = (value: number): number => 1 / (1 + Math.exp(-value));
+    const team1WinProbability = clamp(Math.round(logistic(team1Edge) * 100), 30, 70);
+    const team2WinProbability = 100 - team1WinProbability;
 
     const predictedWinnerTeamId = team1Edge >= 0 ? match.team1 : match.team2;
-    const confidence = clamp(Math.round(50 + (Math.abs(team1Edge) * 6)), 52, 78);
+    const confidence = Math.max(team1WinProbability, team2WinProbability);
 
     return {
         predictedWinnerTeamId,
         confidence,
         team1ProjectedScore,
         team2ProjectedScore,
+        team1WinProbability,
+        team2WinProbability,
     };
 };
 
@@ -2089,13 +2104,12 @@ export const schedule: Match[] = baseSchedule.map((match) => {
     const team2Form = deepResearchTeam2Form || computeTeamFormBeforeMatch(match.team2, match.matchNumber, baseSchedule);
     const team1Name = resolveTeamName(match.team1);
     const team2Name = resolveTeamName(match.team2);
-    const deepResearchStamp = new Date(deepResearchSnapshot.updatedAt).toISOString().slice(0, 10);
     const team1AvgFor = team1Form.played ? (team1Form.runsFor / team1Form.played).toFixed(1) : '0.0';
     const team2AvgFor = team2Form.played ? (team2Form.runsFor / team2Form.played).toFixed(1) : '0.0';
-    const prediction = computePredictionBeforeMatch(match, team1Form, team2Form);
-    const predictedWinnerShortName = resolveTeamName(prediction.predictedWinnerTeamId);
     const dynamicVenueStats = computeVenueStatsFromCompletedMatches(match, baseSchedule);
     const dynamicHeadToHead = computeHeadToHeadBeforeMatch(match, baseSchedule);
+    const prediction = computePredictionBeforeMatch({ ...match, venueStats: dynamicVenueStats }, team1Form, team2Form, dynamicHeadToHead);
+    const predictedWinnerShortName = resolveTeamName(prediction.predictedWinnerTeamId);
     const team1LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team1, match.matchNumber, baseSchedule);
     const team2LikelyXI = getLikelyXIFromLatestCompletedMatch(match.team2, match.matchNumber, baseSchedule);
     const availabilityWatch1 = computeAvailabilityWatch(match.team1, match.matchNumber, baseSchedule);
@@ -2110,6 +2124,13 @@ export const schedule: Match[] = baseSchedule.map((match) => {
         (isPlayerInTeamSquad(match.team2, battle.batter) && isPlayerInTeamSquad(match.team1, battle.bowler))
     ).slice(0, 2);
     const selectedBattles = filteredBattles.length > 0 ? filteredBattles : squadOnlyFallback;
+    const completedAtVenue = baseSchedule.filter((m) => m.matchNumber < match.matchNumber && m.venueCity === match.venueCity && m.status === 'completed' && m.completedDetails);
+    const recentVenueScores = completedAtVenue.slice(-3).map((m) => m.completedDetails!.innings[0].total);
+    const recentVenueAvg = recentVenueScores.length > 0 ? Math.round(mean(recentVenueScores)) : dynamicVenueStats.avgFirstInningsScore;
+    const latestHeadToHeadMatch = baseSchedule
+        .filter((m) => m.matchNumber < match.matchNumber && ((m.team1 === match.team1 && m.team2 === match.team2) || (m.team1 === match.team2 && m.team2 === match.team1)) && m.status === 'completed' && m.completedDetails)
+        .sort((a, b) => b.matchNumber - a.matchNumber)[0];
+    const keyMatchSummary = latestHeadToHeadMatch?.completedDetails?.result || 'No recent direct fixture with completed scorecard data.';
 
     const pitchType = dynamicVenueStats.avgFirstInningsScore >= 182
         ? 'batting-friendly'
@@ -2117,22 +2138,23 @@ export const schedule: Match[] = baseSchedule.map((match) => {
             ? 'bowler-assisting'
             : 'balanced';
     const chasingPct = Math.round((dynamicVenueStats.chasingWins / Math.max(dynamicVenueStats.totalMatches, 1)) * 100);
-    const pitchReport = `${match.venueCity} has played as a ${pitchType} surface this season: average first-innings ${dynamicVenueStats.avgFirstInningsScore}, chasing success ${chasingPct}% (${dynamicVenueStats.chasingWins}/${dynamicVenueStats.totalMatches}). Best bowling return at this venue so far is ${dynamicVenueStats.bestBowlingFigure}.`;
+    const pitchReport = `${match.venueCity} trend model: ${pitchType} wicket profile, first-innings average ${dynamicVenueStats.avgFirstInningsScore}, chasing success ${chasingPct}% (${dynamicVenueStats.chasingWins}/${dynamicVenueStats.totalMatches}), and best bowling return ${dynamicVenueStats.bestBowlingFigure}. Recent venue first-innings trend over last ${Math.min(recentVenueScores.length, 3)} games: ${recentVenueAvg}.`;
 
     return {
         ...match,
-        headline: `${team1Name} (${team1Form.won}-${team1Form.lost}) vs ${team2Name} (${team2Form.won}-${team2Form.lost}) — quick read: ${predictedWinnerShortName} projected ahead (${prediction.confidence}% confidence) from previous-match data.`,
+        headline: `${team1Name} (${team1Form.won}-${team1Form.lost}) vs ${team2Name} (${team2Form.won}-${team2Form.lost}) — quick head: ${predictedWinnerShortName} lead the model (${prediction.confidence}% win probability).`,
         pitchReport,
         venueStats: dynamicVenueStats,
         headToHead: dynamicHeadToHead,
         playerBattles: selectedBattles,
         interestingStats: [
-            `${team1Name}: ${team1Form.won} wins in ${team1Form.played} completed matches, average ${team1AvgFor} runs scored.`,
-            `${team2Name}: ${team2Form.won} wins in ${team2Form.played} completed matches, average ${team2AvgFor} runs scored.`,
-            `Prediction: ${predictedWinnerShortName} to win with ${prediction.confidence}% confidence. Projected totals — ${team1Name}: ${prediction.team1ProjectedScore}, ${team2Name}: ${prediction.team2ProjectedScore}.`,
+            `${team1Name}: ${team1Form.won} wins in ${team1Form.played} completed matches, avg runs ${team1AvgFor}. ${team2Name}: ${team2Form.won} wins in ${team2Form.played}, avg runs ${team2AvgFor}.`,
+            `Win predictor (data weighted): ${team1Name} ${prediction.team1WinProbability}% vs ${team2Name} ${prediction.team2WinProbability}%. Projected totals — ${team1Name}: ${prediction.team1ProjectedScore}, ${team2Name}: ${prediction.team2ProjectedScore}.`,
+            `Venue trend: first-innings avg ${dynamicVenueStats.avgFirstInningsScore}, boundary rate ${dynamicVenueStats.boundaryPercentage}%, chasing success ${chasingPct}%.`,
+            `Head-to-head before this match: ${team1Name} ${dynamicHeadToHead.team1Wins} wins, ${team2Name} ${dynamicHeadToHead.team2Wins} wins, no-result ${dynamicHeadToHead.noResult}.`,
+            `Key recent match context: ${keyMatchSummary}`,
             `${team1Name} XI check: ${team1LikelyXI.length >= 10 ? 'likely XI intact from previous game.' : 'XI continuity uncertain from available matches.'}${availabilityWatch1.length ? ` Availability watch: ${availabilityWatch1.join(', ')}.` : ''}${injuryNews1.length ? ` Injury watch: ${injuryNews1.join(' | ')}.` : ''}`,
             `${team2Name} XI check: ${team2LikelyXI.length >= 10 ? 'likely XI intact from previous game.' : 'XI continuity uncertain from available matches.'}${availabilityWatch2.length ? ` Availability watch: ${availabilityWatch2.join(', ')}.` : ''}${injuryNews2.length ? ` Injury watch: ${injuryNews2.join(' | ')}.` : ''}`,
-            `Deep research source sync date: ${deepResearchStamp} (${deepResearchSnapshot.source.scheduleFeed}).`,
         ],
     };
 });

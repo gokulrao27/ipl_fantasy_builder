@@ -10,7 +10,8 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "deep-research:update": "node scripts/deep-research-update.mjs",
-    "test:deep-research": "tsx scripts/validate-deep-research.ts"
+    "test:deep-research": "tsx scripts/validate-deep-research.ts",
+    "test:insights": "tsx scripts/validate-generated-insights.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
