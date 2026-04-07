@@ -1870,6 +1870,72 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
             }
         ]
     },
+    m12: {
+        toss: 'Punjab Kings won the toss and elected to bowl.',
+        result: 'No result (rain).',
+        playerOfTheMatch: 'N/A',
+        keyMoments: [
+            'Rain interrupted play after only 3.4 overs of the first innings.',
+            'KKR reached 25/2, with Xavier Bartlett striking twice in his opening spell.',
+            'Ajinkya Rahane and Angkrish Raghuvanshi were unbeaten when play was called off.',
+            'With no further play possible, both teams shared points.'
+        ],
+        tacticalAnalysis: [
+            'PBKS used the new ball effectively, with Bartlett finding early movement and breakthroughs.',
+            'KKR attempted to stabilize quickly after two early wickets but had limited time before rain.',
+            'The abandonment denied both sides momentum in a tightly packed early-season schedule.'
+        ],
+        improvements: {
+            team1: [
+                'KKR top order needs better risk control in the first two overs to avoid early wickets.',
+                'Middle-order roles remain untested from this fixture due to the shortened innings.',
+            ],
+            team2: [
+                'PBKS new-ball execution was strong and can be repeated in upcoming powerplays.',
+                'No batting data was available for PBKS because the chase never began.',
+            ],
+            players: [
+                'Xavier Bartlett (PBKS): excellent powerplay control and wicket-taking impact in a short spell.',
+                'Ajinkya Rahane (KKR): remained composed at the crease amid difficult stop-start conditions.',
+            ]
+        },
+        innings: [
+            {
+                teamId: 'kkr',
+                total: 25,
+                wickets: 2,
+                overs: '3.4',
+                batters: [
+                    { name: 'Ajinkya Rahane', howOut: 'not out', runs: 8, balls: 6, fours: 1, sixes: 0, strikeRate: 133.33 },
+                    { name: 'Finn Allen', howOut: 'c Prabhsimran Singh b Xavier Bartlett', runs: 6, balls: 7, fours: 1, sixes: 0, strikeRate: 85.71 },
+                    { name: 'Cameron Green', howOut: 'c Prabhsimran Singh b Xavier Bartlett', runs: 4, balls: 2, fours: 1, sixes: 0, strikeRate: 200.0 },
+                    { name: 'Angkrish Raghuvanshi', howOut: 'not out', runs: 7, balls: 7, fours: 0, sixes: 0, strikeRate: 100.0 },
+                ],
+                extras: '0 (b 0, lb 0, w 0, nb 0)',
+                didNotBat: ['Rovman Powell', 'Rinku Singh', 'Ramandeep Singh', 'Anukul Roy', 'Navdeep Saini', 'Vaibhav Arora', 'Kartik Tyagi'],
+                bowlers: [
+                    { name: 'Arshdeep Singh', overs: '2', maidens: 0, runs: 16, wickets: 0, economy: 8.0 },
+                    { name: 'Xavier Bartlett', overs: '1.4', maidens: 0, runs: 9, wickets: 2, economy: 5.4 },
+                ],
+                fallOfWickets: ['12/1 (Finn Allen, 1.4 ov)', '16/2 (Cameron Green, 2.0 ov)'],
+                powerplayRuns: '25/2 (0.1-3.4 ov)',
+                partnerships: ['12 (Rahane-Allen)', '4 (Rahane-Green)', '9* (Rahane-Raghuvanshi)']
+            },
+            {
+                teamId: 'pbks',
+                total: 0,
+                wickets: 0,
+                overs: '0.0',
+                batters: [],
+                extras: 'Innings not started',
+                didNotBat: [],
+                bowlers: [],
+                fallOfWickets: ['Innings not started'],
+                powerplayRuns: 'Innings not started',
+                partnerships: ['Innings not started']
+            }
+        ]
+    },
 };
 
 const pitchReportsByVenue: Record<string, string> = {
@@ -2553,6 +2619,15 @@ const computePointsTable = (matches: Match[]): PointsTableEntry[] => {
         const team1 = table.get(match.team1);
         const team2 = table.get(match.team2);
         if (!team1 || !team2) return;
+
+        const isNoResult = match.completedDetails.result.toLowerCase().includes('no result');
+        if (isNoResult) {
+            team1.played += 1;
+            team2.played += 1;
+            team1.points += 1;
+            team2.points += 1;
+            return;
+        }
 
         const team1Innings = firstInnings.teamId === match.team1 ? firstInnings : secondInnings;
         const team2Innings = team1Innings === firstInnings ? secondInnings : firstInnings;
