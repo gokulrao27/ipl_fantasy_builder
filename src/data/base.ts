@@ -1936,6 +1936,100 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
             }
         ]
     },
+    m13: {
+        toss: 'Rajasthan Royals won the toss and elected to bat.',
+        result: 'Rajasthan Royals won by 27 runs.',
+        playerOfTheMatch: 'Yashasvi Jaiswal - 77* (32)',
+        keyMoments: [
+            'Yashasvi Jaiswal blasted an unbeaten 77 off 32 as RR surged to 150/3 in the 11-over contest.',
+            'Vaibhav Sooryavanshi’s 39 off 14 gave RR a flying platform before MI pulled back briefly with two wickets for AM Ghazanfar.',
+            'MI collapsed from 22/3 to 46/5, with early wickets from Archer, Burger, and Sandeep Sharma putting the chase under sustained pressure.',
+            'Late resistance from Naman Dhir and Sherfane Rutherford lifted MI, but RR closed strongly to complete a 27-run win.'
+        ],
+        tacticalAnalysis: [
+            'RR won the game in the powerplay-style opening burst: 80/1 inside five overs created a par-plus total for an 11-over innings.',
+            'MI never recovered from losing top-order wickets in clusters; by 4.6 overs they were 46/5 and required high-risk hitting throughout.',
+            'RR used wicket-taking options instead of only run containment, sharing breakthroughs across five bowlers to prevent one big partnership.',
+            'In a shortened game, boundary conversion was decisive: RR’s top order scored at over 13.5 an over while MI’s chase stayed behind the rate from over 3 onward.'
+        ],
+        improvements: {
+            team1: [
+                'RR can tighten death overs in shortened formats after conceding late boundaries to Rutherford, Dhir, and Bumrah.',
+                'Middle-overs control can improve when defending big totals, especially against lower-order counterattacks.',
+                'Continue using Jaiswal as the pace-setter; his powerplay acceleration defined match control.'
+            ],
+            team2: [
+                'MI need stronger top-order risk management in short chases, where early wickets sharply reduce win probability.',
+                'Bowling lengths at the start were inconsistent; conceding 80 in 5 overs left too much to recover in an 11-over innings.',
+                'Batting tempo between overs 3-7 needs better strike rotation to avoid dependence on late-over boundary bursts.'
+            ],
+            players: [
+                'Yashasvi Jaiswal (RR): elite intent with control; this template is ideal for reduced-over games.',
+                'Vaibhav Sooryavanshi (RR): continue attacking hard lengths early to maximize field restrictions.',
+                'AM Ghazanfar (MI): his 2 wickets were the best control phase for MI and should be used earlier in similar games.',
+                'Sherfane Rutherford (MI): late hitting impact was strong; promoting him earlier may improve chase elasticity.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'rr',
+                total: 150,
+                wickets: 3,
+                overs: '11.0',
+                batters: [
+                    { name: 'Yashasvi Jaiswal', howOut: 'not out', runs: 77, balls: 32, fours: 10, sixes: 4, strikeRate: 240.62 },
+                    { name: 'Vaibhav Sooryavanshi', howOut: 'c Tilak Varma b Shardul Thakur', runs: 39, balls: 14, fours: 1, sixes: 5, strikeRate: 278.57 },
+                    { name: 'Dhruv Jurel', howOut: 'lbw b AM Ghazanfar', runs: 2, balls: 3, fours: 0, sixes: 0, strikeRate: 66.67 },
+                    { name: 'Riyan Parag', howOut: 'c Tilak Varma b AM Ghazanfar', runs: 20, balls: 10, fours: 1, sixes: 2, strikeRate: 200.0 },
+                    { name: 'Shimron Hetmyer', howOut: 'not out', runs: 6, balls: 7, fours: 0, sixes: 0, strikeRate: 85.71 },
+                ],
+                extras: '6 (b 0, lb 0, w 6, nb 0)',
+                didNotBat: ['Ravindra Jadeja', 'Donovan Ferreira', 'Jofra Archer', 'Nandre Burger', 'Tushar Deshpande', 'Sandeep Sharma'],
+                bowlers: [
+                    { name: 'Deepak Chahar', overs: '1', maidens: 0, runs: 22, wickets: 0, economy: 22.0 },
+                    { name: 'Jasprit Bumrah', overs: '3', maidens: 0, runs: 32, wickets: 0, economy: 10.67 },
+                    { name: 'Trent Boult', overs: '1', maidens: 0, runs: 22, wickets: 0, economy: 22.0 },
+                    { name: 'Hardik Pandya', overs: '2', maidens: 0, runs: 17, wickets: 0, economy: 8.5 },
+                    { name: 'Shardul Thakur', overs: '2', maidens: 0, runs: 36, wickets: 1, economy: 18.0 },
+                    { name: 'AM Ghazanfar', overs: '2', maidens: 0, runs: 21, wickets: 2, economy: 10.5 },
+                ],
+                fallOfWickets: ['80/1 (Vaibhav Sooryavanshi, 4.6 ov)', '84/2 (Dhruv Jurel, 5.4 ov)', '121/3 (Riyan Parag, 8.5 ov)'],
+                powerplayRuns: '93/2 (0.1-6 ov)',
+                partnerships: ['80 (Jaiswal-Sooryavanshi)', '4 (Jaiswal-Jurel)', '37 (Jaiswal-Parag)', '29* (Jaiswal-Hetmyer)']
+            },
+            {
+                teamId: 'mi',
+                total: 123,
+                wickets: 9,
+                overs: '11.0',
+                batters: [
+                    { name: 'Ryan Rickelton', howOut: 'c Dhruv Jurel b Jofra Archer', runs: 8, balls: 4, fours: 0, sixes: 1, strikeRate: 200.0 },
+                    { name: 'Rohit Sharma', howOut: 'lbw b Sandeep Sharma', runs: 5, balls: 6, fours: 0, sixes: 0, strikeRate: 83.33 },
+                    { name: 'Suryakumar Yadav', howOut: 'c Jofra Archer b Nandre Burger', runs: 6, balls: 3, fours: 0, sixes: 1, strikeRate: 200.0 },
+                    { name: 'Tilak Varma', howOut: 'c Shimron Hetmyer b Ravi Bishnoi', runs: 14, balls: 10, fours: 2, sixes: 0, strikeRate: 140.0 },
+                    { name: 'Hardik Pandya', howOut: 'c Yashasvi Jaiswal b Ravi Bishnoi', runs: 9, balls: 6, fours: 2, sixes: 0, strikeRate: 150.0 },
+                    { name: 'Naman Dhir', howOut: 'c Ravi Bishnoi b Nandre Burger', runs: 25, balls: 13, fours: 3, sixes: 1, strikeRate: 192.31 },
+                    { name: 'Sherfane Rutherford', howOut: 'c Sandeep Sharma b Tushar Deshpande', runs: 25, balls: 8, fours: 2, sixes: 2, strikeRate: 312.5 },
+                    { name: 'Shardul Thakur', howOut: 'c Dhruv Jurel b Sandeep Sharma', runs: 8, balls: 7, fours: 1, sixes: 0, strikeRate: 114.29 },
+                    { name: 'Deepak Chahar', howOut: 'not out', runs: 6, balls: 5, fours: 1, sixes: 0, strikeRate: 120.0 },
+                    { name: 'Trent Boult', howOut: 'run out (Jofra Archer)', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'Jasprit Bumrah', howOut: 'not out', runs: 5, balls: 2, fours: 1, sixes: 0, strikeRate: 250.0 },
+                ],
+                extras: '11 (b 1, lb 4, w 6, nb 0)',
+                didNotBat: [],
+                bowlers: [
+                    { name: 'Jofra Archer', overs: '2', maidens: 0, runs: 17, wickets: 1, economy: 8.5 },
+                    { name: 'Nandre Burger', overs: '2', maidens: 0, runs: 21, wickets: 2, economy: 10.5 },
+                    { name: 'Sandeep Sharma', overs: '3', maidens: 0, runs: 26, wickets: 2, economy: 8.67 },
+                    { name: 'Tushar Deshpande', overs: '2', maidens: 0, runs: 29, wickets: 1, economy: 14.5 },
+                    { name: 'Ravi Bishnoi', overs: '2', maidens: 0, runs: 25, wickets: 2, economy: 12.5 },
+                ],
+                fallOfWickets: ['10/1 (Ryan Rickelton, 0.6 ov)', '20/2 (Suryakumar Yadav, 1.4 ov)', '22/3 (Rohit Sharma, 2.3 ov)', '41/4 (Hardik Pandya, 4.3 ov)', '46/5 (Tilak Varma, 4.6 ov)', '93/6 (Sherfane Rutherford, 7.5 ov)', '103/7 (Naman Dhir, 8.5 ov)', '111/8 (Shardul Thakur, 9.4 ov)', '116/9 (Trent Boult, 10.1 ov)'],
+                powerplayRuns: '58/5 (0.1-6 ov)',
+                partnerships: ['10 (Rickelton-Rohit)', '10 (Rohit-Suryakumar)', '2 (Rohit-Tilak)', '19 (Tilak-Hardik)', '5 (Tilak-Dhir)', '47 (Dhir-Rutherford)', '10 (Dhir-Thakur)', '8 (Thakur-Chahar)', '5 (Chahar-Boult)', '7* (Chahar-Bumrah)']
+            }
+        ]
+    },
 };
 
 const pitchReportsByVenue: Record<string, string> = {
