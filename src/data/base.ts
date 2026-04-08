@@ -739,7 +739,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 11, date: '2026-04-05', dateLabel: '05 Apr', day: 'Sunday', team1: 'rcb', team2: 'csk', venueCity: 'Bengaluru', stadium: 'M. Chinnaswamy Stadium', status: 'completed' },
     { matchNumber: 12, date: '2026-04-06', dateLabel: '06 Apr', day: 'Monday', team1: 'kkr', team2: 'pbks', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 13, date: '2026-04-07', dateLabel: '07 Apr', day: 'Tuesday', team1: 'rr', team2: 'mi', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
-    { matchNumber: 14, date: '2026-04-08', dateLabel: '08 Apr', day: 'Wednesday', team1: 'dc', team2: 'gt', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium' },
+    { matchNumber: 14, date: '2026-04-08', dateLabel: '08 Apr', day: 'Wednesday', team1: 'dc', team2: 'gt', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium', status: 'completed' },
     { matchNumber: 15, date: '2026-04-09', dateLabel: '09 Apr', day: 'Thursday', team1: 'kkr', team2: 'lsg', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 16, date: '2026-04-10', dateLabel: '10 Apr', day: 'Friday', team1: 'rr', team2: 'rcb', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
     { matchNumber: 17, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'pbks', team2: 'srh', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
@@ -2027,6 +2027,100 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['10/1 (Ryan Rickelton, 0.6 ov)', '20/2 (Suryakumar Yadav, 1.4 ov)', '22/3 (Rohit Sharma, 2.3 ov)', '41/4 (Hardik Pandya, 4.3 ov)', '46/5 (Tilak Varma, 4.6 ov)', '93/6 (Sherfane Rutherford, 7.5 ov)', '103/7 (Naman Dhir, 8.5 ov)', '111/8 (Shardul Thakur, 9.4 ov)', '116/9 (Trent Boult, 10.1 ov)'],
                 powerplayRuns: '58/5 (0.1-6 ov)',
                 partnerships: ['10 (Rickelton-Rohit)', '10 (Rohit-Suryakumar)', '2 (Rohit-Tilak)', '19 (Tilak-Hardik)', '5 (Tilak-Dhir)', '47 (Dhir-Rutherford)', '10 (Dhir-Thakur)', '8 (Thakur-Chahar)', '5 (Chahar-Boult)', '7* (Chahar-Bumrah)']
+            }
+        ]
+    },
+    m14: {
+        toss: 'Delhi Capitals won the toss and elected to bowl.',
+        result: 'Gujarat Titans won by 1 run.',
+        playerOfTheMatch: 'Rashid Khan - 3/17 (4)',
+        keyMoments: [
+            'Shubman Gill (70), Jos Buttler (52), and Washington Sundar (55) powered GT to 210/4.',
+            'DC mounted a fierce chase through KL Rahul’s 92 off 52 and David Miller’s unbeaten 41 off 20.',
+            'Rashid Khan’s triple-strike spell removed Nitish Rana, Sameer Rizvi, and Axar Patel in the middle overs.',
+            'With 2 needed off the last ball, Kuldeep Yadav was run out, sealing a 1-run win for GT.'
+        ],
+        tacticalAnalysis: [
+            'GT’s innings was built on sustained run-rate pressure: 210 with only 4 wickets down gave them a par-plus total in Delhi conditions.',
+            'DC’s chase stayed alive because Rahul controlled strike against both pace and spin, but wickets in clusters from 9.5 to 13.6 overs shifted the game.',
+            'Rashid’s 4-0-17-3 was the tactical separator, forcing DC to recalculate their acceleration plan in the middle overs.',
+            'At the death, GT defended with composure despite a high-scoring surface; two run-outs in the last over underlined sharp field execution under pressure.'
+        ],
+        improvements: {
+            team1: [
+                'DC need stronger support around set batters; Rahul’s 92 required one more top-order partner batting through till over 19.',
+                'Death-over bowling plans should tighten against set right-handers after conceding 55 in Mukesh Kumar’s four overs.',
+                'Fielding and awareness at critical moments (last-over running decisions) can improve in tight chases.'
+            ],
+            team2: [
+                'GT can improve powerplay discipline with the ball after conceding early boundaries to Nissanka and Rahul.',
+                'Death overs still leaked runs; defending 210 nearly slipped despite scoreboard pressure.',
+                'GT should reduce boundary balls from pace options outside Rabada and Rashid to avoid similar close finishes.'
+            ],
+            players: [
+                'KL Rahul (DC): outstanding chase anchor; converting this into a winning finish remains the final step.',
+                'Rashid Khan (GT): elite middle-overs control and wicket-taking changed match trajectory.',
+                'Washington Sundar (GT): impactful batting role at No. 4 can be retained as a flexible matchup option.',
+                'Mukesh Kumar (DC): wicket-taking was valuable, but economy (13.75) needs better execution in end-overs.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'gt',
+                total: 210,
+                wickets: 4,
+                overs: '20.0',
+                batters: [
+                    { name: 'Sai Sudharsan', howOut: 'b Mukesh Kumar', runs: 12, balls: 7, fours: 2, sixes: 0, strikeRate: 171.43 },
+                    { name: 'Shubman Gill', howOut: 'c Nitish Rana b Lungi Ngidi', runs: 70, balls: 45, fours: 4, sixes: 5, strikeRate: 155.56 },
+                    { name: 'Jos Buttler', howOut: 'b Kuldeep Yadav', runs: 52, balls: 27, fours: 3, sixes: 5, strikeRate: 192.59 },
+                    { name: 'Washington Sundar', howOut: 'c Nitish Rana b Mukesh Kumar', runs: 55, balls: 32, fours: 6, sixes: 2, strikeRate: 171.88 },
+                    { name: 'Glenn Phillips', howOut: 'not out', runs: 14, balls: 9, fours: 1, sixes: 1, strikeRate: 155.56 },
+                    { name: 'Rahul Tewatia', howOut: 'not out', runs: 1, balls: 1, fours: 0, sixes: 0, strikeRate: 100.0 },
+                ],
+                extras: '6 (b 0, lb 0, w 5, nb 1)',
+                didNotBat: ['Rashid Khan', 'Kagiso Rabada', 'Mohammed Siraj', 'Ashok Sharma', 'Prasidh Krishna'],
+                bowlers: [
+                    { name: 'Mukesh Kumar', overs: '4', maidens: 0, runs: 55, wickets: 2, economy: 13.75 },
+                    { name: 'Lungi Ngidi', overs: '4', maidens: 0, runs: 24, wickets: 1, economy: 6.0 },
+                    { name: 'Axar Patel', overs: '3', maidens: 0, runs: 32, wickets: 0, economy: 10.67 },
+                    { name: 'Kuldeep Yadav', overs: '4', maidens: 0, runs: 42, wickets: 1, economy: 10.5 },
+                    { name: 'T Natarajan', overs: '4', maidens: 0, runs: 34, wickets: 0, economy: 8.5 },
+                    { name: 'Vipraj Nigam', overs: '1', maidens: 0, runs: 23, wickets: 0, economy: 23.0 },
+                ],
+                fallOfWickets: ['19/1 (Sai Sudharsan, 2.1 ov)', '79/2 (Jos Buttler, 7.3 ov)', '183/3 (Shubman Gill, 17.3 ov)', '205/4 (Washington Sundar, 19.3 ov)'],
+                powerplayRuns: '67/1 (0.1-6 ov)',
+                partnerships: ['19 (Sudharsan-Gill)', '60 (Gill-Buttler)', '104 (Gill-Sundar)', '22 (Phillips-Sundar)', '5* (Phillips-Tewatia)']
+            },
+            {
+                teamId: 'dc',
+                total: 209,
+                wickets: 8,
+                overs: '20.0',
+                batters: [
+                    { name: 'Pathum Nissanka', howOut: 'c Rahul Tewatia b Prasidh Krishna', runs: 41, balls: 24, fours: 6, sixes: 1, strikeRate: 170.83 },
+                    { name: 'KL Rahul', howOut: 'c Jos Buttler b Mohammed Siraj', runs: 92, balls: 52, fours: 11, sixes: 4, strikeRate: 176.92 },
+                    { name: 'Nitish Rana', howOut: 'c Sai Sudharsan b Rashid Khan', runs: 5, balls: 6, fours: 1, sixes: 0, strikeRate: 83.33 },
+                    { name: 'Sameer Rizvi', howOut: 'b Rashid Khan', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'David Miller', howOut: 'not out', runs: 41, balls: 20, fours: 3, sixes: 3, strikeRate: 205.0 },
+                    { name: 'Axar Patel', howOut: 'c Glenn Phillips b Rashid Khan', runs: 2, balls: 3, fours: 0, sixes: 0, strikeRate: 66.67 },
+                    { name: 'Tristan Stubbs', howOut: 'run out (Sai Sudharsan)', runs: 7, balls: 6, fours: 0, sixes: 0, strikeRate: 116.67 },
+                    { name: 'Vipraj Nigam', howOut: 'c Shubman Gill b Prasidh Krishna', runs: 12, balls: 7, fours: 2, sixes: 0, strikeRate: 171.43 },
+                    { name: 'Kuldeep Yadav', howOut: 'run out (Jos Buttler)', runs: 1, balls: 1, fours: 0, sixes: 0, strikeRate: 100.0 },
+                ],
+                extras: '8 (b 0, lb 0, w 8, nb 0)',
+                didNotBat: ['Lungi Ngidi', 'T Natarajan'],
+                bowlers: [
+                    { name: 'Mohammed Siraj', overs: '4', maidens: 0, runs: 52, wickets: 1, economy: 13.0 },
+                    { name: 'Kagiso Rabada', overs: '4', maidens: 0, runs: 32, wickets: 0, economy: 8.0 },
+                    { name: 'Rashid Khan', overs: '4', maidens: 0, runs: 17, wickets: 3, economy: 4.25 },
+                    { name: 'Ashok Sharma', overs: '3', maidens: 0, runs: 45, wickets: 0, economy: 15.0 },
+                    { name: 'Prasidh Krishna', overs: '4', maidens: 0, runs: 52, wickets: 2, economy: 13.0 },
+                    { name: 'Washington Sundar', overs: '1', maidens: 0, runs: 11, wickets: 0, economy: 11.0 },
+                ],
+                fallOfWickets: ['76/1 (Pathum Nissanka, 8.1 ov)', '101/2 (Nitish Rana, 9.5 ov)', '101/3 (Sameer Rizvi, 9.6 ov)', '134/4 (Axar Patel, 13.6 ov)', '160/5 (Tristan Stubbs, 16.4 ov)', '166/6 (KL Rahul, 16.6 ov)', '202/7 (Vipraj Nigam, 19.2 ov)', '209/8 (Kuldeep Yadav, 20.0 ov)'],
+                powerplayRuns: '64/0 (0.1-6 ov)',
+                partnerships: ['76 (Nissanka-Rahul)', '25 (Rahul-Rana)', '0 (Rahul-Rizvi)', '33 (Rahul-Miller)', '26 (Miller-Patel)', '26 (Miller-Stubbs)', '6 (Miller-Nigam)', '36 (Miller-Nigam/Kuldeep phase)']
             }
         ]
     },
