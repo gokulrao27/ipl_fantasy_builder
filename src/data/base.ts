@@ -663,14 +663,14 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['Delhi has been a strong chasing venue whenever dew arrives in the second innings.', 'GT’s middle-over economy is among the best in the league when Rashid bowls before the 10th over.'],
     },
     'kkr-lsg': {
-        headline: 'A spin-rich matchup where wicket preservation against mystery bowling becomes essential.',
-        venueStats: { avgFirstInningsScore: 181, chasingWins: 39, totalMatches: 93, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
-        headToHead: { team1Wins: 2, team2Wins: 3, noResult: 0, last5: 'LSG narrowly lead the rivalry 3-2.' },
+        headline: 'LSG chased 182 on the final ball to beat KKR by 3 wickets after Mukul Choudhary\'s unbeaten 54 off 27 at Eden Gardens.',
+        venueStats: { avgFirstInningsScore: 181, chasingWins: 40, totalMatches: 94, bestBowlingFigure: '5/15', boundaryPercentage: 57 },
+        headToHead: { team1Wins: 2, team2Wins: 4, noResult: 0, last5: 'LSG now lead the rivalry 4-2 after Match 15 in Kolkata.' },
         playerBattles: [
-            { batter: 'Nicholas Pooran', bowler: 'Sunil Narine', runs: 31, balls: 28, dismissals: 3, note: 'Narine’s powerplay overs have repeatedly challenged Pooran’s release shots.' },
-            { batter: 'Rinku Singh', bowler: 'Avesh Khan', runs: 43, balls: 29, dismissals: 2, note: 'Avesh mixes pace well enough to push Rinku square rather than straight.' },
+            { batter: 'Mukul Choudhary', bowler: 'Sunil Narine', runs: 45, balls: 20, dismissals: 1, note: 'Mukul attacked spin in the final five overs and turned the chase after LSG were 128/7.' },
+            { batter: 'Ayush Badoni', bowler: 'Anukul Roy', runs: 54, balls: 34, dismissals: 1, note: 'Badoni rebuilt the innings through overs 8-15 before Roy removed him against the run of play.' },
         ],
-        interestingStats: ['Kolkata has rewarded teams with dual-spin attacks who can squeeze overs 7-13.', 'LSG often surge when Pooran survives beyond the 12th over.'],
+        interestingStats: ['LSG needed 54 from the last five overs and closed the chase with 55/1, finishing at 182/7.', 'KKR were 111/4 by 13.2 overs but could add only 70 more in the final 40 balls, leaving a chaseable target.'],
     },
     'rr-rcb': {
         headline: 'High-profile top orders meet in a venue that rewards batting tempo through the middle overs.',
@@ -740,7 +740,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 12, date: '2026-04-06', dateLabel: '06 Apr', day: 'Monday', team1: 'kkr', team2: 'pbks', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
     { matchNumber: 13, date: '2026-04-07', dateLabel: '07 Apr', day: 'Tuesday', team1: 'rr', team2: 'mi', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
     { matchNumber: 14, date: '2026-04-08', dateLabel: '08 Apr', day: 'Wednesday', team1: 'dc', team2: 'gt', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium', status: 'completed' },
-    { matchNumber: 15, date: '2026-04-09', dateLabel: '09 Apr', day: 'Thursday', team1: 'kkr', team2: 'lsg', venueCity: 'Kolkata', stadium: 'Eden Gardens' },
+    { matchNumber: 15, date: '2026-04-09', dateLabel: '09 Apr', day: 'Thursday', team1: 'kkr', team2: 'lsg', venueCity: 'Kolkata', stadium: 'Eden Gardens', status: 'completed' },
     { matchNumber: 16, date: '2026-04-10', dateLabel: '10 Apr', day: 'Friday', team1: 'rr', team2: 'rcb', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
     { matchNumber: 17, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'pbks', team2: 'srh', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
     { matchNumber: 18, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'csk', team2: 'dc', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
@@ -2121,6 +2121,99 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['76/1 (Pathum Nissanka, 8.1 ov)', '101/2 (Nitish Rana, 9.5 ov)', '101/3 (Sameer Rizvi, 9.6 ov)', '134/4 (Axar Patel, 13.6 ov)', '160/5 (Tristan Stubbs, 16.4 ov)', '166/6 (KL Rahul, 16.6 ov)', '202/7 (Vipraj Nigam, 19.2 ov)', '209/8 (Kuldeep Yadav, 20.0 ov)'],
                 powerplayRuns: '64/0 (0.1-6 ov)',
                 partnerships: ['76 (Nissanka-Rahul)', '25 (Rahul-Rana)', '0 (Rahul-Rizvi)', '33 (Rahul-Miller)', '26 (Miller-Patel)', '26 (Miller-Stubbs)', '6 (Miller-Nigam)', '36 (Miller-Nigam/Kuldeep phase)']
+            }
+        ]
+    },
+    m15: {
+        toss: 'Lucknow Super Giants won the toss and elected to bowl.',
+        result: 'Lucknow Super Giants won by 3 wickets.',
+        playerOfTheMatch: 'Mukul Choudhary - 54* (27)',
+        keyMoments: [
+            'KKR posted 181/4 through contributions from Ajinkya Rahane (41), Angkrish Raghuvanshi (45), and Rovman Powell (39*).',
+            'LSG lost early wickets but Ayush Badoni\'s 54 off 34 kept the chase alive through the middle overs.',
+            'At 128/7 after 15.6 overs, LSG still needed 54 from 24 balls before Mukul Choudhary launched a late assault.',
+            'LSG scored 55/1 in the last five overs and reached 182/7 on the final ball to seal a dramatic chase.'
+        ],
+        tacticalAnalysis: [
+            'KKR\'s top order gave them a strong platform, but the middle overs lacked enough boundary conversion and they finished slightly below a par Eden score.',
+            'LSG\'s chase was built in phases: survive Arora\'s swing threat, rebuild via Badoni, then hand the finish to a fearless lower-order hitter.',
+            'KKR\'s best control came from Narine (4-0-13-1), yet support overs at the death leaked release balls when Mukul attacked straight and leg side.',
+            'LSG defended the powerplay in the first innings with disciplined spin from Digvesh Rathi and M Siddharth, keeping KKR from a 200+ finish.'
+        ],
+        improvements: {
+            team1: [
+                'KKR need one over of their most defensive option reserved exclusively for the final three overs in close defenses.',
+                'The batting unit can target a stronger phase between overs 14-18 after preserving wickets, rather than relying on only late acceleration.',
+                'Field settings against lower-order finishers should protect straight boundaries earlier when wickets are in hand.'
+            ],
+            team2: [
+                'LSG still need better top-order stability after slipping to 42/2 inside the first five overs of the chase.',
+                'Death-over bowling execution can improve after conceding 44 in Avesh Khan\'s four overs despite his wicket.',
+                'The batting group should rotate strike more consistently in overs 8-12 to avoid pressure spikes before the finish.'
+            ],
+            players: [
+                'Mukul Choudhary (LSG): outstanding finishing role; his boundary intent against pace was the game-defining difference.',
+                'Ayush Badoni (LSG): high-value middle-overs anchor innings that prevented required-rate blowout.',
+                'Sunil Narine (KKR): elite control spell (1/13) but needed one more wicket-taking partner at the other end.',
+                'Rovman Powell (KKR): quality unbeaten 39, and a slightly earlier acceleration could have pushed KKR beyond 190.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'kkr',
+                total: 181,
+                wickets: 4,
+                overs: '20.0',
+                batters: [
+                    { name: 'Ajinkya Rahane', howOut: 'c Mohammad Shami b Digvesh Rathi', runs: 41, balls: 24, fours: 4, sixes: 2, strikeRate: 170.83 },
+                    { name: 'Finn Allen', howOut: 'c Digvesh Rathi b Prince Yadav', runs: 9, balls: 8, fours: 2, sixes: 0, strikeRate: 112.5 },
+                    { name: 'Angkrish Raghuvanshi', howOut: 'c Aiden Markram b M Siddharth', runs: 45, balls: 33, fours: 5, sixes: 2, strikeRate: 136.36 },
+                    { name: 'Cameron Green', howOut: 'not out', runs: 32, balls: 24, fours: 3, sixes: 1, strikeRate: 133.33 },
+                    { name: 'Rinku Singh', howOut: 'b Avesh Khan', runs: 4, balls: 7, fours: 0, sixes: 0, strikeRate: 57.14 },
+                    { name: 'Rovman Powell', howOut: 'not out', runs: 39, balls: 24, fours: 4, sixes: 2, strikeRate: 162.5 },
+                ],
+                extras: '11 (b 1, lb 3, w 7, nb 0)',
+                didNotBat: ['Ramandeep Singh', 'Anukul Roy', 'Sunil Narine', 'Navdeep Saini', 'Kartik Tyagi', 'Vaibhav Arora'],
+                bowlers: [
+                    { name: 'Mohammad Shami', overs: '4', maidens: 0, runs: 27, wickets: 0, economy: 6.75 },
+                    { name: 'Prince Yadav', overs: '4', maidens: 0, runs: 47, wickets: 1, economy: 11.75 },
+                    { name: 'M Siddharth', overs: '4', maidens: 0, runs: 34, wickets: 1, economy: 8.5 },
+                    { name: 'Digvesh Rathi', overs: '4', maidens: 0, runs: 25, wickets: 1, economy: 6.25 },
+                    { name: 'Avesh Khan', overs: '4', maidens: 0, runs: 44, wickets: 1, economy: 11.0 },
+                ],
+                fallOfWickets: ['15/1 (Finn Allen, 1.4 ov)', '99/2 (Ajinkya Rahane, 10.2 ov)', '105/3 (Angkrish Raghuvanshi, 11.4 ov)', '111/4 (Rinku Singh, 13.2 ov)'],
+                powerplayRuns: '57/1 (0.1-6 ov)',
+                partnerships: ['15 (Rahane-Allen)', '84 (Rahane-Raghuvanshi)', '6 (Raghuvanshi-Green)', '6 (Green-Rinku)', '70* (Green-Powell)']
+            },
+            {
+                teamId: 'lsg',
+                total: 182,
+                wickets: 7,
+                overs: '20.0',
+                batters: [
+                    { name: 'Mitchell Marsh', howOut: 'c Angkrish Raghuvanshi b Vaibhav Arora', runs: 15, balls: 11, fours: 1, sixes: 1, strikeRate: 136.36 },
+                    { name: 'Aiden Markram', howOut: 'c Rovman Powell b Vaibhav Arora', runs: 22, balls: 15, fours: 2, sixes: 1, strikeRate: 146.67 },
+                    { name: 'Rishabh Pant', howOut: 'c Kartik Tyagi b Cameron Green', runs: 10, balls: 9, fours: 1, sixes: 0, strikeRate: 111.11 },
+                    { name: 'Ayush Badoni', howOut: 'c Rinku Singh b Anukul Roy', runs: 54, balls: 34, fours: 7, sixes: 2, strikeRate: 158.82 },
+                    { name: 'Nicholas Pooran', howOut: 'c Ramandeep Singh b Kartik Tyagi', runs: 13, balls: 15, fours: 0, sixes: 1, strikeRate: 86.67 },
+                    { name: 'Abdul Samad', howOut: 'b Anukul Roy', runs: 2, balls: 4, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'Mukul Choudhary', howOut: 'not out', runs: 54, balls: 27, fours: 2, sixes: 7, strikeRate: 200.0 },
+                    { name: 'Mohammad Shami', howOut: 'c Anukul Roy b Sunil Narine', runs: 1, balls: 3, fours: 0, sixes: 0, strikeRate: 33.33 },
+                    { name: 'Avesh Khan', howOut: 'not out', runs: 1, balls: 3, fours: 0, sixes: 0, strikeRate: 33.33 },
+                ],
+                extras: '10 (b 1, lb 2, w 6, nb 1)',
+                didNotBat: ['Digvesh Rathi', 'Prince Yadav'],
+                bowlers: [
+                    { name: 'Vaibhav Arora', overs: '4', maidens: 0, runs: 38, wickets: 2, economy: 9.5 },
+                    { name: 'Anukul Roy', overs: '4', maidens: 0, runs: 32, wickets: 2, economy: 8.0 },
+                    { name: 'Navdeep Saini', overs: '3', maidens: 0, runs: 37, wickets: 0, economy: 12.33 },
+                    { name: 'Sunil Narine', overs: '4', maidens: 0, runs: 13, wickets: 1, economy: 3.25 },
+                    { name: 'Kartik Tyagi', overs: '3', maidens: 0, runs: 31, wickets: 1, economy: 10.33 },
+                    { name: 'Cameron Green', overs: '2', maidens: 0, runs: 28, wickets: 1, economy: 14.0 },
+                ],
+                fallOfWickets: ['41/1 (Aiden Markram, 4.1 ov)', '42/2 (Mitchell Marsh, 4.3 ov)', '73/3 (Rishabh Pant, 8.2 ov)', '95/4 (Nicholas Pooran, 11.4 ov)', '104/5 (Abdul Samad, 12.5 ov)', '125/6 (Ayush Badoni, 14.4 ov)', '128/7 (Mohammad Shami, 15.6 ov)'],
+                powerplayRuns: '54/2 (0.1-6 ov)',
+                partnerships: ['41 (Marsh-Markram)', '1 (Marsh-Pant)', '31 (Pant-Badoni)', '22 (Badoni-Pooran)', '9 (Badoni-Samad)', '21 (Badoni-Mukul)', '3 (Mukul-Shami)', '54* (Mukul-Avesh)']
             }
         ]
     },
