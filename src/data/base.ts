@@ -2217,6 +2217,101 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
             }
         ]
     },
+    m16: {
+        toss: 'Toss details unavailable in submitted scorecard snapshot.',
+        result: 'Rajasthan Royals won by 6 wickets (with 12 balls remaining).',
+        playerOfTheMatch: 'Vaibhav Sooryavanshi - 78 (26)',
+        keyMoments: [
+            'RCB reached 201/8 after Rajat Patidar\'s 63 and late acceleration from Venkatesh Iyer (29*).',
+            'RR\'s chase was powered by Vaibhav Sooryavanshi\'s 78 off 26 at a strike rate of 300.00.',
+            'Dhruv Jurel anchored and finished the chase with an unbeaten 81 off 43.',
+            'RR crossed the target in 18.0 overs to win by 6 wickets.'
+        ],
+        tacticalAnalysis: [
+            'RCB\'s 201 looked competitive, but they lost momentum through middle-over wickets after being 58/2 in under five overs.',
+            'RR broke the chase open with high powerplay intent and sustained boundary hitting from Sooryavanshi and Jurel.',
+            'Krunal Pandya\'s double strike briefly brought RCB back, but RR\'s set batters denied further collapse.',
+            'RR\'s scoring rate above 11 per over across the chase ensured they stayed ahead of the required rate throughout.'
+        ],
+        improvements: {
+            team1: [
+                'RR can tighten new-ball economy after conceding 65 in the first 6 overs.',
+                'Middle-over control can improve by reducing boundary options square of the wicket against set batters.',
+                'Fielding discipline on catching chances remains important in high-scoring matches.'
+            ],
+            team2: [
+                'RCB need stronger powerplay wicket-taking support when defending 200+ totals.',
+                'Containment at the back end of the powerplay and immediately after can reduce chase momentum swings.',
+                'Death-over plans should include clearer matchup execution against in-form set batters.'
+            ],
+            players: [
+                'Dhruv Jurel (RR): elite chase control with acceleration at both ends of the innings.',
+                'Vaibhav Sooryavanshi (RR): high-impact powerplay striking set up the chase template.',
+                'Rajat Patidar (RCB): key top-order contribution, but support through overs 8-14 needs to be steadier.',
+                'Krunal Pandya (RCB): impactful wickets in the chase and useful matchup bowling role.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'rcb',
+                total: 201,
+                wickets: 8,
+                overs: '20.0',
+                batters: [
+                    { name: 'Phil Salt', howOut: 'c Dhruv Jurel b Jofra Archer', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Virat Kohli', howOut: 'b Ravi Bishnoi', runs: 32, balls: 16, fours: 7, sixes: 0, strikeRate: 200.0 },
+                    { name: 'Devdutt Padikkal', howOut: 'c Shimron Hetmyer b Jofra Archer', runs: 14, balls: 7, fours: 3, sixes: 0, strikeRate: 200.0 },
+                    { name: 'Rajat Patidar', howOut: 'c Donovan Ferreira b Sandeep Sharma', runs: 63, balls: 40, fours: 4, sixes: 4, strikeRate: 157.5 },
+                    { name: 'Krunal Pandya', howOut: 'c Shimron Hetmyer b Ravi Bishnoi', runs: 1, balls: 6, fours: 0, sixes: 0, strikeRate: 16.67 },
+                    { name: 'Jitesh Sharma', howOut: 'lbw b Brijesh Sharma', runs: 5, balls: 8, fours: 0, sixes: 0, strikeRate: 62.5 },
+                    { name: 'Tim David', howOut: 'c Shimron Hetmyer b Brijesh Sharma', runs: 13, balls: 9, fours: 2, sixes: 0, strikeRate: 144.44 },
+                    { name: 'Romario Shepherd', howOut: 'c Brijesh Sharma b Ravindra Jadeja', runs: 22, balls: 11, fours: 2, sixes: 1, strikeRate: 200.0 },
+                    { name: 'Venkatesh Iyer', howOut: 'not out', runs: 29, balls: 15, fours: 1, sixes: 2, strikeRate: 193.33 },
+                    { name: 'Bhuvneshwar Kumar', howOut: 'not out', runs: 9, balls: 7, fours: 1, sixes: 0, strikeRate: 128.57 },
+                ],
+                extras: '13 (b 4, lb 2, w 7, nb 0)',
+                didNotBat: ['Abhinandan Singh', 'Josh Hazlewood'],
+                bowlers: [
+                    { name: 'Jofra Archer', overs: '3', maidens: 0, runs: 33, wickets: 2, economy: 11.0 },
+                    { name: 'Nandre Burger', overs: '3', maidens: 0, runs: 32, wickets: 0, economy: 10.67 },
+                    { name: 'Sandeep Sharma', overs: '4', maidens: 0, runs: 47, wickets: 1, economy: 11.75 },
+                    { name: 'Ravi Bishnoi', overs: '4', maidens: 0, runs: 32, wickets: 2, economy: 8.0 },
+                    { name: 'Ravindra Jadeja', overs: '2', maidens: 0, runs: 14, wickets: 1, economy: 7.0 },
+                    { name: 'Brijesh Sharma', overs: '4', maidens: 0, runs: 37, wickets: 2, economy: 9.25 },
+                ],
+                fallOfWickets: ['0/1 (Phil Salt, 0.1 ov)', '45/2 (Devdutt Padikkal, 2.6 ov)', '58/3 (Virat Kohli, 4.5 ov)', '62/4 (Krunal Pandya, 6.2 ov)', '76/5 (Jitesh Sharma, 8.4 ov)', '94/6 (Tim David, 10.6 ov)', '125/7 (Romario Shepherd, 13.6 ov)', '166/8 (Rajat Patidar, 17.1 ov)'],
+                powerplayRuns: '59/3 (0.1-6 ov)',
+                partnerships: ['45 (Kohli-Padikkal)', '13 (Kohli-Patidar)', '4 (Patidar-Krunal)', '14 (Patidar-Jitesh)', '18 (Patidar-Tim David)', '31 (Patidar-Shepherd)', '41 (Patidar-Venkatesh Iyer)', '35* (Venkatesh Iyer-Bhuvneshwar Kumar)']
+            },
+            {
+                teamId: 'rr',
+                total: 202,
+                wickets: 4,
+                overs: '18.0',
+                batters: [
+                    { name: 'Yashasvi Jaiswal', howOut: 'c Jitesh Sharma b Josh Hazlewood', runs: 13, balls: 8, fours: 0, sixes: 2, strikeRate: 162.5 },
+                    { name: 'Vaibhav Sooryavanshi', howOut: 'c Virat Kohli b Krunal Pandya', runs: 78, balls: 26, fours: 8, sixes: 7, strikeRate: 300.0 },
+                    { name: 'Dhruv Jurel', howOut: 'not out', runs: 81, balls: 43, fours: 8, sixes: 3, strikeRate: 188.37 },
+                    { name: 'Shimron Hetmyer', howOut: 'c Josh Hazlewood b Krunal Pandya', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Riyan Parag', howOut: 'c Krunal Pandya b Josh Hazlewood', runs: 3, balls: 5, fours: 0, sixes: 0, strikeRate: 60.0 },
+                    { name: 'Ravindra Jadeja', howOut: 'not out', runs: 24, balls: 25, fours: 1, sixes: 0, strikeRate: 96.0 },
+                ],
+                extras: '3 (b 0, lb 1, w 2, nb 0)',
+                didNotBat: ['Donovan Ferreira', 'Ravi Bishnoi', 'Jofra Archer', 'Nandre Burger', 'Brijesh Sharma'],
+                bowlers: [
+                    { name: 'Bhuvneshwar Kumar', overs: '4', maidens: 0, runs: 37, wickets: 0, economy: 9.25 },
+                    { name: 'Josh Hazlewood', overs: '4', maidens: 0, runs: 44, wickets: 2, economy: 11.0 },
+                    { name: 'Abhinandan Singh', overs: '3', maidens: 0, runs: 54, wickets: 0, economy: 18.0 },
+                    { name: 'Krunal Pandya', overs: '4', maidens: 0, runs: 30, wickets: 2, economy: 7.5 },
+                    { name: 'Tim David', overs: '1', maidens: 0, runs: 18, wickets: 0, economy: 18.0 },
+                    { name: 'Romario Shepherd', overs: '2', maidens: 0, runs: 18, wickets: 0, economy: 9.0 },
+                ],
+                fallOfWickets: ['21/1 (Yashasvi Jaiswal, 1.6 ov)', '129/2 (Vaibhav Sooryavanshi, 8.1 ov)', '129/3 (Shimron Hetmyer, 8.2 ov)', '134/4 (Riyan Parag, 9.4 ov)'],
+                powerplayRuns: '73/1 (0.1-6 ov)',
+                partnerships: ['21 (Jaiswal-Sooryavanshi)', '108 (Sooryavanshi-Jurel)', '0 (Hetmyer-Jurel)', '5 (Parag-Jurel)', '68* (Jurel-Jadeja)']
+            }
+        ]
+    },
 };
 
 const pitchReportsByVenue: Record<string, string> = {
