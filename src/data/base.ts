@@ -742,7 +742,7 @@ const matchSeeds: MatchSeed[] = [
     { matchNumber: 14, date: '2026-04-08', dateLabel: '08 Apr', day: 'Wednesday', team1: 'dc', team2: 'gt', venueCity: 'Delhi', stadium: 'Arun Jaitley Stadium', status: 'completed' },
     { matchNumber: 15, date: '2026-04-09', dateLabel: '09 Apr', day: 'Thursday', team1: 'kkr', team2: 'lsg', venueCity: 'Kolkata', stadium: 'Eden Gardens', status: 'completed' },
     { matchNumber: 16, date: '2026-04-10', dateLabel: '10 Apr', day: 'Friday', team1: 'rr', team2: 'rcb', venueCity: 'Guwahati', stadium: 'Barsapara Cricket Stadium' },
-    { matchNumber: 17, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'pbks', team2: 'srh', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium' },
+    { matchNumber: 17, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'pbks', team2: 'srh', venueCity: 'New Chandigarh', stadium: 'Maharaja Yadavindra Singh International Cricket Stadium', status: 'completed' },
     { matchNumber: 18, date: '2026-04-11', dateLabel: '11 Apr', day: 'Saturday', team1: 'csk', team2: 'dc', venueCity: 'Chennai', stadium: 'M. A. Chidambaram Stadium' },
     { matchNumber: 19, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'lsg', team2: 'gt', venueCity: 'Lucknow', stadium: 'BRSABV Ekana Cricket Stadium' },
     { matchNumber: 20, date: '2026-04-12', dateLabel: '12 Apr', day: 'Sunday', team1: 'mi', team2: 'rcb', venueCity: 'Mumbai', stadium: 'Wankhede Stadium' },
@@ -2309,6 +2309,101 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['21/1 (Yashasvi Jaiswal, 1.6 ov)', '129/2 (Vaibhav Sooryavanshi, 8.1 ov)', '129/3 (Shimron Hetmyer, 8.2 ov)', '134/4 (Riyan Parag, 9.4 ov)'],
                 powerplayRuns: '73/1 (0.1-6 ov)',
                 partnerships: ['21 (Jaiswal-Sooryavanshi)', '108 (Sooryavanshi-Jurel)', '0 (Hetmyer-Jurel)', '5 (Parag-Jurel)', '68* (Jurel-Jadeja)']
+            }
+        ]
+    },
+    m17: {
+        toss: 'Punjab Kings won the toss and elected to field.',
+        result: 'Punjab Kings won by 6 wickets (with 7 balls remaining).',
+        playerOfTheMatch: 'Shreyas Iyer - 69* (33)',
+        keyMoments: [
+            'SRH blasted 120 in the first 8.1 overs before PBKS clawed back through Shashank Singh and Arshdeep Singh.',
+            'Abhishek Sharma\'s 74 off 28 and Heinrich Klaasen\'s 39 helped SRH post 219/6.',
+            'PBKS replied with three rapid fifties: Priyansh Arya 57 (20), Prabhsimran Singh 51 (25), and Shreyas Iyer 69* (33).',
+            'PBKS chased 220 in just 18.5 overs to complete one of the fastest successful 220+ chases in IPL history.'
+        ],
+        tacticalAnalysis: [
+            'PBKS accepted SRH\'s powerplay surge but recovered strongly by using part-time overs from Shashank Singh to break the opening stand.',
+            'Despite conceding 219, PBKS stayed ahead in the chase by maintaining boundary pressure and keeping the required rate under control through overs 7-15.',
+            'SRH\'s bowling plans lacked sustained control at the death, with only Shivang Kumar consistently taking wickets.',
+            'Shreyas Iyer managed tempo expertly, accelerating against pace and spin while batting through the chase unbeaten.'
+        ],
+        improvements: {
+            team1: [
+                'SRH need tighter death-over control after leaking 79 runs in the final 6.5 overs of the chase.',
+                'Defending 220 required more proactive field changes against PBKS\' set right-hand batters.',
+                'SRH can improve phase control after dominating the powerplay but losing momentum between overs 9-16.'
+            ],
+            team2: [
+                'PBKS can tighten powerplay bowling execution after conceding 83 in the first 6 overs.',
+                'Death-over yorker consistency remains an area to improve despite restricting SRH from 220+ momentum at the very end.',
+                'PBKS should preserve bowling balance to reduce dependence on part-time overs in high-scoring matches.'
+            ],
+            players: [
+                'Shreyas Iyer (PBKS): elite chase orchestration with controlled aggression and finishing assurance.',
+                'Priyansh Arya (PBKS): powerplay intent gave PBKS immediate scoreboard leverage in a 220 chase.',
+                'Shashank Singh (PBKS): impactful all-round contribution with two wickets and an unbeaten finishing cameo.',
+                'Abhishek Sharma (SRH): outstanding powerplay striking should be converted into deeper innings more often.',
+                'Shivang Kumar (SRH): wicket-taking middle-overs spell (3/33) kept SRH in the game despite the defeat.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'srh',
+                total: 219,
+                wickets: 6,
+                overs: '20.0',
+                batters: [
+                    { name: 'Abhishek Sharma', howOut: 'c Arshdeep Singh b Shashank Singh', runs: 74, balls: 28, fours: 5, sixes: 8, strikeRate: 264.28 },
+                    { name: 'Travis Head', howOut: 'c Bartlett b Shashank Singh', runs: 38, balls: 23, fours: 5, sixes: 1, strikeRate: 165.21 },
+                    { name: 'Ishan Kishan', howOut: 'c Jansen b Arshdeep Singh', runs: 27, balls: 17, fours: 3, sixes: 1, strikeRate: 158.82 },
+                    { name: 'Heinrich Klaasen', howOut: 'c Connolly b Bartlett', runs: 39, balls: 33, fours: 1, sixes: 1, strikeRate: 118.18 },
+                    { name: 'Aniket Verma', howOut: 'run out (Stoinis/Prabhsimran Singh)', runs: 18, balls: 9, fours: 1, sixes: 1, strikeRate: 200.0 },
+                    { name: 'Salil Arora', howOut: 'c Bartlett b Arshdeep Singh', runs: 9, balls: 8, fours: 0, sixes: 1, strikeRate: 112.5 },
+                    { name: 'Nitish Kumar Reddy', howOut: 'not out', runs: 0, balls: 1, fours: 0, sixes: 0, strikeRate: 0.0 },
+                    { name: 'Harsh Dubey', howOut: 'not out', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                ],
+                extras: '13 (b 1, nb 1, w 11)',
+                didNotBat: ['Shivang Kumar', 'Harshal Patel', 'Eshan Malinga'],
+                bowlers: [
+                    { name: 'Arshdeep Singh', overs: '4', maidens: 0, runs: 50, wickets: 2, economy: 12.5 },
+                    { name: 'Xavier Bartlett', overs: '4', maidens: 0, runs: 42, wickets: 1, economy: 10.5 },
+                    { name: 'Marco Jansen', overs: '4', maidens: 0, runs: 40, wickets: 0, economy: 10.0 },
+                    { name: 'Vijaykumar Vyshak', overs: '2', maidens: 0, runs: 33, wickets: 0, economy: 16.5 },
+                    { name: 'Shashank Singh', overs: '3', maidens: 0, runs: 20, wickets: 2, economy: 6.66 },
+                    { name: 'Yuzvendra Chahal', overs: '3', maidens: 0, runs: 33, wickets: 0, economy: 11.0 },
+                ],
+                fallOfWickets: ['120/1 (Travis Head, 8.1 ov)', '122/2 (Abhishek Sharma, 8.3 ov)', '169/3 (Ishan Kishan, 13.6 ov)', '195/4 (Aniket Verma, 16.4 ov)', '214/5 (Salil Arora, 18.5 ov)', '218/6 (Heinrich Klaasen, 19.4 ov)'],
+                powerplayRuns: '83/0 (0.1-6 ov)',
+                partnerships: ['120 (Abhishek Sharma-Travis Head)', '2 (Abhishek Sharma-Ishan Kishan)', '47 (Ishan Kishan-Klaasen)', '26 (Klaasen-Aniket Verma)', '19 (Klaasen-Salil Arora)', '4 (Klaasen-Nitish Kumar Reddy)', '1* (Nitish Kumar Reddy-Harsh Dubey)']
+            },
+            {
+                teamId: 'pbks',
+                total: 223,
+                wickets: 4,
+                overs: '18.5',
+                batters: [
+                    { name: 'Priyansh Arya', howOut: 'c Nitish Kumar Reddy b Shivang Kumar', runs: 57, balls: 20, fours: 5, sixes: 5, strikeRate: 285.0 },
+                    { name: 'Prabhsimran Singh', howOut: 'c Klaasen b Shivang Kumar', runs: 51, balls: 25, fours: 4, sixes: 4, strikeRate: 204.0 },
+                    { name: 'Cooper Connolly', howOut: 'c Aniket Verma b Shivang Kumar', runs: 11, balls: 12, fours: 1, sixes: 0, strikeRate: 91.66 },
+                    { name: 'Shreyas Iyer', howOut: 'not out', runs: 69, balls: 33, fours: 5, sixes: 5, strikeRate: 209.09 },
+                    { name: 'Nehal Wadhera', howOut: 'b Harsh Dubey', runs: 14, balls: 14, fours: 0, sixes: 1, strikeRate: 100.0 },
+                    { name: 'Shashank Singh', howOut: 'not out', runs: 16, balls: 9, fours: 1, sixes: 1, strikeRate: 177.77 },
+                ],
+                extras: '5 (w 5)',
+                didNotBat: ['Marcus Stoinis', 'Marco Jansen', 'Xavier Bartlett', 'Vijaykumar Vyshak', 'Arshdeep Singh'],
+                bowlers: [
+                    { name: 'Harsh Dubey', overs: '4', maidens: 0, runs: 38, wickets: 1, economy: 9.5 },
+                    { name: 'Jaydev Unadkat', overs: '3', maidens: 0, runs: 40, wickets: 0, economy: 13.33 },
+                    { name: 'Eshan Malinga', overs: '3', maidens: 0, runs: 46, wickets: 0, economy: 15.33 },
+                    { name: 'Harshal Patel', overs: '2', maidens: 0, runs: 39, wickets: 0, economy: 19.5 },
+                    { name: 'Shivang Kumar', overs: '4', maidens: 0, runs: 33, wickets: 3, economy: 8.25 },
+                    { name: 'Nitish Kumar Reddy', overs: '2', maidens: 0, runs: 20, wickets: 0, economy: 10.0 },
+                    { name: 'Abhishek Sharma', overs: '0.5', maidens: 0, runs: 7, wickets: 0, economy: 8.4 },
+                ],
+                fallOfWickets: ['99/1 (Priyansh Arya, 6.2 ov)', '117/2 (Prabhsimran Singh, 8.5 ov)', '128/3 (Cooper Connolly, 10.2 ov)', '197/4 (Nehal Wadhera, 16.1 ov)'],
+                powerplayRuns: '95/0 (0.1-6 ov)',
+                partnerships: ['99 (Priyansh Arya-Prabhsimran Singh)', '18 (Prabhsimran Singh-Cooper Connolly)', '11 (Cooper Connolly-Shreyas Iyer)', '69 (Shreyas Iyer-Nehal Wadhera)', '26* (Shreyas Iyer-Shashank Singh)']
             }
         ]
     },
