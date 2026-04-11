@@ -693,14 +693,14 @@ const matchInsights: Record<string, Omit<Match, 'id' | 'matchNumber' | 'date' | 
         interestingStats: ['SRH average among the highest powerplay scores in the league.', 'PBKS often rely on Arshdeep to break opening stands before the sixth over.'],
     },
     'csk-dc': {
-        headline: 'Chepauk adds a spin-and-discipline lens to a contest packed with stroke players.',
+        headline: 'Sanju Samson\'s unbeaten 115 powered CSK to 212/2 before Jamie Overton\'s 4/18 sealed a 23-run win over DC in Chennai.',
         venueStats: { avgFirstInningsScore: 168, chasingWins: 33, totalMatches: 80, bestBowlingFigure: '5/13', boundaryPercentage: 45 },
         headToHead: { team1Wins: 19, team2Wins: 11, noResult: 0, last5: 'CSK lead 4-1 across the last five meetings.' },
         playerBattles: [
             { batter: 'KL Rahul', bowler: 'Ravindra Jadeja', runs: 74, balls: 68, dismissals: 3, note: 'Jadeja attacks the stumps and forces Rahul to hit against the turn.' },
             { batter: 'Shivam Dube', bowler: 'Kuldeep Yadav', runs: 30, balls: 26, dismissals: 2, note: 'Kuldeep has broken Dube’s rhythm with pace changes and wider lines.' },
         ],
-        interestingStats: ['Chennai has historically favored sides that field two or more spin options.', 'DC’s wicket-taking percentage in the middle overs rises when Kuldeep bowls immediately after the powerplay.'],
+        interestingStats: ['CSK scored 212/2 with only two wickets down, led by Sanju Samson\'s 115* off 56 and Ayush Mhatre\'s 59 off 36.', 'DC were 61/1 but slipped to 76/4, and despite Tristan Stubbs\' 60, they were bowled out for 189 in 20 overs.'],
     },
     'lsg-gt': {
         headline: 'Expect a tactical, low-margin game where strike rotation could outrank brute force.',
@@ -2404,6 +2404,101 @@ const completedMatchDetailsById: Record<string, CompletedMatchDetails> = {
                 fallOfWickets: ['99/1 (Priyansh Arya, 6.2 ov)', '117/2 (Prabhsimran Singh, 8.5 ov)', '128/3 (Cooper Connolly, 10.2 ov)', '197/4 (Nehal Wadhera, 16.1 ov)'],
                 powerplayRuns: '95/0 (0.1-6 ov)',
                 partnerships: ['99 (Priyansh Arya-Prabhsimran Singh)', '18 (Prabhsimran Singh-Cooper Connolly)', '11 (Cooper Connolly-Shreyas Iyer)', '69 (Shreyas Iyer-Nehal Wadhera)', '26* (Shreyas Iyer-Shashank Singh)']
+            }
+        ]
+    },
+    m18: {
+        toss: 'Delhi Capitals won the toss and elected to field.',
+        result: 'Chennai Super Kings won by 23 runs.',
+        playerOfTheMatch: 'Sanju Samson - 115* (56)',
+        keyMoments: [
+            'Sanju Samson anchored and accelerated brilliantly with 115* off 56, striking 15 fours and 4 sixes.',
+            'Ayush Mhatre added 59 off 36 before retiring out, helping CSK reach 175/2 by 17.3 overs and finish at 212/2.',
+            'DC were 61/1 in the chase but collapsed to 76/4 inside 8 overs as CSK repeatedly broke partnerships.',
+            'Tristan Stubbs counterattacked with 60 off 38, but Jamie Overton\'s 4/18 shut down the finish and bowled DC out for 189.'
+        ],
+        tacticalAnalysis: [
+            'CSK maximized batting value by combining Samson\'s strike rotation with boundary bursts, then used Shivam Dube\'s late cameo to push beyond 210.',
+            'DC\'s chase lost control in the middle overs due to successive wickets, forcing Stubbs to rebuild and hit high-risk strokes late.',
+            'Overton bowled high-value overs at key phases, removing set batters and finishing with the best bowling impact of the match.',
+            'CSK mixed pace and spin options effectively enough to prevent a sustained late chase despite DC\'s lower-order hitting attempts.'
+        ],
+        improvements: {
+            team1: [
+                'CSK can sharpen new-ball discipline after conceding 61 in the first five overs of the chase.',
+                'Death-over control should improve to reduce wides and no-balls in high-pressure endings.',
+                'Carrying one additional middle-over wicket-taking option could further reduce opposition recovery windows.'
+            ],
+            team2: [
+                'DC need better middle-order stability after collapsing from 61/1 to 76/4.',
+                'Bowling plans at the death require tighter execution after conceding 37 in the final 4 overs of CSK\'s innings.',
+                'Chasing 200+ totals, DC must preserve wickets through overs 7-14 to avoid exposing the tail too early.'
+            ],
+            players: [
+                'Sanju Samson (CSK): match-defining unbeaten century with sustained tempo and smart strike management.',
+                'Jamie Overton (CSK): game-turning 4/18 with wickets at critical phases of the chase.',
+                'Ayush Mhatre (CSK): strong platform-setting 59 that complemented Samson\'s innings.',
+                'Tristan Stubbs (DC): lone extended resistance with an aggressive 60 under scoreboard pressure.',
+                'Anshul Kamboj (CSK): key support spell with 3 wickets to dismantle DC\'s lower order.'
+            ]
+        },
+        innings: [
+            {
+                teamId: 'csk',
+                total: 212,
+                wickets: 2,
+                overs: '20.0',
+                batters: [
+                    { name: 'Sanju Samson', howOut: 'not out', runs: 115, balls: 56, fours: 15, sixes: 4, strikeRate: 205.35 },
+                    { name: 'Ruturaj Gaikwad', howOut: 'c Pathum Nissanka b Axar Patel', runs: 15, balls: 18, fours: 1, sixes: 0, strikeRate: 83.33 },
+                    { name: 'Ayush Mhatre', howOut: 'retired out', runs: 59, balls: 36, fours: 3, sixes: 4, strikeRate: 163.88 },
+                    { name: 'Shivam Dube', howOut: 'not out', runs: 20, balls: 10, fours: 2, sixes: 1, strikeRate: 200.0 },
+                ],
+                extras: '3 (w 3)',
+                didNotBat: ['Sarfaraz Khan', 'Dewald Brevis', 'Jamie Overton', 'Noor Ahmad', 'Anshul Kamboj', 'Gurjapneet Singh', 'Khaleel Ahmed', 'Akeal Hosein'],
+                bowlers: [
+                    { name: 'Auqib Nabi', overs: '2', maidens: 0, runs: 17, wickets: 0, economy: 8.5 },
+                    { name: 'Mukesh Kumar', overs: '4', maidens: 0, runs: 37, wickets: 0, economy: 9.25 },
+                    { name: 'Axar Patel', overs: '4', maidens: 0, runs: 39, wickets: 1, economy: 9.75 },
+                    { name: 'T Natarajan', overs: '4', maidens: 0, runs: 54, wickets: 0, economy: 13.5 },
+                    { name: 'Lungi Ngidi', overs: '4', maidens: 0, runs: 41, wickets: 0, economy: 10.25 },
+                    { name: 'Kuldeep Yadav', overs: '2', maidens: 0, runs: 24, wickets: 0, economy: 12.0 },
+                ],
+                fallOfWickets: ['62/1 (Ruturaj Gaikwad, 6.2 ov)', '175/2 (Ayush Mhatre, 17.3 ov)'],
+                powerplayRuns: '61/0 (0.1-6 ov)',
+                partnerships: ['62 (Samson-Gaikwad)', '113 (Samson-Mhatre)', '37* (Samson-Dube)']
+            },
+            {
+                teamId: 'dc',
+                total: 189,
+                wickets: 10,
+                overs: '20.0',
+                batters: [
+                    { name: 'Pathum Nissanka', howOut: 'c Dewald Brevis b Anshul Kamboj', runs: 41, balls: 24, fours: 5, sixes: 2, strikeRate: 170.83 },
+                    { name: 'KL Rahul', howOut: 'c Jamie Overton b Khaleel Ahmed', runs: 18, balls: 10, fours: 2, sixes: 1, strikeRate: 180.0 },
+                    { name: 'Sameer Rizvi', howOut: 'c Dewald Brevis b Jamie Overton', runs: 6, balls: 9, fours: 1, sixes: 0, strikeRate: 66.66 },
+                    { name: 'Axar Patel', howOut: 'c Sarfaraz Khan b Gurjapneet Singh', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                    { name: 'David Miller', howOut: 'b Jamie Overton', runs: 17, balls: 14, fours: 1, sixes: 1, strikeRate: 121.42 },
+                    { name: 'Tristan Stubbs', howOut: 'c Noor Ahmad b Jamie Overton', runs: 60, balls: 38, fours: 4, sixes: 3, strikeRate: 157.89 },
+                    { name: 'Ashutosh Sharma', howOut: 'c Anshul Kamboj b Noor Ahmad', runs: 19, balls: 10, fours: 1, sixes: 2, strikeRate: 190.0 },
+                    { name: 'Auqib Nabi', howOut: 'c Akeal Hosein b Jamie Overton', runs: 4, balls: 2, fours: 1, sixes: 0, strikeRate: 200.0 },
+                    { name: 'Kuldeep Yadav', howOut: 'c Dewald Brevis b Anshul Kamboj', runs: 4, balls: 7, fours: 0, sixes: 0, strikeRate: 57.14 },
+                    { name: 'Lungi Ngidi', howOut: 'c Gurjapneet Singh b Anshul Kamboj', runs: 3, balls: 5, fours: 0, sixes: 0, strikeRate: 60.0 },
+                    { name: 'T Natarajan', howOut: 'not out', runs: 1, balls: 2, fours: 0, sixes: 0, strikeRate: 50.0 },
+                ],
+                extras: '15 (lb 1, nb 3, w 11)',
+                didNotBat: ['Mukesh Kumar'],
+                bowlers: [
+                    { name: 'Akeal Hosein', overs: '2', maidens: 0, runs: 20, wickets: 0, economy: 10.0 },
+                    { name: 'Khaleel Ahmed', overs: '3', maidens: 0, runs: 40, wickets: 1, economy: 13.33 },
+                    { name: 'Anshul Kamboj', overs: '4', maidens: 0, runs: 35, wickets: 3, economy: 8.75 },
+                    { name: 'Gurjapneet Singh', overs: '4', maidens: 0, runs: 39, wickets: 1, economy: 9.75 },
+                    { name: 'Jamie Overton', overs: '4', maidens: 0, runs: 18, wickets: 4, economy: 4.5 },
+                    { name: 'Noor Ahmad', overs: '3', maidens: 0, runs: 36, wickets: 1, economy: 12.0 },
+                ],
+                fallOfWickets: ['61/1 (KL Rahul, 4.6 ov)', '61/2 (Pathum Nissanka, 5.2 ov)', '66/3 (Axar Patel, 6.1 ov)', '76/4 (Sameer Rizvi, 7.6 ov)', '121/5 (David Miller, 12.2 ov)', '149/6 (Ashutosh Sharma, 14.5 ov)', '154/7 (Auqib Nabi, 15.4 ov)', '183/8 (Tristan Stubbs, 18.3 ov)', '185/9 (Kuldeep Yadav, 19.1 ov)', '189/10 (Lungi Ngidi, 19.6 ov)'],
+                powerplayRuns: '61/2 (0.1-6 ov)',
+                partnerships: ['61 (Nissanka-Rahul)', '0 (Nissanka-Rizvi)', '5 (Rizvi-Axar)', '10 (Rizvi-Miller)', '45 (Miller-Stubbs)', '28 (Stubbs-Ashutosh)', '5 (Stubbs-Auqib)', '29 (Stubbs-Kuldeep)', '2 (Kuldeep-Ngidi)', '4* (Natarajan-Ngidi)']
             }
         ]
     },
